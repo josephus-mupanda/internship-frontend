@@ -3,29 +3,31 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:internship_frontend/core/config/app_config.dart';
 
+import '../models/user.dart';
+
 class UserService {
   final String baseUrl = AppConfig.userUrl;
 
   // Register a new user
-  Future<http.Response> registerUser(Map<String, String> user) async {
+  Future<http.Response> registerUser(User user) async {
     final response = await http.post(
       Uri.parse('$baseUrl/register'),
       headers: {
         'Content-Type': 'application/json',
       },
-      body: jsonEncode(user),
+      body: jsonEncode(user.toJson()),
     );
     return response;
   }
 
   // User login
-  Future<http.Response> loginUser(Map<String, String> credentials) async {
+  Future<http.Response> loginUser(User user) async {
     final response = await http.post(
       Uri.parse('$baseUrl/login'),
       headers: {
         'Content-Type': 'application/json',
       },
-      body: jsonEncode(credentials),
+      body: jsonEncode(user.toJson()),
     );
     return response;
   }
