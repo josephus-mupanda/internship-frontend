@@ -1,19 +1,19 @@
 
-class Contribution {
+class Disbursement {
   final int groupId;
   final int memberId;
   final double amount;
   final DateTime date;
 
-  Contribution({
+  Disbursement({
     required this.groupId,
     required this.memberId,
     required this.amount,
     required this.date,
   });
 
-  factory Contribution.fromJson(Map<String, dynamic> json) {
-    return Contribution(
+  factory Disbursement.fromJson(Map<String, dynamic> json) {
+    return Disbursement(
       groupId: json['groupId'] as int,
       memberId: json['memberId'] as int,
       amount: (json['amount'] as num).toDouble(),
