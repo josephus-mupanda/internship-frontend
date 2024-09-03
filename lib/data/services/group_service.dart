@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:internship_frontend/core/config/app_config.dart';
+
+import '../../core/config/app_config.dart';
 
 class GroupService {
   final String baseUrl = AppConfig.groupUrl;
