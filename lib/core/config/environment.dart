@@ -1,4 +1,4 @@
+
 class Environment {
-  static const String baseUrl = 'https://yourapi.com/api';
-// Other environment-specific configurations like API keys
+  static const String baseUrl = 'http://localhost:8080';
 }
