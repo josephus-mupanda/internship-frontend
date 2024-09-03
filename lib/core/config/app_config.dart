@@ -6,5 +6,6 @@ class AppConfig {
 
   static const String groupUrl = '${Environment.baseUrl}/api/groups';
 
+  static const String memberUrl = '${Environment.baseUrl}/api/members';
 
 }
