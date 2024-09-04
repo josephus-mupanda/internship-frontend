@@ -1,6 +1,7 @@
 
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:internship_frontend/core/config/environment.dart';
 import '../../core/config/app_config.dart';
 
 import '../models/user.dart';
@@ -12,9 +13,7 @@ class UserService {
   Future<http.Response> registerUser(User user) async {
     final response = await http.post(
       Uri.parse('$baseUrl/register'),
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: Environment.getJsonHeaders(null),
       body: jsonEncode(user.toJson()),
     );
     return response;
@@ -24,9 +23,7 @@ class UserService {
   Future<http.Response> loginUser(User user) async {
     final response = await http.post(
       Uri.parse('$baseUrl/login'),
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: Environment.getJsonHeaders(null),
       body: jsonEncode(user.toJson()),
     );
     return response;
@@ -36,9 +33,7 @@ class UserService {
   Future<http.Response> resetPassword(String email) async {
     final response = await http.post(
       Uri.parse('$baseUrl/reset-password'),
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: Environment.getJsonHeaders(null),
       body: jsonEncode({'email': email}),
     );
     return response;
@@ -56,9 +51,7 @@ class UserService {
   Future<http.Response> changePassword(String token, String newPassword) async {
     final response = await http.post(
       Uri.parse('$baseUrl/change-password?token=$token'),
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: Environment.getJsonHeaders(null),
       body: jsonEncode({'password': newPassword}),
     );
     return response;

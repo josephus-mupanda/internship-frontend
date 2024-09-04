@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:internship_frontend/core/config/environment.dart';
 import '../models/disbursement.dart';
 import '../../core/config/app_config.dart';
 
@@ -10,10 +11,7 @@ class DisbursementService {
   Future<http.Response> getAllDisbursements(String token) async {
     final response = await http.get(
       Uri.parse(baseUrl),
-      headers: {
-        'Authorization': 'Bearer $token',
-        'Content-Type': 'application/json',
-      },
+      headers: Environment.getJsonHeaders(token),
     );
     return response;
   }
@@ -22,10 +20,7 @@ class DisbursementService {
   Future<http.Response> getDisbursementById(String id, String token) async {
     final response = await http.get(
       Uri.parse('$baseUrl/$id'),
-      headers: {
-        'Authorization': 'Bearer $token',
-        'Content-Type': 'application/json',
-      },
+      headers: Environment.getJsonHeaders(token),
     );
     return response;
   }
@@ -34,10 +29,7 @@ class DisbursementService {
   Future<http.Response> createDisbursement(Disbursement disbursement, String token) async {
     final response = await http.post(
       Uri.parse(baseUrl),
-      headers: {
-        'Authorization': 'Bearer $token',
-        'Content-Type': 'application/json',
-      },
+      headers: Environment.getJsonHeaders(token),
       body: jsonEncode(disbursement.toJson()),
     );
     return response;
@@ -47,10 +39,7 @@ class DisbursementService {
   Future<http.Response> updateDisbursement(String id, Disbursement disbursement, String token) async {
     final response = await http.put(
       Uri.parse('$baseUrl/$id'),
-      headers: {
-        'Authorization': 'Bearer $token',
-        'Content-Type': 'application/json',
-      },
+      headers: Environment.getJsonHeaders(token),
       body: jsonEncode(disbursement.toJson()),
     );
     return response;
@@ -60,10 +49,7 @@ class DisbursementService {
   Future<http.Response> deleteDisbursement(String id, String token) async {
     final response = await http.delete(
       Uri.parse('$baseUrl/$id'),
-      headers: {
-        'Authorization': 'Bearer $token',
-        'Content-Type': 'application/json',
-      },
+      headers: Environment.getJsonHeaders(token)
     );
     return response;
   }

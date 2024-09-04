@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 import '../../core/config/app_config.dart';
+import '../../core/config/environment.dart';
 import '../models/group.dart';
 
 class GroupService {
@@ -11,10 +12,7 @@ class GroupService {
   Future<http.Response> createGroup(Group group, String token) async {
     final response = await http.post(
       Uri.parse('$baseUrl/create'),
-      headers: {
-        'Authorization': 'Bearer $token',
-        'Content-Type': 'application/json',
-      },
+      headers: Environment.getJsonHeaders(token),
       body: jsonEncode(group.toJson()),
     );
     return response;
@@ -24,10 +22,7 @@ class GroupService {
   Future<http.Response> updateGroup(int id,Group group, String token) async {
     final response = await http.put(
       Uri.parse('$baseUrl/update/$id'),
-      headers: {
-        'Authorization': 'Bearer $token',
-        'Content-Type': 'application/json',
-      },
+      headers: Environment.getJsonHeaders(token),
       body: jsonEncode(group.toJson()),
     );
     return response;
@@ -36,7 +31,7 @@ class GroupService {
   // Retrieve all groups
   Future<http.Response> getAllGroups(String token) async {
     final response = await http.get(
-      Uri.parse('$baseUrl/list'),
+      Uri.parse(baseUrl),
       headers: {
         'Authorization': 'Bearer $token',
       },
@@ -59,10 +54,7 @@ class GroupService {
       int groupId, Map<String, dynamic> requestDTO, String token) async {
     final response = await http.post(
       Uri.parse('$baseUrl/$groupId/handle-inactive'),
-      headers: {
-        'Authorization': 'Bearer $token',
-        'Content-Type': 'application/json',
-      },
+      headers: Environment.getJsonHeaders(token),
       body: jsonEncode(requestDTO),
     );
     return response;
@@ -73,10 +65,7 @@ class GroupService {
       int groupId, Map<String, dynamic> requestDTO, String token) async {
     final response = await http.post(
       Uri.parse('$baseUrl/$groupId/handle-active'),
-      headers: {
-        'Authorization': 'Bearer $token',
-        'Content-Type': 'application/json',
-      },
+      headers: Environment.getJsonHeaders(token),
       body: jsonEncode(requestDTO),
     );
     return response;
@@ -153,10 +142,7 @@ class GroupService {
       Map<String, dynamic> newMemberDTO, String token) async {
     final response = await http.post(
       Uri.parse('$baseUrl/add-new-member'),
-      headers: {
-        'Authorization': 'Bearer $token',
-        'Content-Type': 'application/json',
-      },
+      headers: Environment.getJsonHeaders(token),
       body: jsonEncode(newMemberDTO),
     );
     return response;
