@@ -11,4 +11,6 @@ class Environment {
     };
   }
 
+  static const String fontFamily = 'Poppins';
+
 }

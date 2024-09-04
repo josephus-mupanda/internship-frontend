@@ -17,4 +17,5 @@ class AppConfig {
 
   static const String loanUrl = '${Environment.baseUrl}/api/loans';
 
+  static const String myFontFamily = Environment.fontFamily;
 }
