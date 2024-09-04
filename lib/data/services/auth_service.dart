@@ -6,7 +6,6 @@ import 'package:internship_frontend/data/services/user_service.dart';
 
 import '../../core/utils/toast.dart';
 import '../models/user.dart';
-
 class AuthService {
   final _storage = const FlutterSecureStorage();
   final _userService = UserService();
@@ -38,11 +37,23 @@ class AuthService {
     }
     return null;
   }
+  Future<void> logout(BuildContext context) async {
+    final token = await getAccessToken(); // Get stored token
+    if (token != null) {
 
-  Future<void> logout() async {
-    await _storage.delete(key: 'jwt_token');
+      final response = await _userService.logoutUser(token); // Call logout API
+      if (response.statusCode == 200) {
+        await _storage.delete(key: 'jwt_token'); // Clear token from storage
+        showSuccessToast(context, "Successfully logged out");
+      } else {
+        // Handle logout error (e.g., show error toast)
+        if (!context.mounted) return;
+        final responseBody = jsonDecode(response.body);
+        final errorMessage = responseBody['message'] as String? ?? 'Logout failed';
+        showErrorToast(context, errorMessage);
+      }
+    }
   }
-
   Future<String?> getAccessToken() async {
     return await _storage.read(key: 'jwt_token');
   }
