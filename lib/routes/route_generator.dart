@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 // import 'screens/register_screen.dart';
 // import 'screens/reset_password_screen.dart';
 // import 'screens/dashboard_screen.dart';
+import '../features/splash/screens/splash_screen.dart';
 import 'app_routes.dart';
 
 class RouteGenerator {
@@ -12,8 +13,8 @@ class RouteGenerator {
     final args = settings.arguments;
 
     switch (settings.name) {
-      // case AppRoutes.splash:
-      //   return MaterialPageRoute(builder: (_) => SplashScreen());
+      case AppRoutes.splash:
+        return MaterialPageRoute(builder: (_) => const SplashScreen());
       // case AppRoutes.onboarding:
       //   return MaterialPageRoute(builder: (_) => OnboardingScreen());
       // case AppRoutes.login:

@@ -35,6 +35,10 @@ class AppTheme {
         fontSize: 20.0,
       ),
     ),
+    iconTheme: const IconThemeData(
+      color: ColorPalette.primaryColor, // Default icon color for light theme
+      size: 24.0,
+    ),
   );
 
   static final ThemeData darkTheme = ThemeData(
@@ -68,6 +72,10 @@ class AppTheme {
         color: ColorPalette.onPrimaryColor,
         fontSize: 20.0,
       ),
+    ),
+    iconTheme: const IconThemeData(
+      color: ColorPalette.onBackgroundColor,
+      size: 24.0,
     ),
   );
 }
