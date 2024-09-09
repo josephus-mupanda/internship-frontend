@@ -50,12 +50,12 @@ class PageRightSide extends StatelessWidget {
                     margin: const EdgeInsets.only(right: 30, top: 100),
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: Theme.of(context).colorScheme.secondary,
+                      color: Theme.of(context).primaryColor,
                     ),
                     child: Text(
                       "🤞",
                       style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                        color: Theme.of(context).colorScheme.onSecondary,
+                        color: Colors.white,
                         fontSize: 24,
                       ),
                     ),
@@ -68,12 +68,12 @@ class PageRightSide extends StatelessWidget {
                   margin: const EdgeInsets.only(left: 30, top: 300),
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: Theme.of(context).colorScheme.secondary,
+                    color: Theme.of(context).primaryColor,
                   ),
                   child: Text(
                     "🖐",
                     style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                      color: Theme.of(context).colorScheme.onSecondary,
+                      color: Colors.white,
                       fontSize: 24,
                     ),
                   ),

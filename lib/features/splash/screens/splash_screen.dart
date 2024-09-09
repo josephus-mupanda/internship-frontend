@@ -112,7 +112,7 @@ class DesktopSplashScreen extends StatelessWidget {
             const SizedBox(height: 30),
             CircularProgressIndicator(
               valueColor: AlwaysStoppedAnimation<Color>(
-                  Theme.of(context).colorScheme.secondary
+                  Theme.of(context).primaryColor
               ),
             ),
           ],

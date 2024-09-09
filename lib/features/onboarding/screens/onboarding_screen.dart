@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:internship_frontend/core/utils/images.dart';
 import 'package:internship_frontend/features/onboarding/screens/page_right_screen.dart';
 import 'package:internship_frontend/routes/app_routes.dart';
 import '../../../core/constants/constants.dart';
@@ -20,28 +21,28 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
 
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      appBar: AppBar(
-        elevation: 0.0,
-        backgroundColor: Theme.of(context).appBarTheme.backgroundColor, // Using theme for AppBar color
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 20, top: 20),
-            child: InkWell(
-              onTap: () {
-                Navigator.pushReplacementNamed(context, AppRoutes.login);
-              },
-              child: const Text(
-                'Skip',
-                style: TextStyle(
-                  color: Colors.grey,
-                  fontSize: 16.0,
-                  fontWeight: FontWeight.w400,
-                ),
-              ),
-            ),
-          )
-        ],
-      ),
+      // appBar: AppBar(
+      //   elevation: 0.0,
+      //   backgroundColor: Theme.of(context).appBarTheme.backgroundColor, // Using theme for AppBar color
+      //   actions: [
+      //     Padding(
+      //       padding: const EdgeInsets.only(right: 20, top: 20),
+      //       child: InkWell(
+      //         onTap: () {
+      //           Navigator.pushReplacementNamed(context, AppRoutes.login);
+      //         },
+      //         child: const Text(
+      //           'Skip',
+      //           style: TextStyle(
+      //             color: Colors.grey,
+      //             fontSize: 16.0,
+      //             fontWeight: FontWeight.w400,
+      //           ),
+      //         ),
+      //       ),
+      //     )
+      //   ],
+      // ),
       body: Container(
         constraints: const BoxConstraints(maxWidth: Constants.kMaxWidth),
         child: SafeArea(
@@ -67,7 +68,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                                   Expanded(
                                     child: Center(
                                       child: Padding(
-                                        padding: const EdgeInsets.all(20.0),
+                                        padding: const EdgeInsets.all(Constants.kDefaultPadding),
                                         child: Card(
                                           color: Theme.of(context).cardColor,
                                           child: Column(
@@ -86,17 +87,17 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                                                       controller: _pageController,
                                                       children: [
                                                         CreatePage(
-                                                          image: 'assets/images/plant-one.png',
+                                                          image: ImagePath.onBoardingImageOne,
                                                           title: Constants.titleOne,
                                                           description: Constants.descriptionOne,
                                                         ),
                                                         CreatePage(
-                                                          image: 'assets/images/plant-two.png',
+                                                          image: ImagePath.onBoardingImageTwo,
                                                           title: Constants.titleTwo,
                                                           description: Constants.descriptionTwo,
                                                         ),
                                                         CreatePage(
-                                                          image: 'assets/images/plant-three.png',
+                                                          image: ImagePath.onBoardingImageThree,
                                                           title: Constants.titleThree,
                                                           description: Constants.descriptionThree,
                                                         ),
@@ -152,8 +153,8 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                                   // Only show the right-side panel on desktop screens
                                   if (Responsive.isDesktop(context)) // Adjust this to the right place
                                     const PageRightSide(
-                                      title: "Dear user,\n  explore these onboarding screens. 🤝",
-                                      icon: "assets/images/svg/register.svg",
+                                      title: "Welcome to Our App,\nLet's get started on your journey! 🚀",
+                                      icon: ImagePath.onBoardingSvg,
                                     ),
                                 ],
                               ),
@@ -218,33 +219,35 @@ class CreatePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.only(left: 50, right: 50, bottom: 80),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          SizedBox(
-            height: 350,
-            child: Image.asset(image),
-          ),
-          const SizedBox(
-            height: 20,
-          ),
-          Text(
-            title,
-            textAlign: TextAlign.center,
-            style: Theme.of(context).textTheme.headlineMedium,
-          ),
-          const SizedBox(
-            height: 20,
-          ),
-          Text(
-            description,
-            textAlign: TextAlign.center,
-            style: Theme.of(context).textTheme.bodyMedium,
-          ),
-          const SizedBox(
-            height: 20,
-          ),
-        ],
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SizedBox(
+              height: 300,
+              child: Image.asset(image),
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+            Text(
+              title,
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.headlineMedium,
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+            Text(
+              description,
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:internship_frontend/core/utils/images.dart';
 import 'package:internship_frontend/core/widgets/input_widget.dart';
 import 'package:internship_frontend/routes/app_routes.dart';
 import 'package:page_transition/page_transition.dart';
@@ -50,86 +51,94 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                                 children: [
                                   Expanded(
                                     child: Center(
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(Constants.kDefaultPadding/2),
-                                        child: Column(
-                                          mainAxisAlignment: MainAxisAlignment.center,
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            Image.asset('assets/images/reset-password.png'),
-                                            Text(
-                                              'Forgot\nPassword',
-                                              style: theme.textTheme.headlineLarge?.copyWith(
-                                                fontWeight: FontWeight.w700,
-                                              ),
-                                            ),
-                                            const SizedBox(height: 30),
-                                            InputWidget(
-                                              obscureText: false,
-                                              hintText: 'Enter Email',
-                                              keyboardType: TextInputType.emailAddress,
-                                              prefixIcon: Icons.alternate_email,
-                                              onChanged: (String? value) => email = value!,
-                                              validator: (String? value) {
-                                                return value!.isEmpty ? "Field is required" : !_emailRegex.hasMatch(value) ? "Invalid email format" : null;
-                                              },
-                                            ),
-                                            const SizedBox(height: 10),
-                                            GestureDetector(
-                                              onTap: () {
-                                                Navigator.pushReplacementNamed(
-                                                  context,
-                                                  AppRoutes.dashboard,
-                                                );
-                                              },
-                                              child: Container(
-                                                width: size.width,
-                                                decoration: BoxDecoration(
-                                                  color: theme.primaryColor,
-                                                  borderRadius: BorderRadius.circular(10),
-                                                ),
-                                                padding: const EdgeInsets.symmetric(
-                                                    horizontal: 10, vertical: 20),
-                                                child: Center(
-                                                  child: Text(
-                                                    'Reset Password',
-                                                    style: theme.textTheme.labelLarge?.copyWith(
-                                                      color: theme.colorScheme.onPrimary,
+                                      child: SingleChildScrollView(
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(Constants.kDefaultPadding),
+                                          child: Card(
+                                            color: Theme.of(context).cardColor,
+                                            child: Padding(
+                                              padding: const EdgeInsets.all(Constants.kDefaultPadding),
+                                              child: Column(
+                                                mainAxisAlignment: MainAxisAlignment.center,
+                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                children: [
+                                                  Center(child: Image.asset(ImagePath.resetPasswordImage,height: 100,)),
+                                                  Text(
+                                                    'Forgot\nPassword',
+                                                    style: theme.textTheme.headlineLarge?.copyWith(
+                                                      fontWeight: FontWeight.w700,
                                                     ),
                                                   ),
-                                                ),
-                                              ),
-                                            ),
-                                            const SizedBox(height: 20),
-                                            GestureDetector(
-                                              onTap: () {
-                                                Navigator.pushReplacementNamed(
-                                                  context,
-                                                  AppRoutes.login,
-                                                );
-                                              },
-                                              child: Center(
-                                                child: Text.rich(
-                                                  TextSpan(
-                                                    children: [
-                                                      TextSpan(
-                                                        text: 'Have an Account? ',
-                                                        style: theme.textTheme.bodyMedium?.copyWith(
-                                                          color: theme.colorScheme.onBackground,
-                                                        ),
-                                                      ),
-                                                      TextSpan(
-                                                        text: 'Login',
-                                                        style: theme.textTheme.bodyMedium?.copyWith(
-                                                          color: theme.primaryColor,
-                                                        ),
-                                                      ),
-                                                    ],
+                                                  const SizedBox(height: 30),
+                                                  InputWidget(
+                                                    obscureText: false,
+                                                    hintText: 'Enter Email',
+                                                    keyboardType: TextInputType.emailAddress,
+                                                    prefixIcon: Icons.alternate_email,
+                                                    onChanged: (String? value) => email = value!,
+                                                    validator: (String? value) {
+                                                      return value!.isEmpty ? "Field is required" : !_emailRegex.hasMatch(value) ? "Invalid email format" : null;
+                                                    },
                                                   ),
-                                                ),
+                                                  const SizedBox(height: 10),
+                                                  GestureDetector(
+                                                    onTap: () {
+                                                      Navigator.pushReplacementNamed(
+                                                        context,
+                                                        AppRoutes.dashboard,
+                                                      );
+                                                    },
+                                                    child: Container(
+                                                      width: size.width,
+                                                      decoration: BoxDecoration(
+                                                        color: theme.primaryColor,
+                                                        borderRadius: BorderRadius.circular(10),
+                                                      ),
+                                                      padding: const EdgeInsets.symmetric(
+                                                          horizontal: 10, vertical: 20),
+                                                      child: Center(
+                                                        child: Text(
+                                                          'Reset Password',
+                                                          style: theme.textTheme.labelLarge?.copyWith(
+                                                            color: theme.colorScheme.onPrimary,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  const SizedBox(height: 20),
+                                                  GestureDetector(
+                                                    onTap: () {
+                                                      Navigator.pushReplacementNamed(
+                                                        context,
+                                                        AppRoutes.login,
+                                                      );
+                                                    },
+                                                    child: Center(
+                                                      child: Text.rich(
+                                                        TextSpan(
+                                                          children: [
+                                                            TextSpan(
+                                                              text: 'Have an Account? ',
+                                                              style: theme.textTheme.bodyMedium?.copyWith(
+                                                                color: theme.colorScheme.onBackground,
+                                                              ),
+                                                            ),
+                                                            TextSpan(
+                                                              text: 'Login',
+                                                              style: theme.textTheme.bodyMedium?.copyWith(
+                                                                color: theme.primaryColor,
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
                                               ),
                                             ),
-                                          ],
+                                          ),
                                         ),
                                       ),
                                     ),
@@ -137,8 +146,8 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                                   // Only show the right-side panel on desktop screens
                                   if (Responsive.isDesktop(context)) // Adjust this to the right place
                                     const PageRightSide(
-                                      title: "Dear user,\n  explore these onboarding screens. 🤝",
-                                      icon: "assets/images/svg/register.svg",
+                                      title: "Forgot Your Password?\nWe'll help you reset it! 🔒",
+                                      icon: ImagePath.resetPasswordSvg,
                                     ),
                                 ],
                               ),

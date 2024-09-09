@@ -88,7 +88,7 @@ class InputWidget extends StatelessWidget {
               prefixIcon: prefixIcon != null
                   ? Icon(
                 prefixIcon,
-                color: theme.iconTheme.color?.withOpacity(0.6),
+                color: theme.colorScheme.onSurface.withOpacity(0.5),
               )
                   : null,
               suffixIcon: suffixIcon,
