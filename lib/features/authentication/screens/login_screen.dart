@@ -1,49 +1,28 @@
 import 'package:flutter/material.dart';
-import 'package:internship_frontend/features/onboarding/screens/page_right_screen.dart';
+import 'package:internship_frontend/core/widgets/input_widget.dart';
 import 'package:internship_frontend/routes/app_routes.dart';
+import 'package:page_transition/page_transition.dart';
+
 import '../../../core/constants/constants.dart';
 import '../../../core/layout/responsive_widget.dart';
+import '../../onboarding/screens/page_right_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
+
   @override
   State<LoginScreen> createState() => _LoginScreenState();
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final PageController _pageController = PageController(initialPage: 0);
-  int currentIndex = 0;
-
   @override
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
+    final ThemeData theme = Theme.of(context);
 
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      appBar: AppBar(
-        elevation: 0.0,
-        backgroundColor: Theme.of(context).appBarTheme.backgroundColor, // Using theme for AppBar color
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 20, top: 20),
-            child: InkWell(
-              onTap: () {
-                Navigator.pushReplacementNamed(context, AppRoutes.login);
-              },
-              child: const Text(
-                'Skip',
-                style: TextStyle(
-                  color: Colors.grey,
-                  fontSize: 16.0,
-                  fontWeight: FontWeight.w400,
-                ),
-              ),
-            ),
-          )
-        ],
-      ),
       body: Container(
-        constraints: const BoxConstraints(maxWidth: Constants.kMaxWidth),
+        constraints: const BoxConstraints(maxWidth: Constants.kMaxWidth ?? double.infinity),
         child: SafeArea(
           child: Column(
             children: [
@@ -63,88 +42,155 @@ class _LoginScreenState extends State<LoginScreen> {
                                 color: Theme.of(context).colorScheme.background,
                               ),
                               child: Row(
-                                children: <Widget>[
+                                children: [
                                   Expanded(
                                     child: Center(
                                       child: Padding(
-                                        padding: const EdgeInsets.all(20.0),
-                                        child: Card(
-                                          color: Theme.of(context).cardColor,
-                                          child: Column(
-                                            children: <Widget>[
-                                              const SizedBox(height: Constants.kDefaultPadding / 2),
-                                              Flexible(
-                                                child: Stack(
-                                                  alignment: Alignment.bottomCenter,
-                                                  children: [
-                                                    PageView(
-                                                      onPageChanged: (int page) {
-                                                        setState(() {
-                                                          currentIndex = page;
-                                                        });
-                                                      },
-                                                      controller: _pageController,
-                                                      children: [
-                                                        CreatePage(
-                                                          image: 'assets/images/plant-one.png',
-                                                          title: Constants.titleOne,
-                                                          description: Constants.descriptionOne,
-                                                        ),
-                                                        CreatePage(
-                                                          image: 'assets/images/plant-two.png',
-                                                          title: Constants.titleTwo,
-                                                          description: Constants.descriptionTwo,
-                                                        ),
-                                                        CreatePage(
-                                                          image: 'assets/images/plant-three.png',
-                                                          title: Constants.titleThree,
-                                                          description: Constants.descriptionThree,
-                                                        ),
-                                                      ],
+                                        padding: const EdgeInsets.all(Constants.kDefaultPadding/2),
+                                        child: Column(
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Image.asset('assets/images/signin.png'),
+                                            Text(
+                                              'Sign In',
+                                              style: theme.textTheme.headlineLarge?.copyWith(
+                                                fontWeight: FontWeight.w700,
+                                              ),
+                                            ),
+                                            const SizedBox(height: 30),
+                                            const InputWidget(
+                                              obscureText: false,
+                                              hintText: 'Enter Username',
+                                              prefixIcon: Icons.alternate_email,
+                                            ),
+                                            const InputWidget(
+                                              obscureText: true,
+                                              hintText: 'Enter Password',
+                                              prefixIcon: Icons.lock,
+                                            ),
+                                            const SizedBox(height: 10),
+                                            GestureDetector(
+                                              onTap: () {
+                                                Navigator.pushReplacementNamed(
+                                                  context,
+                                                  AppRoutes.dashboard,
+                                                );
+                                              },
+                                              child: Container(
+                                                width: size.width,
+                                                decoration: BoxDecoration(
+                                                  color: theme.primaryColor,
+                                                  borderRadius: BorderRadius.circular(10),
+                                                ),
+                                                padding: const EdgeInsets.symmetric(
+                                                    horizontal: 10, vertical: 20),
+                                                child: Center(
+                                                  child: Text(
+                                                    'Sign In',
+                                                    style: theme.textTheme.labelLarge?.copyWith(
+                                                      color: theme.colorScheme.onPrimary,
                                                     ),
-                                                    Positioned(
-                                                      bottom: 80,
-                                                      left: 30,
-                                                      child: Row(
-                                                        children: _buildIndicator(),
-                                                      ),
-                                                    ),
-                                                    Positioned(
-                                                      bottom: 60,
-                                                      right: 30,
-                                                      child: Container(
-                                                        padding: const EdgeInsets.all(4),
-                                                        decoration: BoxDecoration(
-                                                          shape: BoxShape.circle,
-                                                          color: Theme.of(context).primaryColor, // Using theme color
-                                                        ),
-                                                        child: IconButton(
-                                                          onPressed: () {
-                                                            setState(() {
-                                                              if (currentIndex < 2) {
-                                                                currentIndex++;
-                                                                _pageController.nextPage(
-                                                                  duration: const Duration(milliseconds: 300),
-                                                                  curve: Curves.easeIn,
-                                                                );
-                                                              } else {
-                                                                Navigator.pushReplacementNamed(context, AppRoutes.login);
-                                                              }
-                                                            });
-                                                          },
-                                                          icon: const Icon(
-                                                            Icons.arrow_forward_ios,
-                                                            size: 24,
-                                                            color: Colors.white,
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ],
+                                                  ),
                                                 ),
                                               ),
-                                            ],
-                                          ),
+                                            ),
+                                            const SizedBox(height: 10),
+                                            GestureDetector(
+                                              onTap: () {
+                                                Navigator.pushReplacementNamed(
+                                                  context,
+                                                  AppRoutes.resetPassword,
+                                                );
+                                              },
+                                              child: Center(
+                                                child: Text.rich(
+                                                  TextSpan(
+                                                    children: [
+                                                      TextSpan(
+                                                        text: 'Forgot Password? ',
+                                                        style: theme.textTheme.bodyMedium?.copyWith(
+                                                          color: theme.colorScheme.onBackground,
+                                                        ),
+                                                      ),
+                                                      TextSpan(
+                                                        text: 'Reset Here',
+                                                        style: theme.textTheme.bodyMedium?.copyWith(
+                                                          color: theme.primaryColor,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                            const SizedBox(height: 20),
+                                            Row(
+                                              children: [
+                                                const Expanded(child: Divider()),
+                                                Padding(
+                                                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                                                  child: Text('OR', style: theme.textTheme.bodyMedium),
+                                                ),
+                                                const Expanded(child: Divider()),
+                                              ],
+                                            ),
+                                            const SizedBox(height: 20),
+                                            Container(
+                                              width: size.width,
+                                              decoration: BoxDecoration(
+                                                border: Border.all(color: theme.primaryColor),
+                                                borderRadius: BorderRadius.circular(10),
+                                              ),
+                                              padding: const EdgeInsets.symmetric(
+                                                  horizontal: 10, vertical: 15),
+                                              child: Row(
+                                                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                                children: [
+                                                  SizedBox(
+                                                    height: 30,
+                                                    child: Image.asset('assets/images/google.png'),
+                                                  ),
+                                                  Text(
+                                                    'Sign In with Google',
+                                                    style: theme.textTheme.bodyMedium?.copyWith(
+                                                      color: theme.colorScheme.onBackground,
+                                                      fontSize: 18.0,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                            const SizedBox(height: 20),
+                                            GestureDetector(
+                                              onTap: () {
+                                                Navigator.pushReplacementNamed(
+                                                  context,
+                                                  AppRoutes.register,
+                                                );
+                                              },
+                                              child: Center(
+                                                child: Text.rich(
+                                                  TextSpan(
+                                                    children: [
+                                                      TextSpan(
+                                                        text: 'New to this app? ',
+                                                        style: theme.textTheme.bodyMedium?.copyWith(
+                                                          color: theme.colorScheme.onBackground,
+                                                        ),
+                                                      ),
+                                                      TextSpan(
+                                                        text: 'Register',
+                                                        style: theme.textTheme.bodyMedium?.copyWith(
+                                                          color: theme.primaryColor,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
                                         ),
                                       ),
                                     ),
@@ -168,83 +214,6 @@ class _LoginScreenState extends State<LoginScreen> {
             ],
           ),
         ),
-      ),
-    );
-  }
-
-  // Create the indicator decorations widget
-  Widget _indicator(bool isActive) {
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 300),
-      height: 10.0,
-      width: isActive ? 20 : 8,
-      margin: const EdgeInsets.only(right: 5.0),
-      decoration: BoxDecoration(
-        color: Theme.of(context).primaryColor, // Use theme color
-        borderRadius: BorderRadius.circular(5),
-      ),
-    );
-  }
-
-  // Create the indicator list
-  List<Widget> _buildIndicator() {
-    List<Widget> indicators = [];
-
-    for (int i = 0; i < 3; i++) {
-      if (currentIndex == i) {
-        indicators.add(_indicator(true));
-      } else {
-        indicators.add(_indicator(false));
-      }
-    }
-
-    return indicators;
-  }
-}
-
-class CreatePage extends StatelessWidget {
-  final String image;
-  final String title;
-  final String description;
-
-  const CreatePage({
-    super.key,
-    required this.image,
-    required this.title,
-    required this.description,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.only(left: 50, right: 50, bottom: 80),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          SizedBox(
-            height: 350,
-            child: Image.asset(image),
-          ),
-          const SizedBox(
-            height: 20,
-          ),
-          Text(
-            title,
-            textAlign: TextAlign.center,
-            style: Theme.of(context).textTheme.headlineMedium,
-          ),
-          const SizedBox(
-            height: 20,
-          ),
-          Text(
-            description,
-            textAlign: TextAlign.center,
-            style: Theme.of(context).textTheme.bodyMedium,
-          ),
-          const SizedBox(
-            height: 20,
-          ),
-        ],
       ),
     );
   }

@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 class InputWidget extends StatelessWidget {
   final String? hintText;
   final String? errorText;
-  final Widget? prefixIcon;
-  final Widget? suffixIcon;
+  final IconData? prefixIcon;
+  final IconData? suffixIcon;
   final double? height;
   final String? topLabel;
   final bool? obscureText;
@@ -85,8 +85,18 @@ class InputWidget extends StatelessWidget {
             validator: validator,
             obscureText: obscureText ?? false,
             decoration: InputDecoration(
-              prefixIcon: prefixIcon,
-              suffixIcon: suffixIcon,
+              prefixIcon: prefixIcon != null
+                  ? Icon(
+                prefixIcon,
+                color: theme.iconTheme.color?.withOpacity(0.6),
+              )
+                  : null,
+              suffixIcon: suffixIcon != null
+                  ? Icon(
+                suffixIcon,
+                color: theme.iconTheme.color?.withOpacity(0.6),
+              )
+                  : null,
               enabledBorder: OutlineInputBorder(
                 borderSide: BorderSide(
                   color: theme.dividerColor.withOpacity(0.2),

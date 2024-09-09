@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-// import 'screens/splash_screen.dart';
-// import 'screens/onboarding_screen.dart';
-// import 'screens/login_screen.dart';
+
 // import 'screens/register_screen.dart';
 // import 'screens/reset_password_screen.dart';
 // import 'screens/dashboard_screen.dart';
+import '../features/authentication/screens/login_screen.dart';
+import '../features/onboarding/screens/onboarding_screen.dart';
 import '../features/splash/screens/splash_screen.dart';
 import 'app_routes.dart';
 
@@ -16,11 +16,11 @@ class RouteGenerator {
       case AppRoutes.splash:
         return MaterialPageRoute(builder: (_) => const SplashScreen());
       case AppRoutes.onboarding:
-        return MaterialPageRoute(builder: (_) => OnboardingScreen());
+        return MaterialPageRoute(builder: (_) => const OnBoardingScreen());
       case AppRoutes.login:
-        return MaterialPageRoute(builder: (_) => LoginScreen());
-      // case AppRoutes.register:
-      //   return MaterialPageRoute(builder: (_) => RegisterScreen());
+        return MaterialPageRoute(builder: (_) => const LoginScreen());
+      case AppRoutes.register:
+        return MaterialPageRoute(builder: (_) => RegisterScreen());
       // case AppRoutes.resetPassword:
       //   return MaterialPageRoute(builder: (_) => ResetPasswordScreen());
       // case AppRoutes.dashboard:
