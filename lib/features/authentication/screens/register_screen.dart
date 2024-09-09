@@ -15,6 +15,15 @@ class RegisterScreen extends StatefulWidget {
 }
 
 class _RegisterScreenState extends State<RegisterScreen> {
+
+  String? email,username, password, confirmPassword, phoneNumber;
+
+  bool showPassword = false;
+  bool showConfirmPassword = false;
+
+  final _phoneNumberRegex = RegExp(r'^\+?[0-9]{10,15}$'); // Example phone number regex
+  final _emailRegex = RegExp(r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$"); // Example email regex
+
   @override
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
@@ -59,37 +68,88 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                               ),
                                             ),
                                             const SizedBox(height: 30),
-                                            const InputWidget(
+                                            InputWidget(
                                               obscureText: false,
                                               hintText: 'Enter Username',
+                                              keyboardType: TextInputType.name,
                                               prefixIcon: Icons.person,
+                                              onChanged: (String? value) => username = value!,
+                                              validator: (String? value) => value!.isEmpty ? "Field is required" : null,
                                             ),
-                                            const InputWidget(
+                                            InputWidget(
                                               obscureText: false,
                                               hintText: 'Enter Email',
+                                              keyboardType: TextInputType.emailAddress,
                                               prefixIcon: Icons.alternate_email,
+                                              onChanged: (String? value) => email = value!,
+                                              validator: (String? value) {
+                                                return value!.isEmpty ? "Field is required" : !_emailRegex.hasMatch(value) ? "Invalid email format" : null;
+                                              },
                                             ),
-                                            const InputWidget(
+                                            InputWidget(
                                               obscureText: false,
                                               hintText: 'Enter Phone number',
+                                              keyboardType: TextInputType.phone,
                                               prefixIcon: Icons.phone,
+                                              onChanged: (String? value) => phoneNumber = value!,
+                                              validator: (String? value) {
+                                                return value!.isEmpty ? "Field is required" : !_phoneNumberRegex.hasMatch(value) ? "Invalid phone number format" : null;
+                                              },
                                             ),
-                                            const InputWidget(
-                                              obscureText: true,
+                                            InputWidget(
+                                              obscureText: !showPassword,
                                               hintText: 'Enter Password',
                                               prefixIcon: Icons.lock,
+                                              suffixIcon: IconButton(
+                                                icon: Icon(
+                                                  showPassword ? Icons.visibility : Icons.visibility_off,
+                                                  color: theme.primaryColor,
+                                                ),
+                                                onPressed: () {
+                                                  setState(() {
+                                                    showPassword = !showPassword;
+                                                  });
+                                                },
+                                              ),
+                                              onChanged: (String? value) => password = value!,
+                                              validator: (String? value) {
+                                                return value!.isEmpty
+                                                    ? "Field is required"
+                                                    : value.length < 6
+                                                    ? "Password must be at least 6 characters"
+                                                    : null;
+                                              },
                                             ),
-                                            const InputWidget(
-                                              obscureText: true,
+                                            InputWidget(
+                                              obscureText: !showConfirmPassword,
                                               hintText: 'Confirm Password',
                                               prefixIcon: Icons.lock,
+                                              suffixIcon: IconButton(
+                                                icon: Icon(
+                                                  showConfirmPassword ? Icons.visibility : Icons.visibility_off,
+                                                  color: theme.primaryColor,
+                                                ),
+                                                onPressed: () {
+                                                  setState(() {
+                                                    showConfirmPassword = !showConfirmPassword;
+                                                  });
+                                                },
+                                              ),
+                                              onChanged: (String? value) => confirmPassword = value!,
+                                              validator: (String? value) {
+                                                return value!.isEmpty
+                                                    ? "Field is required"
+                                                    : value.length < 6
+                                                    ? "Password must be at least 6 characters"
+                                                    : null;
+                                              },
                                             ),
                                             const SizedBox(height: 10),
                                             GestureDetector(
                                               onTap: () {
                                                 Navigator.pushReplacementNamed(
                                                   context,
-                                                  AppRoutes.dashboard,
+                                                  AppRoutes.login,
                                                 );
                                               },
                                               child: Container(

@@ -4,7 +4,7 @@ class InputWidget extends StatelessWidget {
   final String? hintText;
   final String? errorText;
   final IconData? prefixIcon;
-  final IconData? suffixIcon;
+  final Widget? suffixIcon;
   final double? height;
   final String? topLabel;
   final bool? obscureText;
@@ -91,12 +91,8 @@ class InputWidget extends StatelessWidget {
                 color: theme.iconTheme.color?.withOpacity(0.6),
               )
                   : null,
-              suffixIcon: suffixIcon != null
-                  ? Icon(
-                suffixIcon,
-                color: theme.iconTheme.color?.withOpacity(0.6),
-              )
-                  : null,
+              suffixIcon: suffixIcon,
+
               enabledBorder: OutlineInputBorder(
                 borderSide: BorderSide(
                   color: theme.dividerColor.withOpacity(0.2),
