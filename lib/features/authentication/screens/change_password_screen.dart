@@ -3,7 +3,6 @@ import 'package:internship_frontend/core/utils/images.dart';
 import 'package:internship_frontend/core/widgets/button_widget.dart';
 import 'package:internship_frontend/core/widgets/input_widget.dart';
 import 'package:internship_frontend/routes/app_routes.dart';
-import 'package:page_transition/page_transition.dart';
 
 import '../../../core/constants/constants.dart';
 import '../../../core/layout/responsive_widget.dart';
