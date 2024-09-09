@@ -15,6 +15,11 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+
+  String? username, password;
+
+  bool showPassword = false;
+
   @override
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
@@ -59,15 +64,37 @@ class _LoginScreenState extends State<LoginScreen> {
                                               ),
                                             ),
                                             const SizedBox(height: 30),
-                                            const InputWidget(
+                                            InputWidget(
                                               obscureText: false,
                                               hintText: 'Enter Username',
+                                              keyboardType: TextInputType.name,
                                               prefixIcon: Icons.person,
+                                              onChanged: (String? value) => username = value!,
+                                              validator: (String? value) => value!.isEmpty ? "Field is required" : null,
                                             ),
-                                            const InputWidget(
+                                            InputWidget(
                                               obscureText: true,
                                               hintText: 'Enter Password',
                                               prefixIcon: Icons.lock,
+                                              suffixIcon: IconButton(
+                                                icon: Icon(
+                                                  showPassword ? Icons.visibility : Icons.visibility_off,
+                                                  color: theme.primaryColor,
+                                                ),
+                                                onPressed: () {
+                                                  setState(() {
+                                                    showPassword = !showPassword;
+                                                  });
+                                                },
+                                              ),
+                                              onChanged: (String? value) => password = value!,
+                                              validator: (String? value) {
+                                                return value!.isEmpty
+                                                    ? "Field is required"
+                                                    : value.length < 6
+                                                    ? "Password must be at least 6 characters"
+                                                    : null;
+                                              },
                                             ),
                                             const SizedBox(height: 10),
                                             GestureDetector(
