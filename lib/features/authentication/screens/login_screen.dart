@@ -4,13 +4,13 @@ import 'package:internship_frontend/routes/app_routes.dart';
 import '../../../core/constants/constants.dart';
 import '../../../core/layout/responsive_widget.dart';
 
-class OnBoardingScreen extends StatefulWidget {
-  const OnBoardingScreen({super.key});
+class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
   @override
-  State<OnBoardingScreen> createState() => _OnBoardingScreenState();
+  State<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _OnBoardingScreenState extends State<OnBoardingScreen> {
+class _LoginScreenState extends State<LoginScreen> {
   final PageController _pageController = PageController(initialPage: 0);
   int currentIndex = 0;
 

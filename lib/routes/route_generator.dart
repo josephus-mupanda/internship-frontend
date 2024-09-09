@@ -15,10 +15,10 @@ class RouteGenerator {
     switch (settings.name) {
       case AppRoutes.splash:
         return MaterialPageRoute(builder: (_) => const SplashScreen());
-      // case AppRoutes.onboarding:
-      //   return MaterialPageRoute(builder: (_) => OnboardingScreen());
-      // case AppRoutes.login:
-      //   return MaterialPageRoute(builder: (_) => LoginScreen());
+      case AppRoutes.onboarding:
+        return MaterialPageRoute(builder: (_) => OnboardingScreen());
+      case AppRoutes.login:
+        return MaterialPageRoute(builder: (_) => LoginScreen());
       // case AppRoutes.register:
       //   return MaterialPageRoute(builder: (_) => RegisterScreen());
       // case AppRoutes.resetPassword:

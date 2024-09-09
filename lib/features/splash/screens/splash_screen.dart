@@ -27,7 +27,7 @@ class _SplashScreenState extends State<SplashScreen> {
   Widget build(BuildContext context) {
 
     return const Scaffold(
-      body: ResponsiveWidget(
+      body: Responsive(
         mobile: MobileSplashScreen(),
         tablet: TabletSplashScreen(),
         desktop: DesktopSplashScreen(),
