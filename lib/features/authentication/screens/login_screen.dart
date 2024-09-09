@@ -62,7 +62,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                             const InputWidget(
                                               obscureText: false,
                                               hintText: 'Enter Username',
-                                              prefixIcon: Icons.alternate_email,
+                                              prefixIcon: Icons.person,
                                             ),
                                             const InputWidget(
                                               obscureText: true,

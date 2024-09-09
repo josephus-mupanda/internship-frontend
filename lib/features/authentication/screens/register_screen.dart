@@ -1,0 +1,235 @@
+import 'package:flutter/material.dart';
+import 'package:internship_frontend/core/widgets/input_widget.dart';
+import 'package:internship_frontend/routes/app_routes.dart';
+import 'package:page_transition/page_transition.dart';
+
+import '../../../core/constants/constants.dart';
+import '../../../core/layout/responsive_widget.dart';
+import '../../onboarding/screens/page_right_screen.dart';
+
+class RegisterScreen extends StatefulWidget {
+  const RegisterScreen({super.key});
+
+  @override
+  State<RegisterScreen> createState() => _RegisterScreenState();
+}
+
+class _RegisterScreenState extends State<RegisterScreen> {
+  @override
+  Widget build(BuildContext context) {
+    final Size size = MediaQuery.of(context).size;
+    final ThemeData theme = Theme.of(context);
+
+    return Scaffold(
+      body: Container(
+        constraints: const BoxConstraints(maxWidth: Constants.kMaxWidth ?? double.infinity),
+        child: SafeArea(
+          child: Column(
+            children: [
+              Expanded(
+                child: ListView(
+                  children: [
+                    Stack(
+                      fit: StackFit.loose,
+                      children: [
+                        Center(
+                          child: SingleChildScrollView(
+                            child: Container(
+                              height: size.height,
+                              width: size.width,
+                              clipBehavior: Clip.antiAliasWithSaveLayer,
+                              decoration: BoxDecoration(
+                                color: Theme.of(context).colorScheme.background,
+                              ),
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    child: Center(
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(Constants.kDefaultPadding/2),
+                                        child: Column(
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Image.asset('assets/images/signup.png'),
+                                            Text(
+                                              'Sign Up',
+                                              style: theme.textTheme.headlineLarge?.copyWith(
+                                                fontWeight: FontWeight.w700,
+                                              ),
+                                            ),
+                                            const SizedBox(height: 30),
+                                            const InputWidget(
+                                              obscureText: false,
+                                              hintText: 'Enter Username',
+                                              prefixIcon: Icons.person,
+                                            ),
+                                            const InputWidget(
+                                              obscureText: false,
+                                              hintText: 'Enter Email',
+                                              prefixIcon: Icons.alternate_email,
+                                            ),
+                                            const InputWidget(
+                                              obscureText: false,
+                                              hintText: 'Enter Phone number',
+                                              prefixIcon: Icons.phone,
+                                            ),
+                                            const InputWidget(
+                                              obscureText: true,
+                                              hintText: 'Enter Password',
+                                              prefixIcon: Icons.lock,
+                                            ),
+                                            const InputWidget(
+                                              obscureText: true,
+                                              hintText: 'Confirm Password',
+                                              prefixIcon: Icons.lock,
+                                            ),
+                                            const SizedBox(height: 10),
+                                            GestureDetector(
+                                              onTap: () {
+                                                Navigator.pushReplacementNamed(
+                                                  context,
+                                                  AppRoutes.dashboard,
+                                                );
+                                              },
+                                              child: Container(
+                                                width: size.width,
+                                                decoration: BoxDecoration(
+                                                  color: theme.primaryColor,
+                                                  borderRadius: BorderRadius.circular(10),
+                                                ),
+                                                padding: const EdgeInsets.symmetric(
+                                                    horizontal: 10, vertical: 20),
+                                                child: Center(
+                                                  child: Text(
+                                                    'Sign Up',
+                                                    style: theme.textTheme.labelLarge?.copyWith(
+                                                      color: theme.colorScheme.onPrimary,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                            const SizedBox(height: 10),
+                                            GestureDetector(
+                                              onTap: () {
+                                                Navigator.pushReplacementNamed(
+                                                  context,
+                                                  AppRoutes.resetPassword,
+                                                );
+                                              },
+                                              child: Center(
+                                                child: Text.rich(
+                                                  TextSpan(
+                                                    children: [
+                                                      TextSpan(
+                                                        text: 'Forgot Password? ',
+                                                        style: theme.textTheme.bodyMedium?.copyWith(
+                                                          color: theme.colorScheme.onBackground,
+                                                        ),
+                                                      ),
+                                                      TextSpan(
+                                                        text: 'Reset Here',
+                                                        style: theme.textTheme.bodyMedium?.copyWith(
+                                                          color: theme.primaryColor,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                            const SizedBox(height: 20),
+                                            Row(
+                                              children: [
+                                                const Expanded(child: Divider()),
+                                                Padding(
+                                                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                                                  child: Text('OR', style: theme.textTheme.bodyMedium),
+                                                ),
+                                                const Expanded(child: Divider()),
+                                              ],
+                                            ),
+                                            const SizedBox(height: 20),
+                                            Container(
+                                              width: size.width,
+                                              decoration: BoxDecoration(
+                                                border: Border.all(color: theme.primaryColor),
+                                                borderRadius: BorderRadius.circular(10),
+                                              ),
+                                              padding: const EdgeInsets.symmetric(
+                                                  horizontal: 10, vertical: 15),
+                                              child: Row(
+                                                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                                children: [
+                                                  SizedBox(
+                                                    height: 30,
+                                                    child: Image.asset('assets/images/google.png'),
+                                                  ),
+                                                  Text(
+                                                    'Sign up with Google',
+                                                    style: theme.textTheme.bodyMedium?.copyWith(
+                                                      color: theme.colorScheme.onBackground,
+                                                      fontSize: 18.0,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                            const SizedBox(height: 20),
+                                            GestureDetector(
+                                              onTap: () {
+                                                Navigator.pushReplacementNamed(
+                                                  context,
+                                                  AppRoutes.login,
+                                                );
+                                              },
+                                              child: Center(
+                                                child: Text.rich(
+                                                  TextSpan(
+                                                    children: [
+                                                      TextSpan(
+                                                        text: 'Have an Account? ',
+                                                        style: theme.textTheme.bodyMedium?.copyWith(
+                                                          color: theme.colorScheme.onBackground,
+                                                        ),
+                                                      ),
+                                                      TextSpan(
+                                                        text: 'Login',
+                                                        style: theme.textTheme.bodyMedium?.copyWith(
+                                                          color: theme.primaryColor,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  // Only show the right-side panel on desktop screens
+                                  if (Responsive.isDesktop(context)) // Adjust this to the right place
+                                    const PageRightSide(
+                                      title: "Dear user,\n  explore these onboarding screens. 🤝",
+                                      icon: "assets/images/svg/register.svg",
+                                    ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
