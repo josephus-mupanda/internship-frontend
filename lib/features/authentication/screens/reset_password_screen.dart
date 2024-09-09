@@ -6,6 +6,7 @@ import 'package:page_transition/page_transition.dart';
 
 import '../../../core/constants/constants.dart';
 import '../../../core/layout/responsive_widget.dart';
+import '../../../core/widgets/button_widget.dart';
 import '../../onboarding/screens/page_right_screen.dart';
 
 class ResetPasswordScreen extends StatefulWidget {
@@ -81,30 +82,11 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                                                     },
                                                   ),
                                                   const SizedBox(height: 10),
-                                                  GestureDetector(
-                                                    onTap: () {
-                                                      Navigator.pushReplacementNamed(
-                                                        context,
-                                                        AppRoutes.dashboard,
-                                                      );
+                                                  AppButton(
+                                                    onPressed: () {
+                                                      Navigator.pushReplacementNamed(context, AppRoutes.dashboard);
                                                     },
-                                                    child: Container(
-                                                      width: size.width,
-                                                      decoration: BoxDecoration(
-                                                        color: theme.primaryColor,
-                                                        borderRadius: BorderRadius.circular(10),
-                                                      ),
-                                                      padding: const EdgeInsets.symmetric(
-                                                          horizontal: 10, vertical: 20),
-                                                      child: Center(
-                                                        child: Text(
-                                                          'Reset Password',
-                                                          style: theme.textTheme.labelLarge?.copyWith(
-                                                            color: theme.colorScheme.onPrimary,
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ),
+                                                    text:  'Reset Password',
                                                   ),
                                                   const SizedBox(height: 20),
                                                   GestureDetector(

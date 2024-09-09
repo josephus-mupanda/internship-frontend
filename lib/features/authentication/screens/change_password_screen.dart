@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:internship_frontend/core/utils/images.dart';
+import 'package:internship_frontend/core/widgets/button_widget.dart';
 import 'package:internship_frontend/core/widgets/input_widget.dart';
 import 'package:internship_frontend/routes/app_routes.dart';
 import 'package:page_transition/page_transition.dart';
@@ -126,31 +127,11 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                                                     },
                                                   ),
                                                   const SizedBox(height: 10),
-                                                  GestureDetector(
-                                                    onTap: () {
-                                                      // Handle the password change logic
-                                                      Navigator.pushReplacementNamed(
-                                                        context,
-                                                        AppRoutes.login,
-                                                      );
+                                                  AppButton(
+                                                    onPressed: () {
+                                                      Navigator.pushReplacementNamed(context, AppRoutes.login);
                                                     },
-                                                    child: Container(
-                                                      width: size.width,
-                                                      decoration: BoxDecoration(
-                                                        color: theme.primaryColor,
-                                                        borderRadius: BorderRadius.circular(10),
-                                                      ),
-                                                      padding: const EdgeInsets.symmetric(
-                                                          horizontal: 10, vertical: 20),
-                                                      child: Center(
-                                                        child: Text(
-                                                          'Change Password',
-                                                          style: theme.textTheme.labelLarge?.copyWith(
-                                                            color: theme.colorScheme.onPrimary,
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ),
+                                                    text:  'Change Password',
                                                   ),
                                                   const SizedBox(height: 20),
                                                 ],

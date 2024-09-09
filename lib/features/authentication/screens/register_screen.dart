@@ -6,6 +6,7 @@ import 'package:page_transition/page_transition.dart';
 
 import '../../../core/constants/constants.dart';
 import '../../../core/layout/responsive_widget.dart';
+import '../../../core/widgets/button_widget.dart';
 import '../../onboarding/screens/page_right_screen.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -153,30 +154,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                                     },
                                                   ),
                                                   const SizedBox(height: 10),
-                                                  GestureDetector(
-                                                    onTap: () {
-                                                      Navigator.pushReplacementNamed(
-                                                        context,
-                                                        AppRoutes.login,
-                                                      );
+                                                  AppButton(
+                                                    onPressed: () {
+                                                      Navigator.pushReplacementNamed(context, AppRoutes.login);
                                                     },
-                                                    child: Container(
-                                                      width: size.width,
-                                                      decoration: BoxDecoration(
-                                                        color: theme.primaryColor,
-                                                        borderRadius: BorderRadius.circular(10),
-                                                      ),
-                                                      padding: const EdgeInsets.symmetric(
-                                                          horizontal: 10, vertical: 20),
-                                                      child: Center(
-                                                        child: Text(
-                                                          'Sign Up',
-                                                          style: theme.textTheme.labelLarge?.copyWith(
-                                                            color: theme.colorScheme.onPrimary,
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ),
+                                                    text:  'Sign Up',
                                                   ),
                                                   const SizedBox(height: 10),
                                                   GestureDetector(
@@ -223,24 +205,27 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                                     width: size.width,
                                                     decoration: BoxDecoration(
                                                       border: Border.all(color: theme.primaryColor),
-                                                      borderRadius: BorderRadius.circular(10),
+                                                      borderRadius: BorderRadius.circular(5),
                                                     ),
                                                     padding: const EdgeInsets.symmetric(
-                                                        horizontal: 10, vertical: 15),
+                                                        horizontal: 10, vertical: 10),
                                                     child: Row(
-                                                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                                      //mainAxisAlignment: MainAxisAlignment.spaceAround,
                                                       children: [
+                                                        const Spacer(),
                                                         SizedBox(
-                                                          height: 30,
+                                                          height: 25,
                                                           child: Image.asset(ImagePath.google),
                                                         ),
+                                                        const SizedBox(width: Constants.kDefaultPadding,),
                                                         Text(
                                                           'Sign up with Google',
                                                           style: theme.textTheme.bodyMedium?.copyWith(
                                                             color: theme.colorScheme.onBackground,
-                                                            fontSize: 18.0,
                                                           ),
                                                         ),
+                                                        const Spacer(),
+
                                                       ],
                                                     ),
                                                   ),
