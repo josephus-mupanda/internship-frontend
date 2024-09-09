@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
-
-// import 'screens/reset_password_screen.dart';
 // import 'screens/dashboard_screen.dart';
+import '../features/authentication/screens/change_password_screen.dart';
 import '../features/authentication/screens/login_screen.dart';
 import '../features/authentication/screens/register_screen.dart';
+import '../features/authentication/screens/reset_password_screen.dart';
 import '../features/onboarding/screens/onboarding_screen.dart';
 import '../features/splash/screens/splash_screen.dart';
 import 'app_routes.dart';
 
 class RouteGenerator {
-  
+
   static Route<dynamic> generateRoute(RouteSettings settings) {
     final args = settings.arguments;
 
@@ -22,8 +22,10 @@ class RouteGenerator {
         return MaterialPageRoute(builder: (_) => const LoginScreen());
       case AppRoutes.register:
         return MaterialPageRoute(builder: (_) => const RegisterScreen());
-      // case AppRoutes.resetPassword:
-      //   return MaterialPageRoute(builder: (_) => ResetPasswordScreen());
+      case AppRoutes.resetPassword:
+        return MaterialPageRoute(builder: (_) => const ResetPasswordScreen());
+      case AppRoutes.changePassword:
+        return MaterialPageRoute(builder: (_) => const ChangePasswordScreen());
       // case AppRoutes.dashboard:
       //   return MaterialPageRoute(builder: (_) => DashboardScreen());
     // Handle other routes here...
