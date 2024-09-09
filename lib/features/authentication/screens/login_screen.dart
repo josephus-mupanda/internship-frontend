@@ -5,7 +5,10 @@ import 'package:internship_frontend/routes/app_routes.dart';
 
 import '../../../core/constants/constants.dart';
 import '../../../core/layout/responsive_widget.dart';
+import '../../../core/utils/toast.dart';
 import '../../../core/widgets/button_widget.dart';
+import '../../../data/models/user.dart';
+import '../../../data/services/auth_service.dart';
 import '../../onboarding/screens/page_right_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -19,7 +22,12 @@ class _LoginScreenState extends State<LoginScreen> {
 
   String? username, password;
 
+  final _authService = AuthService(); // Initialize AuthService
+
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
   bool showPassword = false;
+  bool isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -58,159 +66,170 @@ class _LoginScreenState extends State<LoginScreen> {
                                             color: Theme.of(context).cardColor,
                                             child: Padding(
                                               padding: const EdgeInsets.all(Constants.kDefaultPadding),
-                                              child: Column(
-                                                mainAxisAlignment: MainAxisAlignment.center,
-                                                crossAxisAlignment: CrossAxisAlignment.start,
-                                                children: [
-                                                  Center(
-                                                    child: Image.asset(ImagePath.loginImage,
-                                                    height: 200,),
-                                                  ),
-                                                  Text(
-                                                    'Sign In',
-                                                    style: theme.textTheme.headlineLarge?.copyWith(
-                                                      fontWeight: FontWeight.w700,
+                                              child: Form(
+                                                key: _formKey,
+                                                child: Column(
+                                                  mainAxisAlignment: MainAxisAlignment.center,
+                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                  children: [
+                                                    Center(
+                                                      child: Image.asset(ImagePath.loginImage,
+                                                      height: 200,),
                                                     ),
-                                                  ),
-                                                  const SizedBox(height: 30),
-                                                  InputWidget(
-                                                    obscureText: false,
-                                                    hintText: 'Enter Username',
-                                                    keyboardType: TextInputType.name,
-                                                    prefixIcon: Icons.person,
-                                                    onChanged: (String? value) => username = value!,
-                                                    validator: (String? value) => value!.isEmpty ? "Field is required" : null,
-                                                  ),
-                                                  InputWidget(
-                                                    obscureText: !showPassword,
-                                                    hintText: 'Enter Password',
-                                                    prefixIcon: Icons.lock,
-                                                    maxLines: 1,
-                                                    suffixIcon: IconButton(
-                                                      icon: Icon(
-                                                        showPassword ? Icons.visibility : Icons.visibility_off,
-                                                        color: theme.colorScheme.onSurface.withOpacity(0.5),
+                                                    Text(
+                                                      'Sign In',
+                                                      style: theme.textTheme.headlineLarge?.copyWith(
+                                                        fontWeight: FontWeight.w700,
                                                       ),
-                                                      onPressed: () {
-                                                        setState(() {
-                                                          showPassword = !showPassword;
-                                                        });
+                                                    ),
+                                                    const SizedBox(height: 30),
+                                                    InputWidget(
+                                                      obscureText: false,
+                                                      hintText: 'Enter Username',
+                                                      keyboardType: TextInputType.name,
+                                                      prefixIcon: Icons.person,
+                                                      onChanged: (String? value) => username = value!,
+                                                      validator: (String? value) => value!.isEmpty ? "Field is required" : null,
+                                                    ),
+                                                    InputWidget(
+                                                      obscureText: !showPassword,
+                                                      hintText: 'Enter Password',
+                                                      prefixIcon: Icons.lock,
+                                                      maxLines: 1,
+                                                      suffixIcon: IconButton(
+                                                        icon: Icon(
+                                                          showPassword ? Icons.visibility : Icons.visibility_off,
+                                                          color: theme.colorScheme.onSurface.withOpacity(0.5),
+                                                        ),
+                                                        onPressed: () {
+                                                          setState(() {
+                                                            showPassword = !showPassword;
+                                                          });
+                                                        },
+                                                      ),
+                                                      onChanged: (String? value) => password = value!,
+                                                      validator: (String? value) {
+                                                        return value!.isEmpty
+                                                            ? "Field is required"
+                                                            : value.length < 6
+                                                            ? "Password must be at least 6 characters"
+                                                            : null;
                                                       },
                                                     ),
-                                                    onChanged: (String? value) => password = value!,
-                                                    validator: (String? value) {
-                                                      return value!.isEmpty
-                                                          ? "Field is required"
-                                                          : value.length < 6
-                                                          ? "Password must be at least 6 characters"
-                                                          : null;
-                                                    },
-                                                  ),
-                                                  const SizedBox(height: 10),
-                                                  AppButton(
-                                                    onPressed: () {
-                                                      Navigator.pushReplacementNamed(context, AppRoutes.dashboard);
-                                                    },
-                                                    text:  'Sign In',
-                                                  ),
-                                                  const SizedBox(height: 10),
-                                                  GestureDetector(
-                                                    onTap: () {
-                                                      Navigator.pushReplacementNamed(
-                                                        context,
-                                                        AppRoutes.resetPassword,
-                                                      );
-                                                    },
-                                                    child: Center(
-                                                      child: Text.rich(
-                                                        TextSpan(
-                                                          children: [
-                                                            TextSpan(
-                                                              text: 'Forgot Password? ',
-                                                              style: theme.textTheme.bodyMedium?.copyWith(
-                                                                color: theme.colorScheme.onBackground,
-                                                              ),
-                                                            ),
-                                                            TextSpan(
-                                                              text: 'Reset Here',
-                                                              style: theme.textTheme.bodyMedium?.copyWith(
-                                                                color: theme.primaryColor,
-                                                              ),
-                                                            ),
-                                                          ],
-                                                        ),
-                                                      ),
+                                                    const SizedBox(height: 10),
+                                                    AppButton(
+                                                      onPressed: () async {
+                                                        if (_formKey.currentState?.validate() ?? false) {
+                                                          setState(() {
+                                                            isLoading = true; // Show loading indicator
+                                                          });
+                                                          await _login(context);
+                                                          setState(() {
+                                                            isLoading = false; // Hide loading indicator
+                                                          });
+                                                        }
+                                                      },
+                                                      text:  'Sign In',
                                                     ),
-                                                  ),
-                                                  const SizedBox(height: 20),
-                                                  Row(
-                                                    children: [
-                                                      const Expanded(child: Divider()),
-                                                      Padding(
-                                                        padding: const EdgeInsets.symmetric(horizontal: 10),
-                                                        child: Text('OR', style: theme.textTheme.bodyMedium),
-                                                      ),
-                                                      const Expanded(child: Divider()),
-                                                    ],
-                                                  ),
-                                                  const SizedBox(height: 20),
-                                                  Container(
-                                                    width: size.width,
-                                                    decoration: BoxDecoration(
-                                                      border: Border.all(color: theme.primaryColor),
-                                                      borderRadius: BorderRadius.circular(5),
-                                                    ),
-                                                    padding: const EdgeInsets.symmetric(
-                                                        horizontal: 10, vertical: 10),
-                                                    child: Row(
-                                                      // mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                                      children: [
-                                                        const Spacer(),
-                                                        SizedBox(
-                                                          height: 25,
-                                                          child: Image.asset(ImagePath.google),
-                                                        ),
-                                                        const SizedBox(width: Constants.kDefaultPadding),
-                                                        Text(
-                                                          'Sign In with Google',
-                                                          style: theme.textTheme.bodyMedium?.copyWith(
-                                                            color: theme.colorScheme.onBackground,
+                                                    const SizedBox(height: 10),
+                                                    GestureDetector(
+                                                      onTap: () {
+                                                        Navigator.pushReplacementNamed(
+                                                          context,
+                                                          AppRoutes.resetPassword,
+                                                        );
+                                                      },
+                                                      child: Center(
+                                                        child: Text.rich(
+                                                          TextSpan(
+                                                            children: [
+                                                              TextSpan(
+                                                                text: 'Forgot Password? ',
+                                                                style: theme.textTheme.bodyMedium?.copyWith(
+                                                                  color: theme.colorScheme.onBackground,
+                                                                ),
+                                                              ),
+                                                              TextSpan(
+                                                                text: 'Reset Here',
+                                                                style: theme.textTheme.bodyMedium?.copyWith(
+                                                                  color: theme.primaryColor,
+                                                                ),
+                                                              ),
+                                                            ],
                                                           ),
                                                         ),
-                                                        const Spacer(),
+                                                      ),
+                                                    ),
+                                                    const SizedBox(height: 20),
+                                                    Row(
+                                                      children: [
+                                                        const Expanded(child: Divider()),
+                                                        Padding(
+                                                          padding: const EdgeInsets.symmetric(horizontal: 10),
+                                                          child: Text('OR', style: theme.textTheme.bodyMedium),
+                                                        ),
+                                                        const Expanded(child: Divider()),
                                                       ],
                                                     ),
-                                                  ),
-                                                  const SizedBox(height: 20),
-                                                  GestureDetector(
-                                                    onTap: () {
-                                                      Navigator.pushReplacementNamed(
-                                                        context,
-                                                        AppRoutes.register,
-                                                      );
-                                                    },
-                                                    child: Center(
-                                                      child: Text.rich(
-                                                        TextSpan(
-                                                          children: [
-                                                            TextSpan(
-                                                              text: 'New to this app? ',
-                                                              style: theme.textTheme.bodyMedium?.copyWith(
-                                                                color: theme.colorScheme.onBackground,
-                                                              ),
+                                                    const SizedBox(height: 20),
+                                                    Container(
+                                                      width: size.width,
+                                                      decoration: BoxDecoration(
+                                                        border: Border.all(color: theme.primaryColor),
+                                                        borderRadius: BorderRadius.circular(5),
+                                                      ),
+                                                      padding: const EdgeInsets.symmetric(
+                                                          horizontal: 10, vertical: 10),
+                                                      child: Row(
+                                                        // mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                                        children: [
+                                                          const Spacer(),
+                                                          SizedBox(
+                                                            height: 25,
+                                                            child: Image.asset(ImagePath.google),
+                                                          ),
+                                                          const SizedBox(width: Constants.kDefaultPadding),
+                                                          Text(
+                                                            'Sign In with Google',
+                                                            style: theme.textTheme.bodyMedium?.copyWith(
+                                                              color: theme.colorScheme.onBackground,
                                                             ),
-                                                            TextSpan(
-                                                              text: 'Register',
-                                                              style: theme.textTheme.bodyMedium?.copyWith(
-                                                                color: theme.primaryColor,
+                                                          ),
+                                                          const Spacer(),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                    const SizedBox(height: 20),
+                                                    GestureDetector(
+                                                      onTap: () {
+                                                        Navigator.pushReplacementNamed(
+                                                          context,
+                                                          AppRoutes.register,
+                                                        );
+                                                      },
+                                                      child: Center(
+                                                        child: Text.rich(
+                                                          TextSpan(
+                                                            children: [
+                                                              TextSpan(
+                                                                text: 'New to this app? ',
+                                                                style: theme.textTheme.bodyMedium?.copyWith(
+                                                                  color: theme.colorScheme.onBackground,
+                                                                ),
                                                               ),
-                                                            ),
-                                                          ],
+                                                              TextSpan(
+                                                                text: 'Register',
+                                                                style: theme.textTheme.bodyMedium?.copyWith(
+                                                                  color: theme.primaryColor,
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          ),
                                                         ),
                                                       ),
                                                     ),
-                                                  ),
-                                                ],
+                                                  ],
+                                                ),
                                               ),
                                             ),
                                           ),
@@ -239,5 +258,18 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
       ),
     );
+  }
+  Future<void> _login(BuildContext context) async {
+    final user = User(
+      username: username!,
+      password: password!,
+    );
+
+    final token = await _authService.login(context, user);
+    if (token != null) {
+      Navigator.pushReplacementNamed(context, AppRoutes.dashboard); // Navigate to dashboard on success
+    } else {
+      showErrorToast(context, "Login failed. Please try again.");
+    }
   }
 }
