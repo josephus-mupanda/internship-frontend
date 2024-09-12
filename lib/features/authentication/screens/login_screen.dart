@@ -270,9 +270,15 @@ class _LoginScreenState extends State<LoginScreen> {
 
       // Save the token using Preferences class
       await Preferences.setUserToken(token);
-
       // Set login status to true
       await Preferences.setIsLoggedIn(true);
+
+      // Reset the form fields
+      _formKey.currentState?.reset(); // Clear the form
+      setState(() {
+        username = null;
+        password = null;
+      });
 
       Navigator.pushReplacementNamed(context, AppRoutes.dashboard); // Navigate to dashboard on success
     } else {

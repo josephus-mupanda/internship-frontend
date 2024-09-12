@@ -198,6 +198,12 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
 
     if (response.statusCode == 200) {
       showSuccessToast(context, message);
+      // Reset the form fields
+      _formKey.currentState?.reset();
+      setState(() {
+        newPassword = null;
+        confirmNewPassword = null;
+      });
       Navigator.pushReplacementNamed(context, AppRoutes.login);
     } else {
       showErrorToast(context, message);

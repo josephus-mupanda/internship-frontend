@@ -328,6 +328,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
         if (response.statusCode == 201) {
           // Success: Registration complete
           showSuccessToast(context, "Registration successful!Go to your Gmail to confirm your email");
+          // Reset the form fields
+          _formKey.currentState?.reset();
+          setState(() {
+            email = null;
+            username = null;
+            password = null;
+            confirmPassword = null;
+            phoneNumber = null;
+          });
           Navigator.pushNamed(context, AppRoutes.login);
         }
         else if (response.statusCode == 409) {

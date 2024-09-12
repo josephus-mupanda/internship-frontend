@@ -181,6 +181,11 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
 
     if (response.statusCode == 200) {
       showSuccessToast(context, message);
+      // Reset the form fields
+      _formKey.currentState?.reset();
+      setState(() {
+        email = null;
+      });
       //Navigator.pushNamed(context, AppRoutes.login);
     } else if (response.statusCode == 400) {
       showErrorToast(context, message);
