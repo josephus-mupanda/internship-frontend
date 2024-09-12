@@ -6,6 +6,7 @@ import 'package:internship_frontend/routes/app_routes.dart';
 import '../../../core/constants/constants.dart';
 import '../../../core/layout/responsive_widget.dart';
 import '../../../core/utils/loading.dart';
+import '../../../core/utils/preferences.dart';
 import '../../../core/utils/toast.dart';
 import '../../../core/widgets/button_widget.dart';
 import '../../../data/models/user.dart';
@@ -266,6 +267,13 @@ class _LoginScreenState extends State<LoginScreen> {
     // Dismiss the loading dialog
     Navigator.of(context).pop();
     if (token != null) {
+
+      // Save the token using Preferences class
+      await Preferences.setUserToken(token);
+
+      // Set login status to true
+      await Preferences.setIsLoggedIn(true);
+
       Navigator.pushReplacementNamed(context, AppRoutes.dashboard); // Navigate to dashboard on success
     } else {
       showErrorToast(context, "Login failed. Please try again.");
