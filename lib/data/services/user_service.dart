@@ -38,15 +38,6 @@ class UserService {
     );
     return response;
   }
-
-  // Confirm user registration
-  Future<http.Response> confirmUser(String token) async {
-    final response = await http.post(
-      Uri.parse('$baseUrl/confirmation?token=$token'),
-    );
-    return response;
-  }
-
   // Change password
   Future<http.Response> changePassword(String token, String newPassword) async {
     final response = await http.post(
@@ -57,6 +48,13 @@ class UserService {
     return response;
   }
 
+  // Confirm user registration
+  Future<http.Response> confirmUser(String token) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/confirmation?token=$token'),
+    );
+    return response;
+  }
   // Logout user
   Future<http.Response> logoutUser(String token) async {
     final response = await http.post(
