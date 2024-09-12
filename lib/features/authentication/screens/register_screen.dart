@@ -67,7 +67,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                     child: Center(
                                       child: SingleChildScrollView(
                                         child: Padding(
-                                          padding: const EdgeInsets.all(Constants.kDefaultPadding),
+                                          padding: Responsive.isMobile(context)?
+                                          const EdgeInsets.all(0):
+                                          const EdgeInsets.all(Constants.kDefaultPadding),
                                           child: Card(
                                             color: Theme.of(context).cardColor,
                                             child: Padding(
@@ -274,6 +276,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                                         ),
                                                       ),
                                                     ),
+                                                    const SizedBox(height: 20),
                                                   ],
                                                 ),
                                               ),
@@ -324,7 +327,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       Navigator.of(context).pop(); // Dismiss the loading dialog
         if (response.statusCode == 201) {
           // Success: Registration complete
-          showSuccessToast(context, "Registration successful!");
+          showSuccessToast(context, "Registration successful!Go to your Gmail to confirm your email");
           Navigator.pushNamed(context, AppRoutes.login);
         }
         else if (response.statusCode == 409) {

@@ -67,7 +67,9 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                                           child: Card(
                                             color: Theme.of(context).cardColor,
                                             child: Padding(
-                                              padding: const EdgeInsets.all(Constants.kDefaultPadding),
+                                              padding: Responsive.isMobile(context)?
+                                              const EdgeInsets.all(0):
+                                              const EdgeInsets.all(Constants.kDefaultPadding),
                                               child: Form(
                                                 key: _formKey,
                                                 child: Column(

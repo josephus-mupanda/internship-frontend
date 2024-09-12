@@ -62,7 +62,9 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                                     child: Center(
                                       child: SingleChildScrollView(
                                         child: Padding(
-                                          padding: const EdgeInsets.all(Constants.kDefaultPadding),
+                                          padding: Responsive.isMobile(context)?
+                                          const EdgeInsets.all(0):
+                                          const EdgeInsets.all(Constants.kDefaultPadding),
                                           child: Card(
                                             color: Theme.of(context).cardColor,
                                             child: Padding(
