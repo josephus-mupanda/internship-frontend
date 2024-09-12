@@ -5,6 +5,7 @@ import 'package:internship_frontend/routes/app_routes.dart';
 
 import '../../../core/constants/constants.dart';
 import '../../../core/layout/responsive_widget.dart';
+import '../../../core/utils/loading.dart';
 import '../../../core/utils/toast.dart';
 import '../../../core/widgets/button_widget.dart';
 import '../../../data/models/user.dart';
@@ -120,13 +121,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                                     AppButton(
                                                       onPressed: () async {
                                                         if (_formKey.currentState?.validate() ?? false) {
-                                                          setState(() {
-                                                            isLoading = true; // Show loading indicator
-                                                          });
                                                           await _login(context);
-                                                          setState(() {
-                                                            isLoading = false; // Hide loading indicator
-                                                          });
                                                         }
                                                       },
                                                       text:  'Sign In',
@@ -264,8 +259,14 @@ class _LoginScreenState extends State<LoginScreen> {
       username: username!,
       password: password!,
     );
-
+    // Show loading dialog
+    showLoadingDialog(context);
     final token = await _authService.login(context, user);
+
+    // Check if the widget is still mounted
+    if (!context.mounted) return;
+    // Dismiss the loading dialog
+    Navigator.of(context).pop();
     if (token != null) {
       Navigator.pushReplacementNamed(context, AppRoutes.dashboard); // Navigate to dashboard on success
     } else {
