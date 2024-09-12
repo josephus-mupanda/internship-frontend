@@ -4,6 +4,7 @@ import 'package:internship_frontend/features/onboarding/screens/page_right_scree
 import 'package:internship_frontend/routes/app_routes.dart';
 import '../../../core/constants/constants.dart';
 import '../../../core/layout/responsive_widget.dart';
+import '../../../core/utils/preferences.dart';
 
 class OnBoardingScreen extends StatefulWidget {
   const OnBoardingScreen({super.key});
@@ -14,6 +15,19 @@ class OnBoardingScreen extends StatefulWidget {
 class _OnBoardingScreenState extends State<OnBoardingScreen> {
   final PageController _pageController = PageController(initialPage: 0);
   int currentIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkOnboardingStatus(); // Check if the user has already seen onboarding
+  }
+
+  Future<void> _checkOnboardingStatus() async {
+    bool? hasSeenOnboarding = Preferences.getHasSeenOnboarding();
+    if (hasSeenOnboarding ?? false) {
+      Navigator.pushReplacementNamed(context, AppRoutes.login); // Skip to login if already seen
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -121,7 +135,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                                                         ),
                                                         child: IconButton(
                                                           onPressed: () {
-                                                            setState(() {
+                                                            setState(()  async {
                                                               if (currentIndex < 2) {
                                                                 currentIndex++;
                                                                 _pageController.nextPage(
@@ -129,6 +143,8 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                                                                   curve: Curves.easeIn,
                                                                 );
                                                               } else {
+                                                                await Preferences.setHasSeenOnboarding(true); // Save onboarding status
+                                                                if(!context.mounted) return;
                                                                 Navigator.pushReplacementNamed(context, AppRoutes.login);
                                                               }
                                                             });
