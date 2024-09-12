@@ -157,11 +157,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                                       ),
                                                       onChanged: (String? value) => confirmPassword = value!,
                                                       validator: (String? value) {
-                                                        return value!.isEmpty
-                                                            ? "Field is required"
-                                                            : value.length < 6
-                                                            ? "Password must be at least 6 characters"
-                                                            : null;
+                                                        if (value!.isEmpty) {
+                                                          return "Field is required";
+                                                        } else if (value.length < 6) {
+                                                          return "Password must be at least 6 characters";
+                                                        } else if (value != password) {
+                                                          return "Passwords do not match";
+                                                        }
+                                                        return null;
                                                       },
                                                     ),
                                                     const SizedBox(height: 10),
