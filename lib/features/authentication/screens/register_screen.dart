@@ -168,7 +168,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                                     AppButton(
                                                       onPressed: () async {
                                                         if (_formKey.currentState?.validate() ?? false) {
-                                                          _registerUser(context);
+                                                          await _registerUser(context);
                                                         }
                                                       },
                                                       text:  'Sign Up',
@@ -315,6 +315,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
     try {
       final response = await _userService.registerUser(newUser);
+
+      // Check if the widget is still mounted
+      if (!context.mounted) return;
       Navigator.of(context).pop(); // Dismiss the loading dialog
         if (response.statusCode == 201) {
           // Success: Registration complete
