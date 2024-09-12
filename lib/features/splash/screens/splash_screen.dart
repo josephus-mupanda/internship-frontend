@@ -19,9 +19,6 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     super.initState();
     _navigateBasedOnPreferences(); // Check preferences and navigate accordingly
-    // Timer(const Duration(seconds: 3), () {
-    //   Navigator.pushReplacementNamed(context,AppRoutes.onboarding);
-    // });
   }
 
   Future<void> _navigateBasedOnPreferences() async {

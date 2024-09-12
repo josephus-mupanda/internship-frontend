@@ -263,7 +263,7 @@ class _LoginScreenState extends State<LoginScreen> {
     final token = await _authService.login(context, user);
 
     // Check if the widget is still mounted
-    if (!context.mounted) return;
+    // if (!context.mounted) return;
     // Dismiss the loading dialog
     Navigator.of(context).pop();
     if (token != null) {
