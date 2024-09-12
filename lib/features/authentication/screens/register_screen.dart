@@ -25,7 +25,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   String? email,username, password, confirmPassword, phoneNumber;
 
-  final _userService = UserService(); // Initialize AuthService
+  final _userService = UserService(); // Initialize UserService
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 

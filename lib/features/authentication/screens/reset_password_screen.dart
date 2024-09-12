@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:internship_frontend/core/utils/images.dart';
 import 'package:internship_frontend/core/widgets/input_widget.dart';
@@ -5,7 +7,10 @@ import 'package:internship_frontend/routes/app_routes.dart';
 
 import '../../../core/constants/constants.dart';
 import '../../../core/layout/responsive_widget.dart';
+import '../../../core/utils/loading.dart';
+import '../../../core/utils/toast.dart';
 import '../../../core/widgets/button_widget.dart';
+import '../../../data/services/user_service.dart';
 import '../../onboarding/screens/page_right_screen.dart';
 
 class ResetPasswordScreen extends StatefulWidget {
@@ -20,6 +25,10 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   String? email;
 
   final _emailRegex = RegExp(r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$"); // Example email regex
+
+  final _userService = UserService(); // Initialize UserService
+
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
@@ -58,65 +67,70 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                                             color: Theme.of(context).cardColor,
                                             child: Padding(
                                               padding: const EdgeInsets.all(Constants.kDefaultPadding),
-                                              child: Column(
-                                                mainAxisAlignment: MainAxisAlignment.center,
-                                                crossAxisAlignment: CrossAxisAlignment.start,
-                                                children: [
-                                                  Center(child: Image.asset(ImagePath.resetPasswordImage,height: 100,)),
-                                                  Text(
-                                                    'Forgot\nPassword',
-                                                    style: theme.textTheme.headlineLarge?.copyWith(
-                                                      fontWeight: FontWeight.w700,
+                                              child: Form(
+                                                key:_formKey,
+                                                child: Column(
+                                                  mainAxisAlignment: MainAxisAlignment.center,
+                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                  children: [
+                                                    Center(child: Image.asset(ImagePath.resetPasswordImage,height: 100,)),
+                                                    Text(
+                                                      'Forgot\nPassword',
+                                                      style: theme.textTheme.headlineLarge?.copyWith(
+                                                        fontWeight: FontWeight.w700,
+                                                      ),
                                                     ),
-                                                  ),
-                                                  const SizedBox(height: 30),
-                                                  InputWidget(
-                                                    obscureText: false,
-                                                    hintText: 'Enter Email',
-                                                    keyboardType: TextInputType.emailAddress,
-                                                    prefixIcon: Icons.alternate_email,
-                                                    onChanged: (String? value) => email = value!,
-                                                    validator: (String? value) {
-                                                      return value!.isEmpty ? "Field is required" : !_emailRegex.hasMatch(value) ? "Invalid email format" : null;
-                                                    },
-                                                  ),
-                                                  const SizedBox(height: 10),
-                                                  AppButton(
-                                                    onPressed: () {
-                                                      Navigator.pushReplacementNamed(context, AppRoutes.dashboard);
-                                                    },
-                                                    text:  'Reset Password',
-                                                  ),
-                                                  const SizedBox(height: 20),
-                                                  GestureDetector(
-                                                    onTap: () {
-                                                      Navigator.pushReplacementNamed(
-                                                        context,
-                                                        AppRoutes.login,
-                                                      );
-                                                    },
-                                                    child: Center(
-                                                      child: Text.rich(
-                                                        TextSpan(
-                                                          children: [
-                                                            TextSpan(
-                                                              text: 'Have an Account? ',
-                                                              style: theme.textTheme.bodyMedium?.copyWith(
-                                                                color: theme.colorScheme.onBackground,
+                                                    const SizedBox(height: 30),
+                                                    InputWidget(
+                                                      obscureText: false,
+                                                      hintText: 'Enter Email',
+                                                      keyboardType: TextInputType.emailAddress,
+                                                      prefixIcon: Icons.alternate_email,
+                                                      onChanged: (String? value) => email = value!,
+                                                      validator: (String? value) {
+                                                        return value!.isEmpty ? "Field is required" : !_emailRegex.hasMatch(value) ? "Invalid email format" : null;
+                                                      },
+                                                    ),
+                                                    const SizedBox(height: 10),
+                                                    AppButton(
+                                                      onPressed: () async {
+                                                        if (_formKey.currentState?.validate() ?? false) {
+                                                          await _resetPassword(context);
+                                                        }
+                                                      },
+                                                      text:  'Reset Password',
+                                                    ),
+                                                    const SizedBox(height: 20),
+                                                    GestureDetector(
+                                                      onTap: () {
+                                                        Navigator.pushReplacementNamed(
+                                                          context,
+                                                          AppRoutes.login,
+                                                        );
+                                                      },
+                                                      child: Center(
+                                                        child: Text.rich(
+                                                          TextSpan(
+                                                            children: [
+                                                              TextSpan(
+                                                                text: 'Have an Account? ',
+                                                                style: theme.textTheme.bodyMedium?.copyWith(
+                                                                  color: theme.colorScheme.onBackground,
+                                                                ),
                                                               ),
-                                                            ),
-                                                            TextSpan(
-                                                              text: 'Login',
-                                                              style: theme.textTheme.bodyMedium?.copyWith(
-                                                                color: theme.primaryColor,
+                                                              TextSpan(
+                                                                text: 'Login',
+                                                                style: theme.textTheme.bodyMedium?.copyWith(
+                                                                  color: theme.primaryColor,
+                                                                ),
                                                               ),
-                                                            ),
-                                                          ],
+                                                            ],
+                                                          ),
                                                         ),
                                                       ),
                                                     ),
-                                                  ),
-                                                ],
+                                                  ],
+                                                ),
                                               ),
                                             ),
                                           ),
@@ -145,5 +159,34 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
         ),
       ),
     );
+  }
+
+  Future<void> _resetPassword(BuildContext context) async {
+    if (email == null || email!.isEmpty) {
+      showErrorToast(context, "Email is required");
+      return;
+    }
+
+    // Show loading dialog
+    showLoadingDialog(context);
+
+    final response = await _userService.resetPassword(email!);
+
+    final responseBody = jsonDecode(response.body);
+    String message = responseBody['message'] ?? 'An error occurred';
+    // Check if the widget is still mounted
+    if (!context.mounted) return;
+    Navigator.of(context).pop();
+
+    if (response.statusCode == 200) {
+      showSuccessToast(context, message);
+      Navigator.pushNamed(context, AppRoutes.login);
+    } else if (response.statusCode == 400) {
+      showErrorToast(context, message);
+    } else if (response.statusCode == 404) {
+      showErrorToast(context, message);
+    } else {
+      showErrorToast(context, "An unexpected error occurred");
+    }
   }
 }
