@@ -5,8 +5,14 @@ import 'package:internship_frontend/routes/app_routes.dart';
 import 'package:internship_frontend/routes/route_generator.dart';
 import 'package:internship_frontend/themes/app_theme.dart';
 
-void main() {
+import 'core/utils/preferences.dart';
+
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize SharedPreferences
+  await Preferences.init();
+
   runApp(const MyApp());
   // Handle incoming links
   handleIncomingLinks();

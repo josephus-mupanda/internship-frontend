@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:internship_frontend/core/utils/images.dart';
 import 'package:internship_frontend/routes/app_routes.dart';
 import '../../../core/layout/responsive_widget.dart';
+import '../../../core/utils/preferences.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -17,10 +18,28 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
+    _navigateBasedOnPreferences(); // Check preferences and navigate accordingly
+    // Timer(const Duration(seconds: 3), () {
+    //   Navigator.pushReplacementNamed(context,AppRoutes.onboarding);
+    // });
+  }
 
-    Timer(const Duration(seconds: 3), () {
-      Navigator.pushReplacementNamed(context,AppRoutes.onboarding);
-    });
+  Future<void> _navigateBasedOnPreferences() async {
+    // Wait for 3 seconds
+    await Future.delayed(const Duration(seconds: 3));
+
+    // Check if user has seen onboarding or is logged in
+    bool? hasSeenOnboarding = Preferences.getHasSeenOnboarding();
+    bool? isLoggedIn = Preferences.getIsLoggedIn();
+
+    // Decide where to navigate
+    if (isLoggedIn == true) {
+      Navigator.pushReplacementNamed(context, AppRoutes.dashboard); // Navigate to dashboard if logged in
+    } else if (hasSeenOnboarding == true) {
+      Navigator.pushReplacementNamed(context, AppRoutes.login); // Navigate to login if onboarding has been seen
+    } else {
+      Navigator.pushReplacementNamed(context, AppRoutes.onboarding); // Navigate to onboarding by default
+    }
   }
 
   @override
