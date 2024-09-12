@@ -166,7 +166,6 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
       showErrorToast(context, "Email is required");
       return;
     }
-
     // Show loading dialog
     showLoadingDialog(context);
 
@@ -180,7 +179,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
 
     if (response.statusCode == 200) {
       showSuccessToast(context, message);
-      Navigator.pushNamed(context, AppRoutes.login);
+      //Navigator.pushNamed(context, AppRoutes.login);
     } else if (response.statusCode == 400) {
       showErrorToast(context, message);
     } else if (response.statusCode == 404) {
