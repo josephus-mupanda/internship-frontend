@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:internship_frontend/features/authentication/screens/confirm_email_screen.dart';
 // import 'screens/dashboard_screen.dart';
 import '../features/authentication/screens/change_password_screen.dart';
 import '../features/authentication/screens/login_screen.dart';
@@ -14,6 +15,7 @@ class RouteGenerator {
     final args = settings.arguments;
 
     switch (settings.name) {
+
       case AppRoutes.splash:
         return MaterialPageRoute(builder: (_) => const SplashScreen());
       case AppRoutes.onboarding:
@@ -24,6 +26,7 @@ class RouteGenerator {
         return MaterialPageRoute(builder: (_) => const RegisterScreen());
       case AppRoutes.resetPassword:
         return MaterialPageRoute(builder: (_) => const ResetPasswordScreen());
+
       case AppRoutes.changePassword:
         if (args is String) {
           return MaterialPageRoute(
@@ -31,9 +34,16 @@ class RouteGenerator {
           );
         }
         return _errorRoute();
+
+      case AppRoutes.confirmEmail:
+        if (args is String) {
+          return MaterialPageRoute(
+            builder: (_) => ConfirmEmailScreen(token: args),
+          );
+        }
+        return _errorRoute();
       // case AppRoutes.dashboard:
       //   return MaterialPageRoute(builder: (_) => DashboardScreen());
-    // Handle other routes here...
       default:
         return _errorRoute();
     }

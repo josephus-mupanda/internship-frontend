@@ -30,20 +30,37 @@ void handleIncomingLinks() async {
 }
 
 void _handleIncomingUrl(Uri uri) {
-  final token = uri.queryParameters['token'];
+  final String? token = uri.queryParameters['token'];
+  final String? action = uri.queryParameters['action'];
+
   if (token != null) {
     // Ensure navigatorKey is defined in your app for navigation
     if (navigatorKey.currentContext != null) {
-      Navigator.pushReplacementNamed(
+      if (action == 'resetPassword') {
+        Navigator.pushReplacementNamed(
           navigatorKey.currentContext!,
-          AppRoutes.changePassword,
-          arguments: token
-      );
-    }
-    else {
-      if (kDebugMode) {
-        print('No token found in URL');
+          AppRoutes.resetPassword,
+          arguments: token,
+        );
+      } else if (action == 'confirmEmail') {
+        Navigator.pushReplacementNamed(
+          navigatorKey.currentContext!,
+          AppRoutes.confirmEmail,
+          arguments: token,
+        );
+      } else {
+        if (kDebugMode) {
+          print('Unknown action: $action');
+        }
       }
+    } else {
+      if (kDebugMode) {
+        print('No context available for navigation');
+      }
+    }
+  } else {
+    if (kDebugMode) {
+      print('No token found in URL');
     }
   }
 }
