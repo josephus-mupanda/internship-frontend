@@ -39,6 +39,11 @@ class AppTheme {
       color: ColorPalette.primaryColor, // Default icon color for light theme
       size: 24.0,
     ),
+    floatingActionButtonTheme: const FloatingActionButtonThemeData(
+      backgroundColor: ColorPalette.primaryColor,
+      foregroundColor: ColorPalette.onPrimaryColor,
+      elevation: 6.0, // Adjust elevation if needed
+    ),
   );
 
   static final ThemeData darkTheme = ThemeData(
@@ -76,6 +81,11 @@ class AppTheme {
     iconTheme: const IconThemeData(
       color: ColorPalette.onBackgroundColor,
       size: 24.0,
+    ),
+    floatingActionButtonTheme: const FloatingActionButtonThemeData(
+      backgroundColor: ColorPalette.primaryColor,
+      foregroundColor: ColorPalette.onBackgroundColor,
+      elevation: 6.0, // Adjust elevation if needed
     ),
   );
 }
