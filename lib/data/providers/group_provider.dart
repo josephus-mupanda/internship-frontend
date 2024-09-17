@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:outlook/models/Group.dart';
+import '../models/group.dart';
 
 class GroupProvider with ChangeNotifier {
   Group? _selectedGroup;

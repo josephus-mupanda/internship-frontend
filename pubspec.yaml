@@ -45,6 +45,7 @@ dependencies:
   flutter_feather_icons: ^2.0.0+1
   font_awesome_flutter: ^10.7.0
   websafe_svg: ^3.0.1+2
+  provider: ^6.1.2
 
 dev_dependencies:
   flutter_test:

@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:outlook/components/svgIcon.dart';
-import 'package:websafe_svg/websafe_svg.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import '../constants.dart';
-import 'counter_badge.dart';
+import 'package:internship_frontend/features/main/components/svgIcon.dart';
+import '../../../core/constants/constants.dart';
+import '../../../themes/color_palette.dart';
+
 
 class MenuItem extends StatefulWidget {
   final String? title;
@@ -46,7 +45,7 @@ class _MenuItemState extends State<MenuItem> {
             gradient: isHover
                 ? LinearGradient(
                 colors: [
-                  kPrimaryColor.withOpacity(.01),
+                  ColorPalette.primaryColor.withOpacity(.01),
                   Colors.white
                 ],
                 begin: Alignment.centerLeft,
@@ -62,16 +61,16 @@ class _MenuItemState extends State<MenuItem> {
                   boxShadow: [
                     if (isSelected)
                       const BoxShadow(
-                          color: kPrimaryColor,
+                          color: ColorPalette.primaryColor,
                           offset: Offset(3, -1),
                           blurRadius: 5)
                   ],
                   color: isSelected
-                      ? kPrimaryColor
+                      ? ColorPalette.primaryColor
                       : Colors.transparent),
             ),
             const SizedBox(
-              width: kDefaultPadding,
+              width: Constants.kDefaultPadding,
             ),
             if (widget.icon is String)
               SvgIcon(
@@ -86,7 +85,7 @@ class _MenuItemState extends State<MenuItem> {
                 widget.icon,
                 size: widget.size,
                 color: isSelected
-                    ? kPrimaryColor
+                    ? ColorPalette.primaryColor
                     : const Color(0xFF707C97),
               ),
             const SizedBox(
@@ -103,73 +102,3 @@ class _MenuItemState extends State<MenuItem> {
   }
 }
 
-
-
-// class SideMenuItem extends StatelessWidget {
-//   const SideMenuItem({super.key,
-//     this.isActive,
-//     this.isHover = false,
-//     this.itemCount,
-//     this.showBorder = true,
-//     required this.iconSrc,
-//     required this.title,
-//     required this.press,
-//   });
-//
-//   final bool? isActive, isHover, showBorder;
-//   final int? itemCount;
-//   final String? iconSrc, title;
-//   final VoidCallback press;
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return Padding(
-//       padding: const EdgeInsets.only(top: kDefaultPadding),
-//       child: InkWell(
-//         onTap: press,
-//         child: Row(
-//           children: [
-//             (isActive! || isHover!)
-//                 ? WebsafeSvg.asset(
-//                     "assets/Icons/Angle right.svg",
-//                     width: 15,
-//                   )
-//                 : const SizedBox(width: 15),
-//             const SizedBox(width: kDefaultPadding / 4),
-//             Expanded(
-//               child: Container(
-//                 padding: const EdgeInsets.only(bottom: 15, right: 5),
-//                 decoration: showBorder!
-//                     ? const BoxDecoration(
-//                         border: Border(
-//                           bottom: BorderSide(color: Color(0xFFDFE2EF)),
-//                         ),
-//                       )
-//                     : null,
-//                 child: Row(
-//                   children: [
-//                     SvgPicture.asset(
-//                       iconSrc!,
-//                       height: 20,
-//                       color: (isActive! || isHover!) ? kPrimaryColor : kGrayColor,
-//                     ),
-//                     const SizedBox(width: kDefaultPadding * 0.75),
-//                     Text(
-//                       title!,
-//                       style: Theme.of(context).textTheme.labelLarge?.copyWith(
-//                             color:
-//                                 (isActive! || isHover!) ? kTextColor : kGrayColor,
-//                           ),
-//                     ),
-//                     const Spacer(),
-//                    // CounterBadge(itemCount!)
-//                   ],
-//                 ),
-//               ),
-//             ),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-// }

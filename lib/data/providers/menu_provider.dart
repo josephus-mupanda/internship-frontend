@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:outlook/screens/group/member_screen.dart';
 import 'package:outlook/screens/loan/list_of_loans.dart';
-import 'package:outlook/screens/transaction/transaction_screen.dart';
-import 'package:outlook/screens/profile/profile_screen.dart';
 import 'package:outlook/screens/group/list_of_groups.dart';
 import '../../../models/Group.dart';
+import '../../features/profile/profile_screen.dart';
+import '../../features/transaction/transaction_screen.dart';
 
 enum MenuItemSelect { GROUPS, LOANS, TRANSACTIONS, PROFILE, LOGOUT }
 

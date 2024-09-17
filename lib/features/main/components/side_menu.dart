@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:outlook/responsive.dart';
+import 'package:internship_frontend/core/utils/extensions.dart';
+import 'package:internship_frontend/themes/color_palette.dart';
 import 'package:provider/provider.dart';
 import 'package:websafe_svg/websafe_svg.dart';
 
-import '../constants.dart';
-import '../extensions.dart';
-import '../providers/menu_provider.dart';
+import '../../../core/constants/constants.dart';
+import '../../../core/layout/responsive_widget.dart';
+import '../../../data/providers/menu_provider.dart';
 import 'side_menu_item.dart';
 
 import 'package:flutter/foundation.dart' show kIsWeb;
@@ -26,14 +27,14 @@ class _SideMenuState extends State<SideMenu> {
   Widget build(BuildContext context) {
     return Container(
       height: double.infinity,
-      padding: const EdgeInsets.only(top: kIsWeb ? kDefaultPadding : 0),
-      color: kBgLightColor,
+      padding: const EdgeInsets.only(top: kIsWeb ? Constants.kDefaultPadding : 0),
+      color: Theme.of(context).colorScheme.background,
       child: SafeArea(
         child: Column(
           children: [
             Expanded(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: kDefaultPadding),
+                padding: const EdgeInsets.symmetric(horizontal: Constants.kDefaultPadding),
                 child: Column(
                   children: [
                     Row(
@@ -63,14 +64,14 @@ class _SideMenuState extends State<SideMenu> {
                         ),
                       ],
                     ),
-                    const SizedBox(height: kDefaultPadding),
+                    const SizedBox(height: Constants.kDefaultPadding),
                     SizedBox(
                     width: double.infinity,
                       child:  TextButton.icon(
                         style: TextButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: kDefaultPadding),
+                          padding: const EdgeInsets.symmetric(vertical: Constants.kDefaultPadding),
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                          backgroundColor: kPrimaryColor, // Use backgroundColor instead of color
+                          backgroundColor: ColorPalette.primaryColor, // Use backgroundColor instead of color
                           //foregroundColor: kTextColor, // Set the text color here
                         ),
                         onPressed: () {},
@@ -84,26 +85,8 @@ class _SideMenuState extends State<SideMenu> {
                         bottomShadowColor: const Color(0xFF234395).withOpacity(0.2),
                       ),
                     ),
-                    const SizedBox(height: kDefaultPadding),
-                    // SizedBox(
-                    //   width: double.infinity,
-                    //   child:   TextButton.icon(
-                    //     style: TextButton.styleFrom(
-                    //       padding: const EdgeInsets.symmetric(vertical: kDefaultPadding),
-                    //       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                    //       backgroundColor: kBgDarkColor, // Use backgroundColor instead of color
-                    //       foregroundColor: kTextColor, // Set the text color here
-                    //     ),
-                    //     onPressed: () {},
-                    //     icon: WebsafeSvg.asset("assets/Icons/Download.svg", width: 16),
-                    //     label: const Text(
-                    //       "Get messages",
-                    //       style: TextStyle(color: kTextColor),
-                    //     ),
-                    //   ).addNeumorphism(),
-                    // ),
-
-                    const SizedBox(height: kDefaultPadding * 2),
+                    const SizedBox(height: Constants.kDefaultPadding),
+                    const SizedBox(height: Constants.kDefaultPadding * 2),
 
                     Consumer<MenuProvider>(
                         builder: (context, menuProvider, child) {
@@ -149,38 +132,7 @@ class _SideMenuState extends State<SideMenu> {
                             );
                         }
                     ),
-
-                    // Menu Items
-                    // SideMenuItem(
-                    //   press: () {},
-                    //   title: "Inbox",
-                    //   iconSrc: "assets/Icons/Inbox.svg",
-                    //   isActive: true,
-                    //   itemCount: 3,
-                    // ),
-                    // SideMenuItem(
-                    //   press: () {},
-                    //   title: "Sent",
-                    //   iconSrc: "assets/Icons/Send.svg",
-                    //   isActive: false,
-                    //   itemCount: 3,
-                    // ),
-                    // SideMenuItem(
-                    //   press: () {},
-                    //   title: "Drafts",
-                    //   iconSrc: "assets/Icons/File.svg",
-                    //   isActive: false,
-                    //   itemCount: 3,
-                    // ),
-                    // SideMenuItem(
-                    //   press: () {},
-                    //   title: "Deleted",
-                    //   iconSrc: "assets/Icons/Trash.svg",
-                    //   isActive: false,
-                    //   showBorder: false,
-                    // ),
-
-                    const SizedBox(height: kDefaultPadding * 2),
+                    const SizedBox(height: Constants.kDefaultPadding * 2),
                     // Tags
                     // const Tags(),
                   ],
