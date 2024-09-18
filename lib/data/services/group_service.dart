@@ -1,21 +1,39 @@
 import 'dart:convert';
+import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 
 import '../../core/config/app_config.dart';
 import '../../core/config/environment.dart';
+import '../../core/utils/toast.dart';
 import '../models/group.dart';
 
 class GroupService {
   final String baseUrl = AppConfig.groupUrl;
 
   // Create a new group
-  Future<http.Response> createGroup(Group group, String token) async {
-    final response = await http.post(
-      Uri.parse('$baseUrl/create'),
-      headers: Environment.getJsonHeaders(token),
-      body: jsonEncode(group.toJson()),
-    );
-    return response;
+  Future<http.Response?> createGroup(Group group, String token,BuildContext context) async {
+    try {
+      final response = await http.post(
+        Uri.parse(baseUrl),
+        headers: Environment.getJsonHeaders(token),
+        body: jsonEncode(group.toJson()),
+      );
+      if (!context.mounted) return null;
+      // Check the status code and handle conditions with toast messages
+      if (response.statusCode == 201) {
+        showSuccessToast(context, "Group created successfully!");
+      } else if (response.statusCode == 400) {
+        showErrorToast(context, "Invalid token or bad request. Please try again.");
+      } else {
+        showWarningToast(context, "Failed to create the group. Please try again later.");
+      }
+      return response;
+    } catch (e) {
+      // Handle any exceptions and show error toast
+      showErrorToast(context, "An error occurred. Please check your connection.");
+      //throw Exception("Failed to create group: $e");
+    }
+    return null;
   }
 
   // Update an existing group

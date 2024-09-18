@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:internship_frontend/core/utils/images.dart';
+import 'package:internship_frontend/core/widgets/group_dialog.dart';
 import 'package:internship_frontend/routes/app_routes.dart';
 import 'package:internship_frontend/themes/color_palette.dart';
 import 'package:provider/provider.dart';
@@ -113,7 +114,9 @@ class _SideMenuState extends State<SideMenu> {
                           backgroundColor: ColorPalette.primaryColor, // Use backgroundColor instead of color
                           //foregroundColor: kTextColor, // Set the text color here
                         ),
-                        onPressed: () {},
+                        onPressed: () {
+                          _showGroupDialog();
+                        },
                         icon: const Icon( FeatherIcons.edit, color:Colors.white, size: 16,),
                         label: const Text(
                           "Create a group",
@@ -184,6 +187,20 @@ class _SideMenuState extends State<SideMenu> {
           ],
         ),
       ),
+    );
+  }
+
+  void _showGroupDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return const GroupDialog(
+          title: "Create Group",
+          content: "Please enter the group details below:",
+          nameYes: "Create",
+          nameNo: "Cancel",
+        );
+      },
     );
   }
 

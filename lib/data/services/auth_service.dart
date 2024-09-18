@@ -15,6 +15,7 @@ class AuthService {
   Future<String?> login(BuildContext context,User user) async {
     final response = await _userService.loginUser(user);
     if (response.statusCode == 200) {
+
       final responseBody = jsonDecode(response.body);
       final token = responseBody['token'] as String?;
       final username = responseBody['username'] as String?;

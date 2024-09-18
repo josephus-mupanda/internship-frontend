@@ -3,6 +3,7 @@ import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:provider/provider.dart';
 import '../../core/constants/constants.dart';
 import '../../core/layout/responsive_widget.dart';
+import '../../core/widgets/group_dialog.dart';
 import '../../core/widgets/input_widget.dart';
 import '../../data/models/group.dart';
 import '../../data/providers/group_provider.dart';
@@ -36,20 +37,6 @@ class _ListOfGroupsState extends State<ListOfGroups> {
       }
     });
   }
-  //
-  // void _showAddGroupDialog() {
-  //   showGroupDialog(
-  //     context,
-  //     action: 'add',
-  //     onConfirm: (name, description) {
-  //       // Add group to the list (you can replace this with actual logic)
-  //       setState(() {
-  //         groups.add(Group(name: name, description: description));
-  //       });
-  //     },
-  //   );
-  // }
-
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
@@ -160,10 +147,23 @@ class _ListOfGroupsState extends State<ListOfGroups> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        // onPressed: _showAddGroupDialog,
-        onPressed: () {  },
+        onPressed: () {  _showGroupDialog();},
         child: const Icon(Icons.add),
       )
     );
   }
+  void _showGroupDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return const GroupDialog(
+          title: "Create Group",
+          content: "Please enter the group details below:",
+          nameYes: "Create",
+          nameNo: "Cancel",
+        );
+      },
+    );
+  }
+
 }

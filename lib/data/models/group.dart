@@ -30,6 +30,7 @@ class Group {
   }
 }
 
+
 final List<Group> groups = List.generate(
   groupData.length,
       (index) {
