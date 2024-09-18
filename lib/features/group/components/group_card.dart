@@ -1,22 +1,21 @@
 import 'dart:math';
+
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:internship_frontend/core/utils/extensions.dart';
 import 'package:internship_frontend/themes/color_palette.dart';
 
 import '../../../core/constants/constants.dart';
-import '../../../data/models/member.dart';
+import '../../../data/models/group.dart';
 
-class MemberCard extends StatelessWidget {
-
-  const MemberCard({super.key,
+class GroupCard extends StatelessWidget {
+  const GroupCard({super.key,
     this.isActive = true,
-    required this.member,
+    required this.group,
     this.press,
   });
 
   final bool isActive;
-  final Member member;
+  final Group group;
   final VoidCallback? press;
 
 
@@ -44,7 +43,7 @@ class MemberCard extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(Constants.kDefaultPadding),
               decoration: BoxDecoration(
-                color:Theme.of(context).cardColor,
+                color: isActive ? ColorPalette.primaryColor : Theme.of(context).cardColor,
                 borderRadius: BorderRadius.circular(15),
               ),
               child: Column(
@@ -54,11 +53,12 @@ class MemberCard extends StatelessWidget {
                       SizedBox(
                         width: 32,
                         child: CircleAvatar(
-                          backgroundColor: getRandomColor(),
+                            backgroundColor: getRandomColor(),
                           child: Text(
-                            member.userId as String,
-                            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                              fontWeight: FontWeight.bold,
+                            group.name![0].toUpperCase(),
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold, // Make the text bold
                             ),
                           ),
                         ),
@@ -67,14 +67,16 @@ class MemberCard extends StatelessWidget {
                       Expanded(
                         child: Text.rich(
                           TextSpan(
-                            text: "${member.userId} \n",
+                            text: "${group.name} \n",
                             style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                               fontWeight: FontWeight.bold,
                             ),
                             children: [
                               TextSpan(
-                                text: "Join Date : ${member.joinDate}",
-                                style: Theme.of(context).textTheme.bodyMedium,
+                                text: "Created BY : ${group.createdBy}",
+                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                  color: isActive ? Colors.white : null,
+                                ),
                               ),
                             ],
                           ),
@@ -83,19 +85,26 @@ class MemberCard extends StatelessWidget {
                       Column(
                         children: [
                           Text(
-                            "View",
-                            style: Theme.of(context).textTheme.bodySmall,
+                            "Join",
+                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: isActive ? Colors.white70 : null,
+                            ),
                           ),
                           const SizedBox(height: 5),
-                          Text(
-                            "Edit",
-                            style: Theme.of(context).textTheme.bodySmall,
-                          ),
                         ],
                       ),
                     ],
                   ),
                   const SizedBox(height: Constants.kDefaultPadding / 2),
+                  Text(
+                    group.description!,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      height: 1.5,
+                      color: isActive ? Colors.white70 : null,
+                    ),
+                  )
                 ],
               ),
             ).addNeumorphism(
@@ -105,36 +114,9 @@ class MemberCard extends StatelessWidget {
               topShadowColor: Colors.white60,
               bottomShadowColor: const Color(0xFF234395).withOpacity(0.15),
             ),
-            Positioned(
-              right: 8,
-              top: 8,
-              child: Container(
-                height: 12,
-                width: 12,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: member.isActive == true ? const Color(0xFF23CF91): ColorPalette.errorColor ,
-                ),
-              ).addNeumorphism(
-                blurRadius: 4,
-                borderRadius: 8,
-                offset: const Offset(2, 2),
-              ),
-            ),
-            if (member.tagColor != null)
-              Positioned(
-                left: 8,
-                top: 0,
-                child: SvgPicture.asset(
-                  "assets/Icons/Markup filled.svg",
-                  height: 18,
-                  color: member.tagColor,
-                ),
-              )
           ],
         ),
       ),
     );
   }
 }
-

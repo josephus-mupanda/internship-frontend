@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:outlook/screens/group/member_screen.dart';
-import 'package:outlook/screens/loan/list_of_loans.dart';
-import 'package:outlook/screens/group/list_of_groups.dart';
-import '../../../models/Group.dart';
+import '../../features/group/list_of_groups.dart';
+import '../../features/loan/list_of_loans.dart';
+import '../../features/member/member_screen.dart';
 import '../../features/profile/profile_screen.dart';
 import '../../features/transaction/transaction_screen.dart';
+import '../models/group.dart';
 
 enum MenuItemSelect { GROUPS, LOANS, TRANSACTIONS, PROFILE, LOGOUT }
 
@@ -34,7 +34,7 @@ class MenuProvider with ChangeNotifier {
       case MenuItemSelect.LOANS:
         return Row(
           children: [
-            const Expanded(flex: 6, child: ListOfLoans()), // Replace with your ListOfLoans widget
+            Expanded(flex: 6, child: ListOfLoans()), // Replace with your ListOfLoans widget
             Expanded(
               flex: 9,
               child: Container(), // Replace with your LoanScreen or another relevant widget

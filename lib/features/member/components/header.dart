@@ -42,13 +42,6 @@ class Header extends StatelessWidget {
               ),
             ),
           ),
-          IconButton(
-            icon: WebsafeSvg.asset(
-              "assets/Icons/Transfer.svg",
-              width: 24,
-            ),
-            onPressed: () {},
-          ),
           const Spacer(),
           // We don't need print option on mobile
           if (Responsive.isDesktop(context))

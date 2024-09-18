@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:internship_frontend/features/authentication/screens/confirm_email_screen.dart';
-// import 'screens/dashboard_screen.dart';
+import 'package:internship_frontend/features/main/main_screen.dart';
 import '../features/authentication/screens/change_password_screen.dart';
 import '../features/authentication/screens/login_screen.dart';
 import '../features/authentication/screens/register_screen.dart';
@@ -42,8 +42,8 @@ class RouteGenerator {
           );
         }
         return _errorRoute();
-      // case AppRoutes.dashboard:
-      //   return MaterialPageRoute(builder: (_) => DashboardScreen());
+      case AppRoutes.dashboard:
+        return MaterialPageRoute(builder: (_) => const MainScreen());
       default:
         return _errorRoute();
     }

@@ -1,10 +1,11 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:websafe_svg/websafe_svg.dart';
+import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 
-import '../../components/side_menu.dart';
-import '../../constants.dart';
-import '../../responsive.dart';
+import '../../core/constants/constants.dart';
+import '../../core/layout/responsive_widget.dart';
+import '../../core/widgets/input_widget.dart';
+import '../main/components/side_menu.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -18,6 +19,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final ThemeData theme = Theme.of(context);
     return Scaffold(
       key: _scaffoldKey,
       drawer: ConstrainedBox(
@@ -25,8 +27,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
         child: const SideMenu(),
       ),
       body: Container(
-        padding: const EdgeInsets.only(top: kIsWeb ? kDefaultPadding : 0),
-        color: kBgDarkColor,
+        padding: const EdgeInsets.only(top: kIsWeb ? Constants.kDefaultPadding : 0),
+        color:theme.colorScheme.background,
         child: SafeArea(
           right: false,
           child: Column(
@@ -34,7 +36,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               // This is our Search bar
               Padding(
                 padding:
-                const EdgeInsets.symmetric(horizontal: kDefaultPadding),
+                const EdgeInsets.symmetric(horizontal: Constants.kDefaultPadding),
                 child: Row(
                   children: [
                     // Once user click the menu icon the menu shows like drawer
@@ -48,31 +50,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                     if (!Responsive.isDesktop(context)) const SizedBox(width: 5),
                     Expanded(
-                      child: TextField(
-                        onChanged: (value) {},
-                        decoration: InputDecoration(
-                          hintText: "Profile",
-                          fillColor: kBgLightColor,
-                          filled: true,
-                          suffixIcon: Padding(
-                            padding: const EdgeInsets.all(
-                                kDefaultPadding * 0.75), //15
-                            child: WebsafeSvg.asset(
-                              "assets/Icons/Search.svg",
-                              width: 24,
-                            ),
+                      child: InputWidget(
+                        hintText: 'Profile',
+                        keyboardType: TextInputType.name,
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            FeatherIcons.search,
+                            color: theme.colorScheme.onSurface.withOpacity(0.5),
                           ),
-                          border: const OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(10)),
-                            borderSide: BorderSide.none,
-                          ),
+                          onPressed: () {
+                          },
                         ),
+                        onChanged: (String? value) {},
+                        validator: (String? value) {},
                       ),
                     ),
                   ],
                 ),
               ),
-              const SizedBox(height: kDefaultPadding),
+              const SizedBox(height: Constants.kDefaultPadding),
 
             ],
           ),

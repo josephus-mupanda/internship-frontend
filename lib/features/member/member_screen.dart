@@ -1,17 +1,16 @@
 
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:provider/provider.dart';
 
-import 'package:websafe_svg/websafe_svg.dart';
 import '../../core/constants/constants.dart';
 import '../../core/layout/responsive_widget.dart';
+import '../../core/widgets/input_widget.dart';
 import '../../data/models/group.dart';
+import '../../data/models/member.dart';
 import '../../data/providers/group_provider.dart';
-import '../../models/Member.dart';
-import '../../providers/group_provider.dart';
-import '../../responsive.dart';
-import '../main/components/member_card.dart';
+import 'components/header.dart';
+import 'components/member_card.dart';
 
 class MemberScreen extends StatelessWidget {
   final Group? group;
@@ -20,13 +19,13 @@ class MemberScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
+    final ThemeData theme = Theme.of(context);
     final groupProvider = Provider.of<GroupProvider>(context);
     final selectedGroup = groupProvider.selectedGroup;
 
     return Scaffold(
       body: Container(
-        color: Colors.white,
+        color: theme.colorScheme.background,
         child: SafeArea(
           child: selectedGroup == null
               ?
@@ -34,7 +33,6 @@ class MemberScreen extends StatelessWidget {
               :
           Column(
               children: [
-              //Header(),
               Header(group: selectedGroup),
               const Divider(thickness: 1),
               Padding(
@@ -44,25 +42,19 @@ class MemberScreen extends StatelessWidget {
                   children: [
                     if (!Responsive.isDesktop(context)) const SizedBox(width: 5),
                     Expanded(
-                      child: TextField(
-                        onChanged: (value) {},
-                        decoration: InputDecoration(
-                          hintText: "Search",
-                          fillColor: kBgLightColor,
-                          filled: true,
-                          suffixIcon: Padding(
-                            padding: const EdgeInsets.all(
-                                Constants.kDefaultPadding * 0.75), //15
-                            child: WebsafeSvg.asset(
-                              "assets/Icons/Search.svg",
-                              width: 24,
-                            ),
+                      child: InputWidget(
+                        hintText: 'Search member here...',
+                        keyboardType: TextInputType.name,
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            FeatherIcons.search,
+                            color: theme.colorScheme.onSurface.withOpacity(0.5),
                           ),
-                          border: const OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(10)),
-                            borderSide: BorderSide.none,
-                          ),
+                          onPressed: () {
+                          },
                         ),
+                        onChanged: (String? value) {},
+                        validator: (String? value) {},
                       ),
                     ),
                   ],
@@ -73,24 +65,19 @@ class MemberScreen extends StatelessWidget {
                 const EdgeInsets.symmetric(horizontal: Constants.kDefaultPadding),
                 child: Row(
                   children: [
-                    SvgPicture.asset(
-                      "assets/Icons/Angle down.svg",
-                      width: 16,
-                      color: Colors.black,
+                    Icon(
+                      FeatherIcons.chevronDown,
+                      color: theme.colorScheme.onSurface.withOpacity(0.5),
                     ),
                     const SizedBox(width: 5),
                     const Text(
                       "Sort by date",
-                      style: TextStyle(fontWeight: FontWeight.w500),
+                      style: TextStyle(),
                     ),
                     const Spacer(),
-                    MaterialButton(
-                      minWidth: 20,
-                      onPressed: () {},
-                      child: WebsafeSvg.asset(
-                        "assets/Icons/Sort.svg",
-                        width: 16,
-                      ),
+                    Icon(
+                      FeatherIcons.filter,
+                      color: theme.colorScheme.onSurface.withOpacity(0.5),
                     ),
                   ],
                 ),
