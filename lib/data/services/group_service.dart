@@ -37,13 +37,33 @@ class GroupService {
   }
 
   // Update an existing group
-  Future<http.Response> updateGroup(int id,Group group, String token) async {
-    final response = await http.put(
-      Uri.parse('$baseUrl/update/$id'),
-      headers: Environment.getJsonHeaders(token),
-      body: jsonEncode(group.toJson()),
-    );
-    return response;
+  Future<http.Response?> updateGroup(int id,Group group, String token,BuildContext context) async {
+    try {
+      final response = await http.put(
+        Uri.parse('$baseUrl/update/$id'),
+        headers: Environment.getJsonHeaders(token),
+        body: jsonEncode(group.toJson()),
+      );
+      if (!context.mounted) return null;
+      // Check the status code and show appropriate toast messages
+      if (response.statusCode == 200) {
+        showSuccessToast(context, "Group updated successfully!");
+      } else if (response.statusCode == 400) {
+        showErrorToast(context, "Invalid token or bad request.");
+      } else if (response.statusCode == 403) {
+        showErrorToast(context, "You are not authorized to update this group.");
+      } else if (response.statusCode == 404) {
+        showWarningToast(context, "Group not found.");
+      } else {
+        showErrorToast(context, "An unexpected error occurred. Please try again.");
+      }
+      return response;
+    } catch (e) {
+      // Handle any exceptions and show error toast
+      showErrorToast(context, "An error occurred. Please check your connection.");
+      //throw Exception("Failed to update group: $e");
+    }
+    return null;
   }
 
   // Retrieve all groups
