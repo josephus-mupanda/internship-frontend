@@ -9,8 +9,8 @@ class ColorPalette {
   static const Color surfaceColor = Color(0xFFFFFFFF);
   static const Color errorColor = Color(0xFFB00020);
   static const Color onPrimaryColor = Color(0xFFFFFFFF);
-  static const Color onSecondaryColor = Color(0xFF000000);
-  static const Color onBackgroundColor = Color(0xFF000000);
+  static const Color onSecondaryColor =Color(0xFF000000);
+  static const Color onBackgroundColor = Color.fromRGBO(38, 40, 55, 1);//Color(0xFF000000);
   static const Color onSurfaceColor = Color(0xFF000000);
   static const Color onErrorColor = Color(0xFFFFFFFF);
 }

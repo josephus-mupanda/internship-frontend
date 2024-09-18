@@ -6,7 +6,9 @@ class Preferences {
   // Keys for the preferences
   static const _keyIsLoggedIn = 'isLoggedIn';
   static const _keyHasSeenOnboarding = 'hasSeenOnboarding';
-  static const _keyUserToken = 'userToken'; // Example for storing user token
+  static const _keyUserToken = 'userToken';
+  static const _keyUsername = 'username';
+  static const _keyEmail = 'email';
 
   // Initialize SharedPreferences
   static Future init() async {
@@ -42,6 +44,26 @@ class Preferences {
   static String? getUserToken() {
     return _preferences?.getString(_keyUserToken);
   }
+
+  // Setter for username
+  static Future setUsername(String username) async {
+    await _preferences?.setString(_keyUsername, username);
+  }
+
+  // Setter for email
+  static Future setEmail(String email) async {
+    await _preferences?.setString(_keyEmail, email);
+  }
+
+  // Getter for email
+  static String? getEmail() {
+    return _preferences?.getString(_keyEmail);
+  }
+  // Getter for username
+  static String? getUsername() {
+    return _preferences?.getString(_keyUsername);
+  }
+
 
   // Method to clear all preferences (for logout)
   static Future clear() async {

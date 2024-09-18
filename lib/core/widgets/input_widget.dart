@@ -67,7 +67,7 @@ class InputWidget extends StatelessWidget {
         const SizedBox(height: 4.0),
         Container(
           decoration: BoxDecoration(
-            color: theme.colorScheme.surface,
+            color: theme.cardColor,//theme.colorScheme.surface,
             borderRadius: BorderRadius.circular(4.0),
           ),
           child: TextFormField(

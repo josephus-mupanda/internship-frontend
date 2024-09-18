@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:provider/provider.dart';
-import 'package:websafe_svg/websafe_svg.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import '../../core/constants/constants.dart';
 import '../../core/layout/responsive_widget.dart';
 import '../../core/widgets/input_widget.dart';
@@ -11,8 +9,8 @@ import '../../data/providers/group_provider.dart';
 
 import 'package:flutter/foundation.dart' show kIsWeb;
 
+import '../../routes/app_routes.dart';
 import '../main/components/side_menu.dart';
-import '../member/member_screen.dart';
 import 'components/group_card.dart';
 
 class ListOfGroups extends StatefulWidget {
@@ -108,24 +106,19 @@ class _ListOfGroupsState extends State<ListOfGroups> {
                 const EdgeInsets.symmetric(horizontal: Constants.kDefaultPadding),
                 child: Row(
                   children: [
-                    SvgPicture.asset(
-                      "assets/Icons/Angle down.svg",
-                      width: 16,
-                      color: Colors.black,
+                    Icon(
+                      FeatherIcons.chevronDown,
+                      color: theme.colorScheme.onSurface.withOpacity(0.5),
                     ),
                     const SizedBox(width: 5),
-                    const Text(
+                    Text(
                       "Sort by date",
-                      style: TextStyle(fontWeight: FontWeight.w500),
+                      style: theme.textTheme.bodyMedium,
                     ),
                     const Spacer(),
-                    MaterialButton(
-                      minWidth: 20,
-                      onPressed: () {},
-                      child: WebsafeSvg.asset(
-                        "assets/Icons/Sort.svg",
-                        width: 16,
-                      ),
+                    Icon(
+                      FeatherIcons.filter,
+                      color: theme.colorScheme.onSurface.withOpacity(0.5),
                     ),
                   ],
                 ),
@@ -150,11 +143,9 @@ class _ListOfGroupsState extends State<ListOfGroups> {
                           press: () {
                             groupProvider.selectGroup(groups[index]);
                             if(Responsive.isMobile(context)) {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => MemberScreen(group: groups[index]),
-                                ),
+                              Navigator.pushNamed(context,
+                                AppRoutes.memberScreen,
+                                arguments: groups[index],
                               );
                             }
                           },

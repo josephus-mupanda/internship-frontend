@@ -74,6 +74,7 @@ flutter:
     - assets/images/
     - assets/images/logo/
     - assets/images/svg/
+    - assets/fonts/poppins/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

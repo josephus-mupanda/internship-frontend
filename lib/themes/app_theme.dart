@@ -61,6 +61,7 @@ class AppTheme {
       onError: ColorPalette.onErrorColor,
       brightness: Brightness.dark, // Explicitly set brightness for dark theme
     ),
+    cardColor: const Color.fromRGBO(45, 47, 60, 1),//Color.fromRGBO(33, 34, 45, 1),//Color.fromRGBO(50, 53, 72, 1),
     textTheme: TextTheme(
       headlineLarge: TextStyles.headline1.copyWith(color: ColorPalette.backgroundColor),
       headlineMedium: TextStyles.headline2.copyWith(color: ColorPalette.backgroundColor),

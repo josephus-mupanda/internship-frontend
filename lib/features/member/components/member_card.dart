@@ -1,7 +1,6 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:internship_frontend/core/utils/extensions.dart';
 import 'package:internship_frontend/themes/color_palette.dart';
 
 import '../../../core/constants/constants.dart';
@@ -56,7 +55,7 @@ class MemberCard extends StatelessWidget {
                         child: CircleAvatar(
                           backgroundColor: getRandomColor(),
                           child: Text(
-                            member.userId as String,
+                            "J",//member.userId as String,
                             style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                               fontWeight: FontWeight.bold,
                             ),
@@ -98,12 +97,6 @@ class MemberCard extends StatelessWidget {
                   const SizedBox(height: Constants.kDefaultPadding / 2),
                 ],
               ),
-            ).addNeumorphism(
-              blurRadius: 15,
-              borderRadius: 15,
-              offset: const Offset(5, 5),
-              topShadowColor: Colors.white60,
-              bottomShadowColor: const Color(0xFF234395).withOpacity(0.15),
             ),
             Positioned(
               right: 8,
@@ -115,11 +108,7 @@ class MemberCard extends StatelessWidget {
                   shape: BoxShape.circle,
                   color: member.isActive == true ? const Color(0xFF23CF91): ColorPalette.errorColor ,
                 ),
-              ).addNeumorphism(
-                blurRadius: 4,
-                borderRadius: 8,
-                offset: const Offset(2, 2),
-              ),
+              )
             ),
             if (member.tagColor != null)
               Positioned(

@@ -1,14 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:internship_frontend/core/utils/extensions.dart';
+import 'package:internship_frontend/core/utils/images.dart';
+import 'package:internship_frontend/routes/app_routes.dart';
 import 'package:internship_frontend/themes/color_palette.dart';
 import 'package:provider/provider.dart';
-import 'package:websafe_svg/websafe_svg.dart';
 
 import '../../../core/constants/constants.dart';
 import '../../../core/layout/responsive_widget.dart';
+import '../../../core/utils/loading.dart';
+import '../../../core/utils/preferences.dart';
+import '../../../core/utils/toast.dart';
+import '../../../core/widgets/alert_widget.dart';
+import '../../../data/models/user.dart';
 import '../../../data/providers/menu_provider.dart';
+import '../../../data/services/auth_service.dart';
 import 'side_menu_item.dart';
 
 import 'package:flutter/foundation.dart' show kIsWeb;
@@ -22,6 +28,31 @@ class SideMenu extends StatefulWidget {
 }
 
 class _SideMenuState extends State<SideMenu> {
+
+  final AuthService _authService = AuthService();
+  User? _user;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserDetails();
+  }
+
+  Future<void> _loadUserDetails() async {
+    final user = await getUserDetails();
+    setState(() {
+      _user = user;
+    });
+  }
+
+  Future<User?> getUserDetails() async {
+    final username = await Preferences.getUsername();
+    final email = await Preferences.getEmail();
+    if (username != null && email != null) {
+      return User(username: username, email: email);
+    }
+    return null;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +71,7 @@ class _SideMenuState extends State<SideMenu> {
                     Row(
                       children: [
                         Image.asset(
-                          "assets/images/Logo Outlook.png",
+                          ImagePath.companyLogo,
                           width: 46,
                         ),
                         const Spacer(),
@@ -51,18 +82,26 @@ class _SideMenuState extends State<SideMenu> {
                     const CircleAvatar(
                       backgroundColor: Colors.white,
                       radius: 40,
-                      backgroundImage: AssetImage("assets/images/profile.png"),
+                      backgroundImage: AssetImage(ImagePath.profile),
                     ),
-                    const Row(
+                    _user != null ? Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          "Josephus Mupanda",
+                          _user!.username,
+                          overflow: TextOverflow.ellipsis,
+                          style: Theme.of(context).textTheme.bodyMedium,
                         ),
-                        SizedBox(
-                          width: 5,
+                        const SizedBox(height: 5),
+                        Text(
+                          _user!.email!,
+                          overflow: TextOverflow.ellipsis,
+                          style: Theme.of(context).textTheme.bodySmall,
                         ),
                       ],
+                    ) : Text(
+                      'Loading...',
+                      style: Theme.of(context).textTheme.bodySmall,
                     ),
                     const SizedBox(height: Constants.kDefaultPadding),
                     SizedBox(
@@ -75,19 +114,14 @@ class _SideMenuState extends State<SideMenu> {
                           //foregroundColor: kTextColor, // Set the text color here
                         ),
                         onPressed: () {},
-                        icon: WebsafeSvg.asset("assets/Icons/Edit.svg", width: 16),
+                        icon: const Icon( FeatherIcons.edit, color:Colors.white, size: 16,),
                         label: const Text(
-                          "New group",
+                          "Create a group",
                           style: TextStyle(color: Colors.white),
                         ),
-                      ).addNeumorphism(
-                        topShadowColor: Colors.white,
-                        bottomShadowColor: const Color(0xFF234395).withOpacity(0.2),
-                      ),
+                      )
                     ),
-                    const SizedBox(height: Constants.kDefaultPadding),
                     const SizedBox(height: Constants.kDefaultPadding * 2),
-
                     Consumer<MenuProvider>(
                         builder: (context, menuProvider, child) {
                             return Column(
@@ -128,27 +162,62 @@ class _SideMenuState extends State<SideMenu> {
                                   },
                                   icon: FeatherIcons.user,
                                 ),
+                                MenuItem(
+                                  title: "Logout",
+                                  groupValue: MenuItemSelect.LOGOUT,
+                                  value: menuProvider.selectedItem,
+                                  onChanged: (value) async {
+                                    menuProvider.selectItem(MenuItemSelect.LOGOUT);
+                                    _showLogoutDialog();
+                                  },
+                                  icon: FeatherIcons.power,
+                                ),
                               ],
                             );
                         }
                     ),
                     const SizedBox(height: Constants.kDefaultPadding * 2),
-                    // Tags
-                    // const Tags(),
                   ],
                 ),
               ),
-            ),
-            const MenuItem(
-              title: "Logout",
-              groupValue: MenuItemSelect.LOGOUT,
-              //value: selectItem,
-              //onChanged: changeValue,
-              icon: FeatherIcons.power,
             ),
           ],
         ),
       ),
     );
+  }
+
+  void _showLogoutDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return MyDialog(
+          title: "Logout",
+          content: "Are you sure you want to logout?",
+          nameYes: "Yes",
+          nameNo: "No",
+          ok: () async {
+            Navigator.of(context).pop(); // Close the dialog
+            await _logoutUser(); // Call logout method
+          },
+        );
+      },
+    );
+  }
+  Future<void> _logoutUser() async {
+    // Show loading dialog
+    showLoadingDialog(context);
+    try {
+      await _authService.logout(context);
+      // Reset MenuProvider selection after logout
+      final menuProvider = Provider.of<MenuProvider>(context, listen: false);
+      menuProvider.resetSelection();
+    } catch (e) {
+      // Handle errors and show a toast or dialog with the error message
+      showErrorToast(context, 'An error occurred during logout');
+    } finally {
+      Navigator.of(context).pop(); // Close the loading dialog
+      Navigator.pushReplacementNamed(context, AppRoutes.login); // Navigate to login screen
+    }
   }
 }

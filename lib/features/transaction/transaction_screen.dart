@@ -30,7 +30,7 @@ class _TransactionScreenState extends State<TransactionScreen> {
       ),
       body: Container(
         padding: const EdgeInsets.only(top: kIsWeb ? Constants.kDefaultPadding : 0),
-        color:theme.colorScheme.background,
+        color:Theme.of(context).cardColor,
         child: SafeArea(
           right: false,
           child: Column(

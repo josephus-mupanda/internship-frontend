@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:internship_frontend/features/authentication/screens/confirm_email_screen.dart';
 import 'package:internship_frontend/features/main/main_screen.dart';
+import '../data/models/group.dart';
 import '../features/authentication/screens/change_password_screen.dart';
 import '../features/authentication/screens/login_screen.dart';
 import '../features/authentication/screens/register_screen.dart';
 import '../features/authentication/screens/reset_password_screen.dart';
+import '../features/member/member_screen.dart';
 import '../features/onboarding/screens/onboarding_screen.dart';
 import '../features/splash/screens/splash_screen.dart';
 import 'app_routes.dart';
@@ -44,6 +46,15 @@ class RouteGenerator {
         return _errorRoute();
       case AppRoutes.dashboard:
         return MaterialPageRoute(builder: (_) => const MainScreen());
+
+      case AppRoutes.memberScreen:
+        if (args is Group) {
+          return MaterialPageRoute(
+            builder: (_) => MemberScreen(group: args),
+          );
+        }
+        return _errorRoute();
+
       default:
         return _errorRoute();
     }

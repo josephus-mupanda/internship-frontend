@@ -70,9 +70,9 @@ class MemberScreen extends StatelessWidget {
                       color: theme.colorScheme.onSurface.withOpacity(0.5),
                     ),
                     const SizedBox(width: 5),
-                    const Text(
+                    Text(
                       "Sort by date",
-                      style: TextStyle(),
+                      style: theme.textTheme.bodyMedium,
                     ),
                     const Spacer(),
                     Icon(

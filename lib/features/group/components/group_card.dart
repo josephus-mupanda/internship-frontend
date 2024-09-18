@@ -1,7 +1,6 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:internship_frontend/core/utils/extensions.dart';
 import 'package:internship_frontend/themes/color_palette.dart';
 
 import '../../../core/constants/constants.dart';
@@ -43,7 +42,7 @@ class GroupCard extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(Constants.kDefaultPadding),
               decoration: BoxDecoration(
-                color: isActive ? ColorPalette.primaryColor : Theme.of(context).cardColor,
+                color: isActive ? ColorPalette.primaryColor : Theme.of(context).colorScheme.background,
                 borderRadius: BorderRadius.circular(15),
               ),
               child: Column(
@@ -55,7 +54,7 @@ class GroupCard extends StatelessWidget {
                         child: CircleAvatar(
                             backgroundColor: getRandomColor(),
                           child: Text(
-                            group.name![0].toUpperCase(),
+                            group.name[0].toUpperCase(),
                             style: const TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.bold, // Make the text bold
@@ -73,13 +72,15 @@ class GroupCard extends StatelessWidget {
                             ),
                             children: [
                               TextSpan(
-                                text: "Created BY : ${group.createdBy}",
+                                text: "Created by : ${group.createdBy}",
                                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                   color: isActive ? Colors.white : null,
                                 ),
                               ),
                             ],
                           ),
+                          overflow: TextOverflow.ellipsis,
+                          // maxLines: 1,
                         ),
                       ),
                       Column(
@@ -97,7 +98,7 @@ class GroupCard extends StatelessWidget {
                   ),
                   const SizedBox(height: Constants.kDefaultPadding / 2),
                   Text(
-                    group.description!,
+                    group.description,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
@@ -107,13 +108,7 @@ class GroupCard extends StatelessWidget {
                   )
                 ],
               ),
-            ).addNeumorphism(
-              blurRadius: 15,
-              borderRadius: 15,
-              offset: const Offset(5, 5),
-              topShadowColor: Colors.white60,
-              bottomShadowColor: const Color(0xFF234395).withOpacity(0.15),
-            ),
+            )
           ],
         ),
       ),

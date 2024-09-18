@@ -18,6 +18,10 @@ class MenuProvider with ChangeNotifier {
     _selectedItem = item;
     notifyListeners();
   }
+  void resetSelection() {
+    _selectedItem = MenuItemSelect.GROUPS;
+    notifyListeners();
+  }
 
   Widget getSelectedScreen() {
     switch (_selectedItem) {
@@ -34,7 +38,7 @@ class MenuProvider with ChangeNotifier {
       case MenuItemSelect.LOANS:
         return Row(
           children: [
-            Expanded(flex: 6, child: ListOfLoans()), // Replace with your ListOfLoans widget
+            const Expanded(flex: 6, child: ListOfLoans()), // Replace with your ListOfLoans widget
             Expanded(
               flex: 9,
               child: Container(), // Replace with your LoanScreen or another relevant widget

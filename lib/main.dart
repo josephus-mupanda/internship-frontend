@@ -16,14 +16,15 @@ void main() async {
   // Initialize SharedPreferences
   await Preferences.init();
 
-  MultiProvider(
-    providers: [
-      ChangeNotifierProvider(create: (_) => MenuProvider()),
-      ChangeNotifierProvider(create: (_) => GroupProvider()),
-    ],
-    child: const MyApp(),
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => MenuProvider()),
+        ChangeNotifierProvider(create: (_) => GroupProvider()),
+      ],
+      child: const MyApp(),
+    ),
   );
-
   // Handle incoming links
   handleIncomingLinks();
 }

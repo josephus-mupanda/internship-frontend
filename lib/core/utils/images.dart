@@ -2,12 +2,12 @@ class ImagePath {
   //images route
   static const String imageDir = "assets/images";
   // static const String iconDir =  "assets/icons";
-
   // Logo
   static const String logoDark = "$imageDir/logo/logo.png";
-  static const String companyLogo = "$imageDir/verified.png";
+  static const String companyLogo = "$imageDir/logo/Logo Outlook.png";
   static const String google = "$imageDir/google.png";
-
+  //Profile
+  static const String profile = "$imageDir/profile.png";
   //Onboarding
   static const String onBoardingSvg = "$imageDir/svg/illustration.svg";
   static const String onBoardingImageOne = "$imageDir/plant-one.png";

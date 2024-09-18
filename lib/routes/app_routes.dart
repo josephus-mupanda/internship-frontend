@@ -7,5 +7,6 @@ class AppRoutes {
   static const String resetPassword = '/reset-password';
   static const String changePassword = '/change-password';
   static const String dashboard = '/dashboard';
-  // Add more routes as needed
+  static const String memberScreen = '$dashboard/member';
+// Add more routes as needed
 }
