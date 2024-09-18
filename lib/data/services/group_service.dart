@@ -29,7 +29,6 @@ class GroupService {
       }
       return response;
     } catch (e) {
-      // Handle any exceptions and show error toast
       showErrorToast(context, "An error occurred. Please check your connection.");
       //throw Exception("Failed to create group: $e");
     }
@@ -40,7 +39,7 @@ class GroupService {
   Future<http.Response?> updateGroup(int id,Group group, String token,BuildContext context) async {
     try {
       final response = await http.put(
-        Uri.parse('$baseUrl/update/$id'),
+        Uri.parse('$baseUrl/$id'),
         headers: Environment.getJsonHeaders(token),
         body: jsonEncode(group.toJson()),
       );
@@ -59,13 +58,37 @@ class GroupService {
       }
       return response;
     } catch (e) {
-      // Handle any exceptions and show error toast
       showErrorToast(context, "An error occurred. Please check your connection.");
       //throw Exception("Failed to update group: $e");
     }
     return null;
   }
 
+  Future<void> deleteGroup(int id, String token, BuildContext context) async {
+    try {
+      final response = await http.delete(
+        Uri.parse('$baseUrl/$id'),
+        headers: Environment.getJsonHeaders(token),
+      );
+      if (!context.mounted) return;
+      // Check the status code and show appropriate toast messages
+      if (response.statusCode == 204) {
+        showDeleteToast(context, "Group deleted successfully!");
+      } else if (response.statusCode == 400) {
+        showErrorToast(context, "Invalid token or bad request. Please try again.");
+      } else if (response.statusCode == 403) {
+        showErrorToast(context, "You are not authorized to delete this group.");
+      } else if (response.statusCode == 404) {
+        showWarningToast(context, "Group not found. Please check the group ID.");
+      } else {
+        showWarningToast(context, "Failed to delete the group. Please try again later.");
+      }
+    } catch (e) {
+      // Handle any exceptions and show error toast
+      showErrorToast(context, "An error occurred. Please check your connection.");
+      //throw Exception("Failed to delete group: $e");
+    }
+  }
   // Retrieve all groups
   Future<http.Response> getAllGroups(String token) async {
     final response = await http.get(
