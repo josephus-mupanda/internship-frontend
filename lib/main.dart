@@ -4,8 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:internship_frontend/routes/app_routes.dart';
 import 'package:internship_frontend/routes/route_generator.dart';
 import 'package:internship_frontend/themes/app_theme.dart';
+import 'package:provider/provider.dart';
 
 import 'core/utils/preferences.dart';
+import 'data/providers/group_provider.dart';
+import 'data/providers/menu_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -13,7 +16,14 @@ void main() async {
   // Initialize SharedPreferences
   await Preferences.init();
 
-  runApp(const MyApp());
+  MultiProvider(
+    providers: [
+      ChangeNotifierProvider(create: (_) => MenuProvider()),
+      ChangeNotifierProvider(create: (_) => GroupProvider()),
+    ],
+    child: const MyApp(),
+  );
+
   // Handle incoming links
   handleIncomingLinks();
 }
