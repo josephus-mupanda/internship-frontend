@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import '../models/group.dart';
 
@@ -15,6 +17,7 @@ class GroupProvider with ChangeNotifier {
     _isLoading = loading;
     notifyListeners();
   }
+
 
   // Method to set groups and select the first one as default
   void setGroups(List<Group> groups) {

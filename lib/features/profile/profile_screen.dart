@@ -43,7 +43,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     // Also we want to hide this menu icon on desktop
                     if (!Responsive.isDesktop(context))
                       IconButton(
-                        icon: const Icon(Icons.menu),
+                        icon: Icon(
+                            Icons.menu,
+                          color: theme.colorScheme.onSurface.withOpacity(0.5),
+                        ),
                         onPressed: () {
                           _scaffoldKey.currentState?.openDrawer();
                         },

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -13,9 +15,12 @@ import '../../../core/utils/loading.dart';
 import '../../../core/utils/preferences.dart';
 import '../../../core/utils/toast.dart';
 import '../../../core/widgets/alert_widget.dart';
+import '../../../data/models/group.dart';
 import '../../../data/models/user.dart';
+import '../../../data/providers/group_provider.dart';
 import '../../../data/providers/menu_provider.dart';
 import '../../../data/services/auth_service.dart';
+import '../../../data/services/group_service.dart';
 import 'side_menu_item.dart';
 
 import 'package:flutter/foundation.dart' show kIsWeb;
@@ -31,11 +36,50 @@ class SideMenu extends StatefulWidget {
 class _SideMenuState extends State<SideMenu> {
 
   final AuthService _authService = AuthService();
+  final GroupService _groupService = GroupService();
+
   User? _user;
+  List<Group> groups = [];
+
+  Future<void> fetchGroups() async {
+
+    // Retrieve the token from secure storage
+    String? token = await _authService.getAccessToken();
+    if (token == null) {
+      showErrorToast(context, 'Token not found. Please log in again.');
+      Navigator.pushReplacementNamed(context, AppRoutes.login);
+      return;
+    }
+
+    try {
+      final response = await _groupService.getAllGroups(token);
+      if (response.statusCode == 200) {
+        // Decode the JSON data
+        List<dynamic> data = jsonDecode(response.body);
+        // Convert the JSON data into a list of Group objects
+        List<Group> fetchedGroups = data.map((groupJson) {
+          return Group.fromJson(groupJson);
+        }).toList();
+        // Update your state or provider with the fetched groups
+        setState(() {
+          groups = fetchedGroups;
+          // Update GroupProvider with the fetched groups
+          Provider.of<GroupProvider>(context, listen: false).setGroups(groups);
+        });
+      } else {
+        // Handle the error if the status code is not 200
+        throw Exception("Failed to load groups");
+      }
+    } catch (e) {
+      // Handle any exceptions
+      print("Error fetching groups: $e");
+    }
+  }
 
   @override
   void initState() {
     super.initState();
+    fetchGroups();
     _loadUserDetails();
   }
 
@@ -194,11 +238,14 @@ class _SideMenuState extends State<SideMenu> {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return const GroupDialog(
+        return  GroupDialog(
           title: "Create Group",
           content: "Please enter the group details below:",
           nameYes: "Create",
           nameNo: "Cancel",
+          onGroupCreated: () {
+            fetchGroups();
+          },
         );
       },
     );

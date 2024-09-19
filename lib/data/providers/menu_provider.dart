@@ -11,6 +11,7 @@ enum MenuItemSelect { GROUPS, LOANS, TRANSACTIONS, PROFILE, LOGOUT }
 class MenuProvider with ChangeNotifier {
 
   MenuItemSelect _selectedItem = MenuItemSelect.GROUPS;
+  List<Group> groups = [];
 
   MenuItemSelect get selectedItem => _selectedItem;
 
@@ -20,6 +21,11 @@ class MenuProvider with ChangeNotifier {
   }
   void resetSelection() {
     _selectedItem = MenuItemSelect.GROUPS;
+    notifyListeners();
+  }
+
+  void updateGroups(List<Group> newGroups) {
+    groups = newGroups;
     notifyListeners();
   }
 

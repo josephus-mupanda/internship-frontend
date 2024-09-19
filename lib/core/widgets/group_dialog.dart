@@ -1,8 +1,14 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
+import 'package:internship_frontend/data/services/auth_service.dart';
+import 'package:internship_frontend/data/services/group_service.dart';
+import 'package:internship_frontend/routes/app_routes.dart';
+import '../../data/models/group.dart';
 import '../../themes/color_palette.dart';
 import '../constants/constants.dart';
+import '../utils/loading.dart';
+import '../utils/toast.dart';
 import 'input_widget.dart';
 
 class GroupDialog extends StatefulWidget {
@@ -11,12 +17,14 @@ class GroupDialog extends StatefulWidget {
   final String content;
   final String nameYes;
   final String nameNo;
+  final VoidCallback onGroupCreated;
 
   const GroupDialog({
     required this.title,
     required this.content,
     required this.nameYes,
     required this.nameNo,
+    required this.onGroupCreated,
     super.key});
 
   @override
@@ -26,7 +34,8 @@ class GroupDialog extends StatefulWidget {
 class _GroupDialogState extends State<GroupDialog> {
 
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
-
+  final _groupService = GroupService();
+  final _authService = AuthService();
   String? name, description;
 
   @override
@@ -95,14 +104,9 @@ class _GroupDialogState extends State<GroupDialog> {
                           backgroundColor: ColorPalette.primaryColor,
                           //foregroundColor: kTextColor, // Set the text color here
                         ),
-                        onPressed:() {
+                        onPressed:()  async {
                           if (formKey.currentState?.validate() ?? false) {
-                            formKey.currentState?.reset();
-                            setState(() {
-                              name = null;
-                              description = null;
-                            });
-                            Navigator.of(context).pop();
+                            await _createGroup();
                           }
                         },
                         icon: const Icon( FeatherIcons.check, color:Colors.white, size: 16,),
@@ -141,5 +145,37 @@ class _GroupDialogState extends State<GroupDialog> {
           ),
         ),
     );
+  }
+  Future<void> _createGroup() async {
+    final Group group = Group(
+        name: name!,
+        description: description!
+    );
+    // Show loading dialog
+    showLoadingDialog(context);
+
+    // Retrieve the token from secure storage
+    String? token = await _authService.getAccessToken();
+
+    if (token == null) {
+      showErrorToast(context, 'Token not found. Please log in again.');
+      Navigator.pushNamed(context, AppRoutes.login);
+      return;
+    }
+    try {
+      await _groupService.createGroup(group,token,context);
+      formKey.currentState?.reset();
+      setState(() {
+        name = null;
+        description = null;
+      });
+      widget.onGroupCreated();
+    } catch (e) {
+      // Handle errors and show a toast or dialog with the error message
+      showErrorToast(context, 'An error occurred during creation');
+    } finally {
+      Navigator.of(context).pop(); // Close the loading dialog
+      Navigator.of(context).pop();
+    }
   }
 }

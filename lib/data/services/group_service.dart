@@ -89,6 +89,7 @@ class GroupService {
       //throw Exception("Failed to delete group: $e");
     }
   }
+
   // Retrieve all groups
   Future<http.Response> getAllGroups(String token) async {
     final response = await http.get(
