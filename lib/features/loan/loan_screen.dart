@@ -7,7 +7,6 @@ import '../../data/providers/group_provider.dart';
 import 'components/header.dart';
 import 'components/loan_card.dart';
 
-
 class LoanScreen extends StatefulWidget {
   final Group group;
 
