@@ -1,24 +1,85 @@
 
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
+import 'package:internship_frontend/data/providers/member_provider.dart';
+import 'package:internship_frontend/data/services/group_service.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/constants/constants.dart';
 import '../../core/layout/responsive_widget.dart';
+import '../../core/utils/toast.dart';
 import '../../core/widgets/input_widget.dart';
 import '../../data/models/group.dart';
 import '../../data/models/member.dart';
 import '../../data/providers/group_provider.dart';
+import '../../data/services/auth_service.dart';
+import '../../routes/app_routes.dart';
 import 'components/header.dart';
 import 'components/member_card.dart';
 
-class MemberScreen extends StatelessWidget {
-  final Group? group;
+class MemberScreen extends StatefulWidget {
+  final Group group;
 
-  const MemberScreen({super.key, this.group,});
+  const MemberScreen({super.key, required this.group,});
+
+  @override
+  State<MemberScreen> createState() => _MemberScreenState();
+}
+
+class _MemberScreenState extends State<MemberScreen> {
+
+  final GroupService _groupService = GroupService();
+  final AuthService _authService = AuthService();
+  List<Member> members = [];
+
+  Future<void> fetchMembers() async {
+    // Retrieve the token from secure storage
+    String? token = await _authService.getAccessToken();
+    if (token == null) {
+      showErrorToast(context, 'Token not found. Please log in again.');
+      Navigator.pushReplacementNamed(context, AppRoutes.login);
+      return;
+    }
+    try {
+      final response = await _groupService.getMembersByGroup( widget.group.id!, token, context);
+      if (response?.statusCode == 200) {
+        // Decode the JSON data
+        List<dynamic> data = jsonDecode(response!.body);
+        // Convert the JSON data into a list of Member objects
+        List<Member> fetchedMembers = data.map((membersJson) {
+          return Member.fromJson(membersJson);
+        }).toList();
+        // Update your state or provider with the fetched members
+        setState(() {
+          members = fetchedMembers;
+          Provider.of<MemberProvider>(context, listen: false).setMembers(members);
+        });
+      } else {
+        // Handle the error if the status code is not 200
+        throw Exception("Failed to load members");
+      }
+    } catch (e) {
+      // Handle any exceptions
+      print("Error fetching members: $e");
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    fetchMembers();
+  }
+
+  void _onMemberDeleted() {
+    // Refresh the list after deletion
+    fetchMembers();
+  }
 
   @override
   Widget build(BuildContext context) {
+
     final ThemeData theme = Theme.of(context);
     final groupProvider = Provider.of<GroupProvider>(context);
     final selectedGroup = groupProvider.selectedGroup;
@@ -90,13 +151,20 @@ class MemberScreen extends StatelessWidget {
                       // This is our Search bar
                       ListView.builder(
                         shrinkWrap: true, // Let it take only required space
-                        physics: const NeverScrollableScrollPhysics(), // Disable scroll of ListView
+                        physics: const NeverScrollableScrollPhysics(),
                         itemCount: members.length,
-                        itemBuilder: (context, index) => MemberCard(
-                          member: members[index],
-                          // press: () {
-                          // },
-                        ),
+                        itemBuilder: (context, index) {
+                          return Consumer<MemberProvider>(
+                            builder: (context, memberProvider, child){
+                              return MemberCard(
+                                member: members[index],
+                                // press: () {
+                                // },
+                                onMemberDeleted: _onMemberDeleted,
+                              );
+                            }
+                          );
+                        }
                       ),
                     ],
                   ),

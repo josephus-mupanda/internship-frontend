@@ -1,7 +1,7 @@
 
 class Environment {
 
-  static const String baseUrl = 'http://localhost:8080';
+  static const String baseUrl = 'http://localhost:8080'; //'http://192.168.97.102:8080';
 
   //Define Header Constants
   static Map<String, String> getJsonHeaders(String? token) {

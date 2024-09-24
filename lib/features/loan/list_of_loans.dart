@@ -19,7 +19,7 @@ import '../../data/services/group_service.dart';
 import '../../routes/app_routes.dart';
 import '../main/components/side_menu.dart';
 import '../member/member_screen.dart';
-import 'components/loan_card.dart';
+import 'components/group_card.dart';
 
 class ListOfLoans extends StatefulWidget {
 
@@ -169,7 +169,7 @@ class _ListOfLoansState extends State<ListOfLoans> {
                               // }
 
                               final isSelected = groupProvider.selectedGroup == groups[index];
-                              return LoanCard(
+                              return GroupCard(
                                 isActive: Responsive.isMobile(context) ? false : isSelected, // Responsive.isMobile(context) ? false : index == 0,
                                 group: groups[index],
                                 press: () {

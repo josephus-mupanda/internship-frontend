@@ -1,33 +1,25 @@
-import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:internship_frontend/themes/color_palette.dart';
-
 import '../../../core/constants/constants.dart';
-import '../../../data/models/group.dart';
 
-class LoanCard extends StatelessWidget {
-  const LoanCard({super.key,
-    this.isActive = true,
-    required this.group,
+class LoanCard extends StatefulWidget {
+  final VoidCallback? press;
+  final IconData icon;
+  final Color iconColor;
+  final String title;
+
+  const LoanCard({
+    super.key,
     this.press,
+    required this.icon,
+    required this.iconColor,
+    required this.title,
   });
 
-  final bool isActive;
-  final Group group;
-  final VoidCallback? press;
+  @override
+  State<LoanCard> createState() => _LoanCardState();
+}
 
-
-  // Function to generate a random color
-  Color getRandomColor() {
-    Random random = Random();
-    return Color.fromARGB(
-      255,
-      random.nextInt(256), // Red value
-      random.nextInt(256), // Green value
-      random.nextInt(256), // Blue value
-    );
-  }
-
+class _LoanCardState extends State<LoanCard> {
   @override
   Widget build(BuildContext context) {
     //  Here the shadow is not showing properly
@@ -35,13 +27,13 @@ class LoanCard extends StatelessWidget {
       padding: const EdgeInsets.symmetric(
           horizontal: Constants.kDefaultPadding, vertical: Constants.kDefaultPadding / 2),
       child: InkWell(
-        onTap: press,
+        onTap: widget.press,
         child: Stack(
           children: [
             Container(
               padding: const EdgeInsets.all(Constants.kDefaultPadding),
               decoration: BoxDecoration(
-                color: isActive ? ColorPalette.primaryColor : Theme.of(context).colorScheme.background,
+                color:Theme.of(context).cardColor,
                 borderRadius: BorderRadius.circular(15),
               ),
               child: Column(
@@ -49,66 +41,34 @@ class LoanCard extends StatelessWidget {
                   Row(
                     children: [
                       SizedBox(
-                        width: 32,
+                        width: 40,
                         child: CircleAvatar(
-                            backgroundColor: getRandomColor(),
-                          child: Text(
-                            group.name[0].toUpperCase(),
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold, // Make the text bold
-                            ),
+                          backgroundColor: Theme.of(context).colorScheme.background,
+                          child: Icon(
+                            widget.icon,
+                            color: widget.iconColor,
+                            size: 24,
                           ),
                         ),
                       ),
                       const SizedBox(width: Constants.kDefaultPadding / 2),
                       Expanded(
-                        child: Text.rich(
-                          TextSpan(
-                            text: "${group.name} \n",
-                            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                              fontWeight: FontWeight.bold,
-                            ),
-                            children: [
-                              TextSpan(
-                                text: "Created By : ${group.createdBy}",
-                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                  color: isActive ? Colors.white : null,
-                                ),
-                              ),
-                            ],
+                        child: Text(
+                          widget.title,
+                          style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
                       ),
-                      Column(
-                        children: [
-                          Text(
-                            "Request",
-                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: isActive ? Colors.white70 : null,
-                            ),
-                          ),
-                          const SizedBox(height: 5),
-                        ],
-                      ),
                     ],
                   ),
-                  const SizedBox(height: Constants.kDefaultPadding / 2),
-                  Text(
-                    group.description,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      height: 1.5,
-                      color: isActive ? Colors.white70 : null,
-                    ),
-                  )
                 ],
               ),
-            )
+            ),
           ],
         ),
       ),
     );
   }
 }
+

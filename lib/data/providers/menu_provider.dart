@@ -69,6 +69,15 @@ class MenuProvider with ChangeNotifier {
             ),
           ],
         );
+      case MenuItemSelect.LOGOUT:
+        return const Row(
+          children: [
+            Expanded(
+              flex: 12,
+              child: ProfileScreen(), // Replace with your ProfileScreen widget
+            ),
+          ],
+        );
       default:
         return Row(
           children: [

@@ -14,17 +14,18 @@ import '../../../data/models/group.dart';
 import '../../../routes/app_routes.dart';
 
 class GroupCard extends StatefulWidget {
+
+  final bool isActive;
+  final Group group;
+  final VoidCallback? press;
+  final VoidCallback? onGroupDeleted;
+
   const GroupCard({super.key,
     this.isActive = true,
     required this.group,
     this.press,
     this.onGroupDeleted,
   });
-
-  final bool isActive;
-  final Group group;
-  final VoidCallback? press;
-  final VoidCallback? onGroupDeleted;
   @override
   State<GroupCard> createState() => _GroupCardState();
 }
@@ -173,7 +174,6 @@ class _GroupCardState extends State<GroupCard> {
     try {
       await _groupService.deleteGroup(widget.group.id!, token, context);
       widget.onGroupDeleted?.call();
-      Navigator.of(context).pop();
     } catch (e) {
       // Handle errors and show a toast or dialog with the error message
       showErrorToast(context, 'An error occurred during deletion');

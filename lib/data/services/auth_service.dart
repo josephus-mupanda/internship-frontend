@@ -37,15 +37,8 @@ class AuthService {
       // Handle login failure
       final responseBody = jsonDecode(response.body);
       final errorMessage = responseBody['message'] as String? ?? 'Login failed';
-      if (response.statusCode == 401) {
-        // Handle unauthorized
-        showErrorToast(context, errorMessage);
-      } else if (response.statusCode == 403) {
-        // Handle forbidden
-        showWarningToast(context, errorMessage);
-      } else {
-        showErrorToast(context, errorMessage);
-      }
+      // Throw a custom exception with the status code
+      throw AuthException(response.statusCode, errorMessage);
     }
     return null;
   }
@@ -72,4 +65,14 @@ class AuthService {
   Future<String?> getAccessToken() async {
     return await _storage.read(key: 'jwt_token');
   }
+}
+
+class AuthException implements Exception {
+  final int statusCode;
+  final String message;
+
+  AuthException(this.statusCode, this.message);
+
+  @override
+  String toString() => message;
 }

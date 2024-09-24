@@ -134,14 +134,34 @@ class GroupService {
   }
 
   // Get members by group
-  Future<http.Response> getMembersByGroup(int groupId, String token) async {
-    final response = await http.get(
-      Uri.parse('$baseUrl/$groupId/members'),
-      headers: {
-        'Authorization': 'Bearer $token',
-      },
-    );
-    return response;
+  Future<http.Response?> getMembersByGroup(int groupId, String token, BuildContext context) async {
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/$groupId/members'),
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      );
+      if (!context.mounted) return null;
+
+      // Check the status code and show appropriate toast messages
+      if (response.statusCode == 200) {
+        showSuccessToast(context, 'Members retrieved successfully');
+      } else if (response.statusCode == 400) {
+        showErrorToast(context, 'Invalid token. Please log in again.');
+      } else if (response.statusCode == 403) {
+        showErrorToast(context, 'Unauthorized. You don’t have permission to view members of this group.');
+      } else if (response.statusCode == 404) {
+        showWarningToast(context, 'Group not found. Please check the group ID.');
+      } else {
+        showWarningToast(context, 'Failed to retrieve members. Please try again later.');
+      }
+      return response;
+    } catch (e) {
+      // Handle network errors or parsing issues
+      showErrorToast(context, 'An error occurred. Please check your connection.');
+    }
+    return null;
   }
 
   // Get contributions by group

@@ -52,14 +52,14 @@
         <dict>
             <key>CFBundleURLSchemes</key>
             <array>
-                <string>ikimina</string> <!-- Replace with your URL scheme -->
+                <string>ikiminabk</string> <!-- Replace with your URL scheme -->
             </array>
         </dict>
     </array>
 
     <key>LSApplicationQueriesSchemes</key>
     <array>
-        <string>ikimina</string> <!-- Replace with your URL scheme -->
+        <string>ikiminabk</string> <!-- Replace with your URL scheme -->
     </array>
 </dict>
 </plist>

@@ -82,7 +82,7 @@ class _GroupDialogState extends State<GroupDialog> {
                     InputWidget(
                       obscureText: false,
                       hintText: 'Enter Group Description',
-                      maxLines: 3,
+                      maxLines: 2,
                       prefixIcon: Icons.description,
                       onChanged: (String? value) => description = value!,
                       validator: (String? value) => value!.isEmpty ? "Description is required" : null,

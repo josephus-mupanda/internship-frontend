@@ -260,23 +260,36 @@ class _LoginScreenState extends State<LoginScreen> {
     );
     // Show loading dialog
     showLoadingDialog(context);
-    final token = await _authService.login(context, user);
 
-    // Check if the widget is still mounted
-    // if (!context.mounted) return;
-    // Dismiss the loading dialog
-    Navigator.of(context).pop();
-    if (token != null) {
-      // Reset the form fields
-      _formKey.currentState?.reset(); // Clear the form
-      setState(() {
-        username = null;
-        password = null;
-      });
+    try {
+      final token = await _authService.login(context, user);
+      if (token != null) {
+        // Reset the form fields
+        _formKey.currentState?.reset(); // Clear the form
+        setState(() {
+          username = null;
+          password = null;
+        });
 
-      Navigator.pushReplacementNamed(context, AppRoutes.dashboard); // Navigate to mainScreen on success
-    } else {
-      showErrorToast(context, "Login failed. Please try again.");
+        Navigator.pushReplacementNamed(
+            context, AppRoutes.dashboard); // Navigate to mainScreen on success
+      }
+    } on AuthException catch (e) {
+      // Check the status code and show the appropriate message
+      if (!context.mounted) return ;
+      if (e.statusCode == 401) {
+        showErrorToast(context, e.message); // Handle unauthorized
+      } else if (e.statusCode == 403) {
+        showWarningToast(context, e.message); // Handle forbidden
+      } else {
+        showErrorToast(context, e.message); // Other errors
+      }
+    } catch (e) {
+      if (!context.mounted) return ;
+      showErrorToast(context, "An unexpected error occurred.");
+    }
+    finally {
+      Navigator.of(context).pop();
     }
   }
 }
