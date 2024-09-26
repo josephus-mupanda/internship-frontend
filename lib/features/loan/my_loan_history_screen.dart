@@ -3,9 +3,10 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
-import 'package:internship_frontend/data/services/group_service.dart';
-import 'package:internship_frontend/data/models/contribution.dart';
+import 'package:internship_frontend/data/models/loan.dart';
 import 'package:internship_frontend/data/providers/contribution_provider.dart';
+import 'package:internship_frontend/data/providers/loan_provider.dart';
+import 'package:internship_frontend/data/services/group_service.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/constants/constants.dart';
@@ -16,25 +17,24 @@ import '../../data/models/group.dart';
 import '../../data/providers/group_provider.dart';
 import '../../data/services/auth_service.dart';
 import '../../routes/app_routes.dart';
-
 import '../member/components/header.dart';
 
-class ContributionScreen extends StatefulWidget {
+class MyLoanHistoryScreen extends StatefulWidget {
   final Group group;
 
-  const ContributionScreen({super.key, required this.group,});
+  const MyLoanHistoryScreen({super.key, required this.group,});
 
   @override
-  State<ContributionScreen> createState() => _ContributionScreenState();
+  State<MyLoanHistoryScreen> createState() => _MyLoanHistoryScreenState();
 }
 
-class _ContributionScreenState extends State<ContributionScreen> {
+class _MyLoanHistoryScreenState extends State<MyLoanHistoryScreen> {
 
   final GroupService _groupService = GroupService();
   final AuthService _authService = AuthService();
-  List<Contribution> contributions = [];
+  List<Loan> myLoans = [];
 
-  Future<void> fetchContributions() async {
+  Future<void> fetchMyLoans() async {
     // Retrieve the token from secure storage
     String? token = await _authService.getAccessToken();
     if (token == null) {
@@ -43,38 +43,38 @@ class _ContributionScreenState extends State<ContributionScreen> {
       return;
     }
     try {
-      final response = await _groupService.getContributionsByGroup( widget.group.id!, token, context);
+      final response = await _groupService.getLoansByGroupAndMember(widget.group.id!, token, context);
       if (response?.statusCode == 200) {
         // Decode the JSON data
         List<dynamic> data = jsonDecode(response!.body);
-        // Convert the JSON data into a list of Contribution objects
-        List<Contribution> fetchedContributions = data.map((contributionsJson) {
-          return Contribution.fromJson(contributionsJson);
+        // Convert the JSON data into a list of Loan objects
+        List<Loan> fetchedMyLoans = data.map((loansJson) {
+          return Loan.fromJson(loansJson);
         }).toList();
-        // Update your state or provider with the fetched contributions
+        // Update your state or provider with the fetched loans
         setState(() {
-          contributions = fetchedContributions;
-          Provider.of<ContributionProvider>(context, listen: false).setContributions(contributions);
+          myLoans = fetchedMyLoans;
+          Provider.of<LoanProvider>(context, listen: false).setLoans(myLoans);
         });
       } else {
         // Handle the error if the status code is not 200
-        throw Exception("Failed to load contributions");
+        throw Exception("Failed to load loans");
       }
     } catch (e) {
       // Handle any exceptions
-      print("Error fetching contributions: $e");
+      print("Error fetching loans: $e");
     }
   }
 
   @override
   void initState() {
     super.initState();
-    fetchContributions();
+    fetchMyLoans();
   }
 
-  void _onContributionDeleted() {
+  void _onLoanDeleted() {
     // Refresh the list after deletion
-    fetchContributions();
+    fetchMyLoans();
   }
 
   @override
@@ -100,7 +100,7 @@ class _ContributionScreenState extends State<ContributionScreen> {
                     if (!Responsive.isDesktop(context)) const SizedBox(width: 5),
                     Expanded(
                       child: InputWidget(
-                        hintText: 'Search contribution here...',
+                        hintText: 'Search my loan here...',
                         keyboardType: TextInputType.name,
                         suffixIcon: IconButton(
                           icon: Icon(
@@ -156,4 +156,3 @@ class _ContributionScreenState extends State<ContributionScreen> {
     );
   }
 }
-

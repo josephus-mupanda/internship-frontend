@@ -42,7 +42,7 @@ class _MyContributionScreenState extends State<MyContributionScreen> {
       return;
     }
     try {
-      final response = await _groupService.getMembersByGroup( widget.group.id!, token, context);
+      final response = await _groupService.getContributionsByGroupAndMember( widget.group.id!, token, context);
       if (response?.statusCode == 200) {
         // Decode the JSON data
         List<dynamic> data = jsonDecode(response!.body);

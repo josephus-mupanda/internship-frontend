@@ -15,7 +15,7 @@ class ContributionProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  // Method to set groups and select the first one as default
+  // Method to set contributions and select the first one as default
   void setContributions(List<Contribution>  contributions) {
     _contributions = contributions;
     notifyListeners();
