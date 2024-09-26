@@ -1,15 +1,15 @@
 
 class Contribution {
-  final int groupId;
+  final int? groupId;
   final int memberId;
   final double amount;
-  final DateTime date;
+  final DateTime? date;
 
   Contribution({
-    required this.groupId,
+    this.groupId,
     required this.memberId,
     required this.amount,
-    required this.date,
+    this.date,
   });
 
   factory Contribution.fromJson(Map<String, dynamic> json) {
@@ -26,7 +26,7 @@ class Contribution {
       'groupId': groupId,
       'memberId': memberId,
       'amount': amount,
-      'date': date.toIso8601String(),
+      'date': date?.toIso8601String(),
     };
   }
 }

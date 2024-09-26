@@ -1,42 +1,25 @@
 import 'package:flutter/material.dart';
 
-class InputWidget extends StatelessWidget {
-  final String? hintText;
-  final String? errorText;
-  final IconData? prefixIcon;
-  final Widget? suffixIcon;
-  final double? height;
+class DropdownWidget extends StatelessWidget {
   final String? topLabel;
-  final bool? obscureText;
-  final int? minLines;
-  final int? maxLines;
-  final FormFieldSetter<String>? onSaved;
-  final ValueChanged<String>? onChanged;
+  final String? hintText;
+  final IconData? prefixIcon;
+  final String? errorText;
+  final List<String> items;
+  final String? selectedItem;
+  final ValueChanged<String?>? onChanged;
   final FormFieldValidator<String>? validator;
-  final TextInputType? keyboardType;
-  final Key? kKey;
-  final TextEditingController? kController;
-  final String? kInitialValue;
-  final bool kReadOnly;
-  const InputWidget({
+
+  const DropdownWidget({
     super.key,
+    this.topLabel,
     this.hintText,
     this.prefixIcon,
-    this.suffixIcon,
-    this.height = 36.0,
-    this.topLabel = "",
-    this.minLines,
-    this.maxLines,
-    this.obscureText = false,
-    this.onSaved,
-    this.keyboardType,
     this.errorText,
+    required this.items,
+    this.selectedItem,
     this.onChanged,
     this.validator,
-    this.kKey,
-    this.kController,
-    this.kInitialValue,
-    this.kReadOnly = false
   });
 
   @override
@@ -48,6 +31,7 @@ class InputWidget extends StatelessWidget {
           fontWeight: FontWeight.normal,
           fontSize: 12,
         );
+
     final TextStyle errorStyle = theme.inputDecorationTheme.errorStyle ??
         TextStyle(
           fontSize: 12,
@@ -58,34 +42,25 @@ class InputWidget extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SelectableText(
-          topLabel ?? "",
-          style: theme.textTheme.bodySmall?.copyWith(
-            fontSize: 12,
-            color: theme.colorScheme.onSurface.withOpacity(0.6),
+        if (topLabel != null && topLabel!.isNotEmpty)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 4.0),
+            child: Text(
+              topLabel!,
+              style: theme.textTheme.bodySmall?.copyWith(
+                fontSize: 12,
+                color: theme.colorScheme.onSurface.withOpacity(0.6),
+              ),
+            ),
           ),
-        ),
-        const SizedBox(height: 4.0),
         Container(
           decoration: BoxDecoration(
-            color: theme.cardColor,//theme.colorScheme.surface,
+            color: theme.cardColor,
             borderRadius: BorderRadius.circular(4.0),
           ),
-          child: TextFormField(
-            initialValue: kInitialValue,
-            controller: kController,
-            style: theme.textTheme.bodySmall?.copyWith(
-              fontSize: 12,
-              color: theme.colorScheme.onSurface.withOpacity(0.6),
-            ),
-            minLines: minLines,
-            maxLines: maxLines,
-            keyboardType: keyboardType,
-            onSaved: onSaved,
-            onChanged: onChanged,
-            validator: validator,
-            obscureText: obscureText ?? false,
-            readOnly: kReadOnly,
+          child: DropdownButtonFormField<String>(
+            value: selectedItem,
+            icon: Icon(Icons.arrow_drop_down, color: theme.colorScheme.onSurface.withOpacity(0.5)),
             decoration: InputDecoration(
               prefixIcon: prefixIcon != null
                   ? Icon(
@@ -93,8 +68,10 @@ class InputWidget extends StatelessWidget {
                 color: theme.colorScheme.onSurface.withOpacity(0.5),
               )
                   : null,
-              suffixIcon: suffixIcon,
-
+              hintText: hintText,
+              hintStyle: hintStyle,
+              errorText: errorText,
+              errorStyle: errorStyle,
               enabledBorder: OutlineInputBorder(
                 borderSide: BorderSide(
                   color: theme.dividerColor.withOpacity(0.2),
@@ -105,7 +82,6 @@ class InputWidget extends StatelessWidget {
                   color: theme.colorScheme.primary,
                 ),
               ),
-              errorStyle: errorStyle,
               errorBorder: OutlineInputBorder(
                 borderSide: BorderSide(
                   color: theme.colorScheme.error,
@@ -116,10 +92,21 @@ class InputWidget extends StatelessWidget {
                   color: theme.colorScheme.error,
                 ),
               ),
-              hintText: hintText,
-              hintStyle: hintStyle,
-              errorText: errorText,
             ),
+            items: items.map<DropdownMenuItem<String>>((String value) {
+              return DropdownMenuItem<String>(
+                value: value,
+                child: Text(
+                  value,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    fontSize: 12,
+                    color: theme.colorScheme.onSurface.withOpacity(0.6),
+                  ),
+                ),
+              );
+            }).toList(),
+            onChanged: onChanged,
+            validator: validator,
           ),
         ),
       ],

@@ -25,15 +25,6 @@ class ContributionService {
     return response;
   }
 
-  // Create a new contribution
-  Future<http.Response> createContribution(Contribution contribution, String token) async {
-    final response = await http.post(
-      Uri.parse(baseUrl),
-      headers: Environment.getJsonHeaders(token),
-      body: jsonEncode(contribution.toJson()),
-    );
-    return response;
-  }
 
   // Update an existing contribution
   Future<http.Response> updateContribution(String id, Contribution contribution, String token) async {
