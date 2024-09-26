@@ -8,5 +8,7 @@ class AppRoutes {
   static const String changePassword = '/change-password';
   static const String dashboard = '/dashboard';
   static const String memberScreen = '$dashboard/member';
+  static const String loanOnboardingScreen = '$dashboard/loanOnboarding';
+  static const String loanScreen = '$dashboard/loan';
 // Add more routes as needed
 }

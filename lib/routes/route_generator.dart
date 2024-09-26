@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:internship_frontend/features/authentication/screens/confirm_email_screen.dart';
+import 'package:internship_frontend/features/loan/loan_onboarding_screen.dart';
+import 'package:internship_frontend/features/loan/loan_screen.dart';
 import 'package:internship_frontend/features/main/main_screen.dart';
 import '../data/models/group.dart';
 import '../features/authentication/screens/change_password_screen.dart';
@@ -54,6 +56,25 @@ class RouteGenerator {
           );
         }
         return _errorRoute();
+
+      case AppRoutes.loanScreen:
+        if (args is Group) {
+          return MaterialPageRoute(
+            builder: (_) => LoanScreen(group: args),
+          );
+        }
+        return _errorRoute();
+
+      case AppRoutes.loanOnboardingScreen:
+        if (args is Group) {
+          return MaterialPageRoute(
+            builder: (_) => LoanScreen(group: args),
+          );
+        }
+        return _errorRoute();
+        // return MaterialPageRoute(builder: (_) => LoanOnboardingScreen(
+        //   onboardingComplete: () {  },)
+        // );
 
       default:
         return _errorRoute();

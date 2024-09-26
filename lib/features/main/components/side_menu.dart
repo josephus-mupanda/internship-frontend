@@ -42,7 +42,6 @@ class _SideMenuState extends State<SideMenu> {
   List<Group> groups = [];
 
   Future<void> fetchGroups() async {
-
     // Retrieve the token from secure storage
     String? token = await _authService.getAccessToken();
     if (token == null) {

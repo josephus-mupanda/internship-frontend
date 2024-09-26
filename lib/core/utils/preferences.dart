@@ -6,6 +6,7 @@ class Preferences {
   // Keys for the preferences
   static const _keyIsLoggedIn = 'isLoggedIn';
   static const _keyHasSeenOnboarding = 'hasSeenOnboarding';
+  static const _keyHasSeenLoanOnboarding = 'hasSeenLoanOnboarding';
   static const _keyUserToken = 'userToken';
   static const _keyUsername = 'username';
   static const _keyEmail = 'email';
@@ -33,6 +34,16 @@ class Preferences {
   // Getter for onboarding status
   static bool? getHasSeenOnboarding() {
     return _preferences?.getBool(_keyHasSeenOnboarding);
+  }
+
+  // Setter for loan onboarding status
+  static Future setHasSeenLoanOnboarding(bool hasSeen) async {
+    await _preferences?.setBool(_keyHasSeenLoanOnboarding, hasSeen);
+  }
+
+  // Getter for loan onboarding status
+  static bool? getHasSeenLoanOnboarding() {
+    return _preferences?.getBool(_keyHasSeenLoanOnboarding);
   }
 
   // Example: Setter for a user token

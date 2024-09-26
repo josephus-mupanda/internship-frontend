@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:internship_frontend/features/loan/loan_onboarding_screen.dart';
+import 'package:internship_frontend/features/loan/loan_screen.dart';
+import '../../core/utils/preferences.dart';
 import '../../features/group/list_of_groups.dart';
 import '../../features/loan/list_of_loans.dart';
 import '../../features/member/member_screen.dart';
@@ -12,6 +15,7 @@ class MenuProvider with ChangeNotifier {
 
   MenuItemSelect _selectedItem = MenuItemSelect.GROUPS;
   List<Group> groups = [];
+  bool? _hasSeenLoanOnboarding = false;
 
   MenuItemSelect get selectedItem => _selectedItem;
 
@@ -29,6 +33,20 @@ class MenuProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  // Check onboarding status
+  Future<void> checkLoanOnboardingStatus() async {
+    _hasSeenLoanOnboarding = await Preferences.getHasSeenLoanOnboarding();
+    notifyListeners();
+  }
+
+  // Function to complete onboarding
+  Future<void> completeLoanOnboarding() async {
+    await Preferences.setHasSeenLoanOnboarding(true);
+    _hasSeenLoanOnboarding = true;
+    notifyListeners();
+  }
+
+
   Widget getSelectedScreen() {
     switch (_selectedItem) {
       case MenuItemSelect.GROUPS:
@@ -44,10 +62,14 @@ class MenuProvider with ChangeNotifier {
       case MenuItemSelect.LOANS:
         return Row(
           children: [
-            const Expanded(flex: 6, child: ListOfLoans()), // Replace with your ListOfLoans widget
+            const Expanded(flex: 6, child: ListOfLoans()),
             Expanded(
               flex: 9,
-              child: Container(), // Replace with your LoanScreen or another relevant widget
+              child: groups.isNotEmpty
+                  ? _hasSeenLoanOnboarding!
+                  ? LoanScreen(group: groups[0])
+                  : LoanOnboardingScreen(onboardingComplete: completeLoanOnboarding)
+                  : Container(),
             ),
           ],
         );

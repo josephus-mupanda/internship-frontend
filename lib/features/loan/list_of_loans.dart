@@ -3,8 +3,6 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:provider/provider.dart';
-import 'package:websafe_svg/websafe_svg.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import '../../core/constants/constants.dart';
 import '../../core/layout/responsive_widget.dart';
 import '../../core/utils/toast.dart';
@@ -18,7 +16,6 @@ import '../../data/services/auth_service.dart';
 import '../../data/services/group_service.dart';
 import '../../routes/app_routes.dart';
 import '../main/components/side_menu.dart';
-import '../member/member_screen.dart';
 import 'components/group_card.dart';
 
 class ListOfLoans extends StatefulWidget {
@@ -175,12 +172,7 @@ class _ListOfLoansState extends State<ListOfLoans> {
                                 press: () {
                                   groupProvider.selectGroup(groups[index]);
                                   if(Responsive.isMobile(context)) {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => MemberScreen(group: groups[index]),
-                                      ),
-                                    );
+                                    Navigator.pushNamed(context, AppRoutes.loanScreen);
                                   }
                                 },
                               );

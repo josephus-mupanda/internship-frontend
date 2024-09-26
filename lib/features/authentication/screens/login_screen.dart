@@ -270,7 +270,7 @@ class _LoginScreenState extends State<LoginScreen> {
           username = null;
           password = null;
         });
-
+        Navigator.of(context).pop();
         Navigator.pushReplacementNamed(
             context, AppRoutes.dashboard); // Navigate to mainScreen on success
       }
@@ -286,10 +286,8 @@ class _LoginScreenState extends State<LoginScreen> {
       }
     } catch (e) {
       if (!context.mounted) return ;
-      showErrorToast(context, "An unexpected error occurred.");
-    }
-    finally {
       Navigator.of(context).pop();
+      showErrorToast(context, "An unexpected error occurred.");
     }
   }
 }

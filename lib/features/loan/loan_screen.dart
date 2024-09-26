@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:internship_frontend/features/loan/loan_onboarding_screen.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/constants/constants.dart';
+import '../../core/utils/preferences.dart';
+import '../../core/widgets/repay_loan_dialog.dart';
+import '../../core/widgets/request_loan_widget.dart';
 import '../../data/models/group.dart';
 import '../../data/providers/group_provider.dart';
 import 'components/header.dart';
@@ -17,6 +21,8 @@ class LoanScreen extends StatefulWidget {
 }
 
 class _LoanScreenState extends State<LoanScreen> {
+  bool _showOnboarding = false;
+
   @override
   Widget build(BuildContext context) {
 
@@ -24,7 +30,18 @@ class _LoanScreenState extends State<LoanScreen> {
     final groupProvider = Provider.of<GroupProvider>(context);
     final selectedGroup = groupProvider.selectedGroup;
 
-    return Scaffold(
+    return _showOnboarding
+        ?
+    LoanOnboardingScreen(
+        onboardingComplete: () {
+            // Handle completion of onboarding here if needed
+            setState(() {
+              _showOnboarding = false; // Go back to LoanScreen
+            });
+          }
+        )
+        :
+    Scaffold (
       body: Container(
         color: theme.colorScheme.background,
         child: SafeArea(
@@ -47,23 +64,51 @@ class _LoanScreenState extends State<LoanScreen> {
                         iconColor: Colors.blue,
                         title: 'Request Loan',
                         press: () {
-                          // Implement your logic for requesting a loan
+                          // Show Request Loan Dialog
+                          showDialog(
+                            context: context,
+                            builder: (context) {
+                              return RequestLoanDialog(
+                                title: 'Request Loan',
+                                content: 'Enter the amount you wish to borrow.',
+                                nameYes: 'Request',
+                                nameNo: 'Cancel',
+                                onLoanRequested: () {
+                                  // Refresh the UI or perform necessary actions
+                                },
+                              );
+                            },
+                          );
                         },
                       ),
                       const SizedBox(height: Constants.kDefaultPadding),
                       // Loan Card for Repaying a Loan
                       LoanCard(
-                        icon: Icons.attach_money, // Choose an appropriate icon
+                        icon: Icons.attach_money,
                         iconColor: Colors.green,
                         title: 'Repay Loan',
                         press: () {
-                          // Implement your logic for repaying a loan
+                          // Show Repay Loan Dialog
+                          showDialog(
+                            context: context,
+                            builder: (context) {
+                              return RepayLoanDialog(
+                                title: 'Repay Loan',
+                                content: 'Enter the amount you wish to repay.',
+                                nameYes: 'Repay',
+                                nameNo: 'Cancel',
+                                onLoanRepaid: () {
+                                  // Refresh the UI or perform necessary actions
+                                },
+                              );
+                            },
+                          );
                         },
                       ),
                       const SizedBox(height: Constants.kDefaultPadding),
                       // Loan Card for Loan History
                       LoanCard(
-                        icon: Icons.history, // Choose an appropriate icon
+                        icon: Icons.history,
                         iconColor: Colors.orange,
                         title: 'Loan History',
                         press: () {
@@ -73,11 +118,14 @@ class _LoanScreenState extends State<LoanScreen> {
                       const SizedBox(height: Constants.kDefaultPadding),
                       // Loan Card for Explaining How Loans Work
                       LoanCard(
-                        icon: Icons.info, // Choose an appropriate icon
+                        icon: Icons.info,
                         iconColor: Colors.purple,
                         title: 'How Loans Work',
-                        press: () {
-                          // Implement your logic for explaining loan workings
+                        press: ()  async {
+                          await Preferences.setHasSeenLoanOnboarding(false);
+                          setState(() {
+                            _showOnboarding = true; // Set to true to show onboarding
+                          });
                         },
                       ),
                     ],

@@ -5,11 +5,11 @@ import '../models/group.dart';
 
 class GroupProvider with ChangeNotifier {
   Group? _selectedGroup;
-  List<Group> _groups = [];
+  List<Group>? _groups ;
   bool _isLoading = false;
 
   Group? get selectedGroup => _selectedGroup;
-  List<Group> get groups => _groups;
+  List<Group> get groups => _groups!;
   bool get isLoading => _isLoading;
 
   // Method to set loading state
@@ -22,8 +22,8 @@ class GroupProvider with ChangeNotifier {
   // Method to set groups and select the first one as default
   void setGroups(List<Group> groups) {
     _groups = groups;
-    if (_groups.isNotEmpty && _selectedGroup == null) {
-      _selectedGroup = _groups[0]; // Automatically select the first group by default
+    if (_groups!.isNotEmpty && _selectedGroup == null) {
+      _selectedGroup = _groups![0]; // Automatically select the first group by default
     }
     notifyListeners();
   }

@@ -1,48 +1,23 @@
 import 'package:flutter/material.dart';
-import 'package:internship_frontend/core/utils/images.dart';
-import 'package:internship_frontend/features/onboarding/screens/page_right_screen.dart';
 import 'package:internship_frontend/routes/app_routes.dart';
 import '../../../core/constants/constants.dart';
-import '../../../core/layout/responsive_widget.dart';
 import '../../../core/utils/preferences.dart';
 
-class OnBoardingScreen extends StatefulWidget {
-  const OnBoardingScreen({super.key});
+class LoanOnboardingScreen extends StatefulWidget {
+  final VoidCallback onboardingComplete;
+
+  const LoanOnboardingScreen({
+    super.key,
+    required this.onboardingComplete
+  });
+
   @override
-  State<OnBoardingScreen> createState() => _OnBoardingScreenState();
+  State<LoanOnboardingScreen> createState() => _LoanOnboardingScreenState();
 }
 
-class _OnBoardingScreenState extends State<OnBoardingScreen> {
+class _LoanOnboardingScreenState extends State<LoanOnboardingScreen> {
   final PageController _pageController = PageController(initialPage: 0);
   int currentIndex = 0;
-
-  @override
-  void initState() {
-    super.initState();
-    _checkOnboardingStatus(); // Check if the user has already seen onboarding
-  }
-
-  Future<void> _checkOnboardingStatus() async {
-    bool? hasSeenOnboarding = Preferences.getHasSeenOnboarding();
-    if (hasSeenOnboarding ?? false) {
-      Navigator.pushReplacementNamed(context, AppRoutes.login); // Skip to login if already seen
-    }
-  }
-
-  void _nextPage() async {
-    if (currentIndex < 2) {
-      currentIndex++;
-      _pageController.nextPage(
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeIn,
-      );
-      setState(() {}); // Only update the state for the current index
-    } else {
-      await Preferences.setHasSeenOnboarding(true); // Save onboarding status
-      if (!context.mounted) return;
-      Navigator.pushReplacementNamed(context, AppRoutes.login);
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -94,19 +69,19 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                                                       controller: _pageController,
                                                       children: [
                                                         CreatePage(
-                                                          image: ImagePath.onBoardingImageOne,
-                                                          title: Constants.titleOne,
-                                                          description: Constants.descriptionOne,
+                                                          icon: Icons.request_page,
+                                                          title: Constants.loanTitleOne,
+                                                          description: Constants.loanDescriptionOne,
                                                         ),
                                                         CreatePage(
-                                                          image: ImagePath.onBoardingImageTwo,
-                                                          title: Constants.titleTwo,
-                                                          description: Constants.descriptionTwo,
+                                                          icon: Icons.attach_money,
+                                                          title: Constants.loanTitleTwo,
+                                                          description: Constants.loanDescriptionTwo,
                                                         ),
                                                         CreatePage(
-                                                          image: ImagePath.onBoardingImageThree,
-                                                          title: Constants.titleThree,
-                                                          description: Constants.descriptionThree,
+                                                          icon: Icons.history,
+                                                          title: Constants.loanTitleThree,
+                                                          description: Constants.loanDescriptionThree,
                                                         ),
                                                       ],
                                                     ),
@@ -127,7 +102,19 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                                                           color: Theme.of(context).primaryColor, // Using theme color
                                                         ),
                                                         child: IconButton(
-                                                          onPressed: _nextPage,
+                                                          onPressed: () {
+                                                            setState(()  async {
+                                                              if (currentIndex < 2) {
+                                                                currentIndex++;
+                                                                _pageController.nextPage(
+                                                                  duration: const Duration(milliseconds: 300),
+                                                                  curve: Curves.easeIn,
+                                                                );
+                                                              } else {
+                                                                widget.onboardingComplete();
+                                                              }
+                                                            });
+                                                          },
                                                           icon: const Icon(
                                                             Icons.arrow_forward_ios,
                                                             size: 24,
@@ -145,12 +132,6 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                                       ),
                                     ),
                                   ),
-                                  // Only show the right-side panel on desktop screens
-                                  if (Responsive.isDesktop(context)) // Adjust this to the right place
-                                    const PageRightSide(
-                                      title: "Welcome to Our App,\nLet's get started on your journey! 🚀",
-                                      icon: ImagePath.onBoardingSvg,
-                                    ),
                                 ],
                               ),
                             ),
@@ -199,13 +180,13 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
 }
 
 class CreatePage extends StatelessWidget {
-  final String image;
+  final IconData icon;
   final String title;
   final String description;
 
   const CreatePage({
     super.key,
-    required this.image,
+    required this.icon,
     required this.title,
     required this.description,
   });
@@ -220,10 +201,10 @@ class CreatePage extends StatelessWidget {
           children: [
             SizedBox(
               height: 300,
-              child: Image.asset(image),
+              child: Icon(icon),
             ),
             const SizedBox(
-              height: 20,
+              height: Constants.kDefaultPadding,
             ),
             Text(
               title,
@@ -231,7 +212,7 @@ class CreatePage extends StatelessWidget {
               style: Theme.of(context).textTheme.headlineMedium,
             ),
             const SizedBox(
-              height: 20,
+              height: Constants.kDefaultPadding,
             ),
             Text(
               description,
@@ -239,7 +220,7 @@ class CreatePage extends StatelessWidget {
               style: Theme.of(context).textTheme.bodyMedium,
             ),
             const SizedBox(
-              height: 20,
+              height: Constants.kDefaultPadding,
             ),
           ],
         ),
