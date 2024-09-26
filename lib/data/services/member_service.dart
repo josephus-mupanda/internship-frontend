@@ -1,8 +1,10 @@
 
 import 'dart:convert';
+import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 
 import '../../core/config/app_config.dart';
+import '../../core/utils/toast.dart';
 import '../models/member.dart'; // Update the path as needed
 
 class MemberService {
@@ -19,17 +21,55 @@ class MemberService {
     );
     return response;
   }
-
   // Get a member by ID
-  Future<http.Response> getMemberById(int id, String token) async {
-    final response = await http.get(
-      Uri.parse('$baseUrl/$id'),
-      headers: {
-        'Authorization': 'Bearer $token',
-        'Content-Type': 'application/json',
-      },
-    );
-    return response;
+  Future<http.Response?> getMemberById(int memberId, String token, BuildContext context) async {
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/$memberId'),
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      );
+      if (!context.mounted) return null;
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      } else if (response.statusCode == 400) {
+        showErrorToast(context, "Invalid token or bad request. Please try again.");
+      } else if (response.statusCode == 404) {
+        showWarningToast(context, "Member not found. Please check the member ID.");
+      } else {
+        showWarningToast(context, "Failed to retrieve the member . Please try again later.");
+      }
+    }
+    catch(e){
+      showErrorToast(context, "An error occurred. Please check your connection.");
+    }
+    return null;
+  }
+
+  Future<http.Response?> getMemberByUsername(String token, BuildContext context) async {
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/by-username'),
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      );
+      if (!context.mounted) return null;
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      } else if (response.statusCode == 400) {
+        showErrorToast(context, "Invalid token or bad request. Please try again.");
+      } else if (response.statusCode == 404) {
+        showWarningToast(context, "Member not found. Please check the member username.");
+      } else {
+        showWarningToast(context, "Failed to retrieve the member . Please try again later.");
+      }
+    }
+    catch(e){
+      showErrorToast(context, "An error occurred. Please check your connection.");
+    }
+    return null;
   }
 
   // Create a new member

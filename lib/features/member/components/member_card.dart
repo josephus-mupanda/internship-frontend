@@ -1,11 +1,15 @@
+import 'dart:convert';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:internship_frontend/core/utils/images.dart';
+import 'package:internship_frontend/data/services/user_service.dart';
 import 'package:internship_frontend/themes/color_palette.dart';
 
 import '../../../core/constants/constants.dart';
 import '../../../data/models/member.dart';
+import '../../../data/services/auth_service.dart';
+import '../../../routes/app_routes.dart';
 
 class MemberCard extends StatefulWidget {
   final bool isActive;
@@ -25,6 +29,35 @@ class MemberCard extends StatefulWidget {
 }
 
 class _MemberCardState extends State<MemberCard> {
+
+  final UserService _userService = UserService();
+  final AuthService _authService = AuthService();
+  String? username;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchUsername();
+  }
+  // Fetch the username based on member's userId
+  Future<void> fetchUsername() async {
+    // Retrieve the token from secure storage
+    String? token = await _authService.getAccessToken();
+    if (token == null) {
+      //showErrorToast(context, 'Token not found. Please log in again.');
+      Navigator.pushReplacementNamed(context, AppRoutes.login);
+      return;
+    }
+    final response = await _userService.getUserById(widget.member.userId!, token, context);
+    if (response != null) {
+      Map<String, dynamic> data = jsonDecode(response.body);
+      setState(() {
+        username = data['username'];
+      });
+    }
+  }
+
+
   // Function to generate a random color
   Color getRandomColor() {
     Random random = Random();
@@ -60,7 +93,7 @@ class _MemberCardState extends State<MemberCard> {
                         child: CircleAvatar(
                           backgroundColor: getRandomColor(),
                           child: Text(
-                            widget.member.user!.username[0],
+                              username != null ? username![0] : '?',
                             style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                               fontWeight: FontWeight.bold,
                             ),
@@ -71,7 +104,7 @@ class _MemberCardState extends State<MemberCard> {
                       Expanded(
                         child: Text.rich(
                           TextSpan(
-                            text :"${widget.member.user!.username} \n",
+                            text : "${username ?? 'Loading...'} \n",
                             style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                               fontWeight: FontWeight.bold,
                             ),

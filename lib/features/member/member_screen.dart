@@ -154,8 +154,8 @@ class _MemberScreenState extends State<MemberScreen> {
                             builder: (context, memberProvider, child){
                               return MemberCard(
                                 member: members[index],
-                                // press: () {
-                                // },
+                                press: () {
+                                },
                                 onMemberDeleted: _onMemberDeleted,
                               );
                             }

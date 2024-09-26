@@ -1,14 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:internship_frontend/features/authentication/screens/confirm_email_screen.dart';
+import 'package:internship_frontend/features/contribution/my_contribution_screen.dart';
 import 'package:internship_frontend/features/group/group_menu_screen.dart';
 import 'package:internship_frontend/features/loan/loan_onboarding_screen.dart';
 import 'package:internship_frontend/features/loan/loan_screen.dart';
 import 'package:internship_frontend/features/main/main_screen.dart';
 import '../data/models/group.dart';
+import '../data/models/member.dart';
 import '../features/authentication/screens/change_password_screen.dart';
 import '../features/authentication/screens/login_screen.dart';
 import '../features/authentication/screens/register_screen.dart';
 import '../features/authentication/screens/reset_password_screen.dart';
+import '../features/contribution/contribution_screen.dart';
+import '../features/loan/loan_history_screen.dart';
+import '../features/loan/my_loan_history_screen.dart';
 import '../features/member/member_screen.dart';
 import '../features/onboarding/screens/onboarding_screen.dart';
 import '../features/splash/screens/splash_screen.dart';
@@ -69,31 +74,39 @@ class RouteGenerator {
       case AppRoutes.allContributionsGroupScreen:
         if (args is Group) {
           return MaterialPageRoute(
-            builder: (_) => MemberScreen(group: args),
+            builder: (_) => ContributionScreen(group: args),
           );
         }
         return _errorRoute();
+
         //-------- ALL MY CONTRIBUTIONS IN A GROUP
       case AppRoutes.contributionGroupScreen:
-        if (args is Group) {
+        if (args is MyArguments) {
           return MaterialPageRoute(
-            builder: (_) => MemberScreen(group: args),
+            builder: (_) => MyContributionScreen(
+              group: args.group,
+              member: args.member,
+            ),
           );
         }
         return _errorRoute();
-      //-------- ALL LOANS IN A GROUP
+
+        //-------- ALL LOANS IN A GROUP
       case AppRoutes.allLoansGroupScreen:
         if (args is Group) {
           return MaterialPageRoute(
-            builder: (_) => MemberScreen(group: args),
+            builder: (_) => LoanHistoryScreen(group: args),
           );
         }
         return _errorRoute();
       //-------- ALL MY LOANS IN A GROUP
       case AppRoutes.loanGroupScreen:
-        if (args is Group) {
+        if (args is MyArguments) {
           return MaterialPageRoute(
-            builder: (_) => MemberScreen(group: args),
+            builder: (_) => MyLoanHistoryScreen(
+              group: args.group,
+              member: args.member,
+            ),
           );
         }
         return _errorRoute();
@@ -141,4 +154,11 @@ class RouteGenerator {
       );
     });
   }
+}
+
+class MyArguments {
+  final Group group;
+  final Member member;
+
+  MyArguments(this.group, this.member);
 }

@@ -1,11 +1,18 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:internship_frontend/features/group/components/group_menu_card.dart';
+import 'package:internship_frontend/routes/app_routes.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/constants/constants.dart';
+import '../../core/utils/toast.dart';
 import '../../data/models/group.dart';
+import '../../data/models/member.dart';
 import '../../data/providers/group_provider.dart';
 import '../../data/services/auth_service.dart';
+import '../../data/services/member_service.dart';
+import '../../routes/route_generator.dart';
 import 'components/header.dart';
 
 class GroupMenuScreen extends StatefulWidget {
@@ -19,22 +26,39 @@ class GroupMenuScreen extends StatefulWidget {
 
 class _GroupMenuScreenState extends State<GroupMenuScreen> {
   String? _username;
+  Member? currentMember;
+
   bool _isLoading = true;
   final AuthService _authService = AuthService();
+  final MemberService _memberService = MemberService();
 
   @override
   void initState() {
     super.initState();
-    _loadUsername();
+    _loadUsernameAndMember();
   }
-
   // Fetch the username from the token
-  Future<void> _loadUsername() async {
+  Future<void> _loadUsernameAndMember() async {
     try {
+      // Get the token and username
+      String? token = await _authService.getAccessToken();
       String? username = await _authService.getUsernameFromToken();
-      if (mounted) {
+      // Fetch the member details by username
+      if (token != null && username != null) {
+        final response = await _memberService.getMemberByUsername(token, context);
+        if (response != null) {
+          setState(() {
+            _username = username;
+            currentMember = Member.fromJson(jsonDecode(response.body));
+            _isLoading = false;
+          });
+        } else {
+          setState(() {
+            _isLoading = false;
+          });
+        }
+      } else {
         setState(() {
-          _username = username;
           _isLoading = false;
         });
       }
@@ -42,8 +66,10 @@ class _GroupMenuScreenState extends State<GroupMenuScreen> {
       setState(() {
         _isLoading = false;
       });
+      showErrorToast(context, "Failed to load user data.");
     }
   }
+
   @override
   Widget build(BuildContext context) {
 
@@ -80,7 +106,11 @@ class _GroupMenuScreenState extends State<GroupMenuScreen> {
                         iconColor: Colors.blue,
                         title: 'All members',
                         press: () {
-
+                          Navigator.pushNamed(
+                              context,
+                              AppRoutes.allMembersGroupScreen,
+                              arguments:selectedGroup
+                          );
                         },
                       ),
                       const SizedBox(height: Constants.kDefaultPadding),
@@ -91,7 +121,11 @@ class _GroupMenuScreenState extends State<GroupMenuScreen> {
                           iconColor: Colors.green,
                           title: 'All Contributions',
                           press: () {
-                            // Action for All Contributions
+                            Navigator.pushNamed(
+                                context,
+                                AppRoutes.allContributionsGroupScreen,
+                                arguments:selectedGroup
+                            );
                           },
                         ),
                         const SizedBox(height: Constants.kDefaultPadding),
@@ -100,7 +134,11 @@ class _GroupMenuScreenState extends State<GroupMenuScreen> {
                           iconColor: Colors.red,
                           title: 'All Loans',
                           press: () {
-                            // Action for All Loans
+                            Navigator.pushNamed(
+                                context,
+                                AppRoutes.allLoansGroupScreen,
+                                arguments:selectedGroup
+                            );
                           },
                         ),
                         const SizedBox(height: Constants.kDefaultPadding),
@@ -111,7 +149,11 @@ class _GroupMenuScreenState extends State<GroupMenuScreen> {
                         iconColor: Colors.orange,
                         title: 'My Contributions',
                         press: () {
-                          // Action for My Contributions
+                          Navigator.pushNamed(
+                              context,
+                              AppRoutes.contributionGroupScreen,
+                              arguments: MyArguments(selectedGroup, currentMember!)
+                          );
                         },
                       ),
                       const SizedBox(height: Constants.kDefaultPadding),
@@ -121,7 +163,11 @@ class _GroupMenuScreenState extends State<GroupMenuScreen> {
                         iconColor: Colors.purple,
                         title: 'My Loans',
                         press: () {
-                          // Action for My Loans
+                          Navigator.pushNamed(
+                              context,
+                              AppRoutes.loanGroupScreen,
+                              arguments:MyArguments(selectedGroup, currentMember!)
+                          );
                         },
                       ),
                     ],

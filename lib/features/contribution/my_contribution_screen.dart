@@ -13,6 +13,7 @@ import '../../core/layout/responsive_widget.dart';
 import '../../core/utils/toast.dart';
 import '../../core/widgets/input_widget.dart';
 import '../../data/models/group.dart';
+import '../../data/models/member.dart';
 import '../../data/providers/group_provider.dart';
 import '../../data/services/auth_service.dart';
 import '../../routes/app_routes.dart';
@@ -20,8 +21,13 @@ import '../member/components/header.dart';
 
 class MyContributionScreen extends StatefulWidget {
   final Group group;
+  final Member member;
 
-  const MyContributionScreen({super.key, required this.group,});
+  const MyContributionScreen({
+    super.key,
+    required this.group,
+    required this.member
+  });
 
   @override
   State<MyContributionScreen> createState() => _MyContributionScreenState();
@@ -42,7 +48,7 @@ class _MyContributionScreenState extends State<MyContributionScreen> {
       return;
     }
     try {
-      final response = await _groupService.getContributionsByGroupAndMember( widget.group.id!, token, context);
+      final response = await _groupService.getContributionsByGroupAndMember(widget.group.id!,widget.member.id!,token, context);
       if (response?.statusCode == 200) {
         // Decode the JSON data
         List<dynamic> data = jsonDecode(response!.body);

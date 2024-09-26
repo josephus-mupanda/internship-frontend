@@ -102,15 +102,31 @@ class GroupService {
   }
 
   // Retrieve a single group by ID
-  Future<http.Response> getGroupById(int groupId, String token) async {
-    final response = await http.get(
-      Uri.parse('$baseUrl/$groupId'),
-      headers: {
-        'Authorization': 'Bearer $token',
-      },
-    );
-    return response;
+  Future<http.Response?> getGroupById(int groupId, String token, BuildContext context) async {
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/$groupId'),
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      );
+      if (!context.mounted) return null;
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      } else if (response.statusCode == 400) {
+        showErrorToast(context, "Invalid token or bad request. Please try again.");
+      } else if (response.statusCode == 404) {
+        showWarningToast(context, "Group not found. Please check the group ID.");
+      } else {
+        showWarningToast(context, "Failed to retrieve the group . Please try again later.");
+      }
+    }
+    catch(e){
+      showErrorToast(context, "An error occurred. Please check your connection.");
+    }
+    return null;
   }
+
   // Handle inactive members
   Future<http.Response> handleInactiveMembers(
       int groupId, Map<String, dynamic> requestDTO, String token) async {
