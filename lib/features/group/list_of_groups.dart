@@ -183,7 +183,7 @@ class _ListOfGroupsState extends State<ListOfGroups> {
                             groupProvider.selectGroup(groups[index]);
                             if(Responsive.isMobile(context)) {
                               Navigator.pushNamed(context,
-                                AppRoutes.memberScreen,
+                                AppRoutes.groupMenuScreen,
                                 arguments: groups[index],
                               );
                             }

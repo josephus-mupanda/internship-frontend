@@ -163,50 +163,261 @@ class GroupService {
     }
     return null;
   }
-
+  // =============================== CONTRIBUTIONS =======================================
   // Get contributions by group
-  Future<http.Response> getContributionsByGroup(int groupId, String token) async {
-    final response = await http.get(
-      Uri.parse('$baseUrl/$groupId/contributions'),
-      headers: {
-        'Authorization': 'Bearer $token',
-      },
-    );
-    return response;
-  }
+  Future<http.Response?> getContributionsByGroup(int groupId, String token,BuildContext context) async {
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/$groupId/contributions'),
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      );
+      if (!context.mounted) return null;
 
-  // Get transactions by group
-  Future<http.Response> getAllTransactions(int groupId, String token) async {
-    final response = await http.get(
-      Uri.parse('$baseUrl/$groupId/transactions'),
-      headers: {
-        'Authorization': 'Bearer $token',
-      },
-    );
-    return response;
+      // Check the status code and show appropriate toast messages
+      if (response.statusCode == 200) {
+        showSuccessToast(context, 'Contributions retrieved successfully');
+      } else if (response.statusCode == 400) {
+        showErrorToast(context, 'Invalid token. Please log in again.');
+      } else if (response.statusCode == 403) {
+        showErrorToast(context, 'Unauthorized. You don’t have permission to view contributions of this group.');
+      } else if (response.statusCode == 404) {
+        showWarningToast(context, 'Group not found. Please check the group ID.');
+      } else {
+        showWarningToast(context, 'Failed to retrieve contributions. Please try again later.');
+      }
+      return response;
+    } catch (e) {
+      // Handle network errors or parsing issues
+      showErrorToast(context, 'An error occurred. Please check your connection.');
+    }
+    return null;
   }
+  // Get contributions by group and member
+  Future<http.Response?> getContributionsByGroupAndMember(int groupId, int memberId,String token,BuildContext context) async {
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/$groupId/members/$memberId/contributions'),
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      );
 
-  // Calculate total loans for a group
-  Future<http.Response> getTotalLoanAmount(int groupId, String token) async {
-    final response = await http.get(
-      Uri.parse('$baseUrl/$groupId/loans/total'),
-      headers: {
-        'Authorization': 'Bearer $token',
-      },
-    );
-    return response;
+      if (!context.mounted) return null;
+
+      // Check the status code and show appropriate toast messages
+      if (response.statusCode == 200) {
+        //showSuccessToast(context, 'Contributions retrieved successfully');
+        return jsonDecode(response.body);
+      } else if (response.statusCode == 400) {
+        showErrorToast(context, 'Invalid token. Please log in again.');
+      } else if (response.statusCode == 403) {
+        showErrorToast(context, 'Unauthorized. You don’t have permission to view contributions of this member.');
+      } else if (response.statusCode == 404) {
+        showWarningToast(context, 'Group or member not found. Please check the IDs.');
+      } else {
+        showWarningToast(context, 'Failed to retrieve contributions. Please try again later.');
+      }
+    } catch (e) {
+      // Handle network errors or parsing issues
+      showErrorToast(context, 'An error occurred. Please check your connection.');
+    }
+    return null;
   }
 
   // Calculate total contributions for a group
-  Future<http.Response> calculateTotalContributions(int groupId, String token) async {
-    final response = await http.get(
-      Uri.parse('$baseUrl/$groupId/contributions/total'),
-      headers: {
-        'Authorization': 'Bearer $token',
-      },
-    );
-    return response;
+  Future<http.Response?> calculateTotalContributions(int groupId, String token,BuildContext context) async {
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/$groupId/contributions/total'),
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (!context.mounted) return null;
+
+      // Check the status code and show appropriate toast messages
+      if (response.statusCode == 200) {
+        //showSuccessToast(context, 'Total contributions retrieved successfully');
+        return jsonDecode(response.body);
+      } else if (response.statusCode == 400) {
+        showErrorToast(context, 'Invalid token. Please log in again.');
+      } else if (response.statusCode == 403) {
+        showErrorToast(context, 'Unauthorized. You don’t have permission to view the total contributions.');
+      } else if (response.statusCode == 404) {
+        showWarningToast(context, 'Group not found. Please check the group ID.');
+      } else {
+        showWarningToast(context, 'Failed to retrieve total contributions. Please try again later.');
+      }
+    } catch (e) {
+      // Handle network errors or parsing issues
+      showErrorToast(context, 'An error occurred. Please check your connection.');
+    }
+    return null;
   }
+
+  // =================================== TRANSACTIONS ==========================
+  // Get transactions by group
+  Future<http.Response?> getAllTransactionsByGroup(int groupId, String token,BuildContext context) async {
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/$groupId/transactions'),
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      );
+      if (!context.mounted) return null;
+
+      // Check the status code and show appropriate toast messages
+      if (response.statusCode == 200) {
+        showSuccessToast(context, 'Transactions retrieved successfully');
+      } else if (response.statusCode == 400) {
+        showErrorToast(context, 'Invalid token. Please log in again.');
+      } else if (response.statusCode == 403) {
+        showErrorToast(context, 'Unauthorized. You don’t have permission to view transactions of this group.');
+      } else if (response.statusCode == 404) {
+        showWarningToast(context, 'Group not found. Please check the group ID.');
+      } else {
+        showWarningToast(context, 'Failed to retrieve transactions. Please try again later.');
+      }
+      return response;
+    } catch (e) {
+      // Handle network errors or parsing issues
+      showErrorToast(context, 'An error occurred. Please check your connection.');
+    }
+    return null;
+  }
+
+  // Get transactions by group and member
+  Future<http.Response?> getTransactionsByGroupAndMember(int groupId, int memberId, String token, BuildContext context) async {
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/$groupId/members/$memberId/transactions'),
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (!context.mounted) return null;
+      // Check the status code and show appropriate toast messages
+      if (response.statusCode == 200) {
+        //showSuccessToast(context, 'Transactions retrieved successfully');
+        return jsonDecode(response.body);
+      } else if (response.statusCode == 400) {
+        showErrorToast(context, 'Invalid token. Please log in again.');
+      } else if (response.statusCode == 403) {
+        showErrorToast(context, 'Unauthorized. You don’t have permission to view transactions of this member.');
+      } else if (response.statusCode == 404) {
+        showWarningToast(context, 'Group or member not found. Please check the IDs.');
+      } else {
+        showWarningToast(context, 'Failed to retrieve transactions. Please try again later.');
+      }
+    } catch (e) {
+      // Handle network errors or parsing issues
+      showErrorToast(context, 'An error occurred. Please check your connection.');
+    }
+    return null;
+  }
+
+  // =================================== LOANS ==========================
+  // Get loans by group
+  Future<http.Response?> getLoansByGroup(int groupId,String token,BuildContext context) async {
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/$groupId/loans'),
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (!context.mounted) return null;
+      // Check the status code and show appropriate toast messages
+      if (response.statusCode == 200) {
+        //showSuccessToast(context, 'Loans retrieved successfully');
+        return jsonDecode(response.body); // Parse and return the loans data
+      } else if (response.statusCode == 400) {
+        showErrorToast(context, 'Invalid token. Please log in again.');
+      } else if (response.statusCode == 403) {
+        showErrorToast(context, 'Unauthorized. You don’t have permission to view loans for this group.');
+      } else if (response.statusCode == 404) {
+        showWarningToast(context, 'Group not found. Please check the group ID.');
+      } else {
+        showWarningToast(context, 'Failed to retrieve loans. Please try again later.');
+      }
+    } catch (e) {
+      // Handle network errors or parsing issues
+      showErrorToast(context, 'An error occurred. Please check your connection.');
+    }
+    return null;
+  }
+
+  // Get loans by group and member
+  Future<http.Response?> getLoansByGroupAndMember(int groupId, int memberId,String token,BuildContext context) async {
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/$groupId/members/$memberId/loans'),
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (!context.mounted) return null;
+
+      // Check the status code and show appropriate toast messages
+      if (response.statusCode == 200) {
+        //showSuccessToast(context, 'Loan history retrieved successfully');
+        return jsonDecode(response.body); // Parse and return the loan history data
+      } else if (response.statusCode == 400) {
+        showErrorToast(context, 'Invalid token. Please log in again.');
+      } else if (response.statusCode == 403) {
+        showErrorToast(context, 'Unauthorized. You don’t have permission to view loans for this member.');
+      } else if (response.statusCode == 404) {
+        showWarningToast(context, 'Group or member not found. Please check the IDs.');
+      } else {
+        showWarningToast(context, 'Failed to retrieve loan history. Please try again later.');
+      }
+    } catch (e) {
+      // Handle network errors or parsing issues
+      showErrorToast(context, 'An error occurred. Please check your connection.');
+    }
+    return null;
+  }
+
+  // Calculate total loans for a group
+  Future<http.Response?> getTotalLoanAmount(int groupId, String token,BuildContext context) async {
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/$groupId/loans/total'),
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (!context.mounted) return null;
+
+      // Check the status code and show appropriate toast messages
+      if (response.statusCode == 200) {
+        //showSuccessToast(context, 'Total loan amount retrieved successfully');
+        return jsonDecode(response.body);
+      } else if (response.statusCode == 400) {
+        showErrorToast(context, 'Invalid token. Please log in again.');
+      } else if (response.statusCode == 403) {
+        showErrorToast(context, 'Unauthorized. You don’t have permission to view the total loan amount.');
+      } else if (response.statusCode == 404) {
+        showWarningToast(context, 'Group not found. Please check the group ID.');
+      } else {
+        showWarningToast(context, 'Failed to retrieve total loan amount. Please try again later.');
+      }
+    } catch (e) {
+      // Handle network errors or parsing issues
+      showErrorToast(context, 'An error occurred. Please check your connection.');
+    }
+    return null;
+  }
+
+
 
   // Automate disbursement
   Future<http.Response> automateDisbursement(int groupId, String token) async {

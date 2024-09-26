@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:internship_frontend/data/services/user_service.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
 
 import '../../core/utils/preferences.dart';
 import '../../core/utils/toast.dart';
@@ -64,6 +65,17 @@ class AuthService {
 
   Future<String?> getAccessToken() async {
     return await _storage.read(key: 'jwt_token');
+  }
+
+  //Decode the JWT token and fetch the username.
+  Future<String?> getUsernameFromToken() async {
+    final token = await getAccessToken(); // Get token from storage
+    if (token != null && !JwtDecoder.isExpired(token)) {
+      final decodedToken = JwtDecoder.decode(token); // Decode the token
+      final username = decodedToken['username'] as String?; // Extract username
+      return username;
+    }
+    return null;
   }
 }
 

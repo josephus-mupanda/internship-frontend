@@ -7,7 +7,17 @@ class AppRoutes {
   static const String resetPassword = '/reset-password';
   static const String changePassword = '/change-password';
   static const String dashboard = '/dashboard';
-  static const String memberScreen = '$dashboard/member';
+
+
+  static const String groupMenuScreen = '$dashboard/groups';
+  //========================================================
+  static const String allMembersGroupScreen = '$groupMenuScreen/members';
+  static const String contributionGroupScreen = '$groupMenuScreen/myContribution';
+  static const String allContributionsGroupScreen = '$groupMenuScreen/allContributions';
+  static const String disbursementScreen = '$groupMenuScreen/disbursements';
+  static const String loanGroupScreen = '$groupMenuScreen/myLoan';
+  static const String allLoansGroupScreen = '$groupMenuScreen/allLoans';
+
   static const String loanOnboardingScreen = '$dashboard/loanOnboarding';
   static const String loanScreen = '$dashboard/loan';
 // Add more routes as needed

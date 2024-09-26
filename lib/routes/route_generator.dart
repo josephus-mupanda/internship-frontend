@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:internship_frontend/features/authentication/screens/confirm_email_screen.dart';
+import 'package:internship_frontend/features/group/group_menu_screen.dart';
 import 'package:internship_frontend/features/loan/loan_onboarding_screen.dart';
 import 'package:internship_frontend/features/loan/loan_screen.dart';
 import 'package:internship_frontend/features/main/main_screen.dart';
@@ -48,15 +49,62 @@ class RouteGenerator {
         return _errorRoute();
       case AppRoutes.dashboard:
         return MaterialPageRoute(builder: (_) => const MainScreen());
-
-      case AppRoutes.memberScreen:
+        //=============== GROUP MENU =======================
+      case AppRoutes.groupMenuScreen:
+        if (args is Group) {
+          return MaterialPageRoute(
+            builder: (_) => GroupMenuScreen(group: args),
+          );
+        }
+        return _errorRoute();
+        //-------- ALL MEMBERS IN A GROUP
+      case AppRoutes.allMembersGroupScreen:
         if (args is Group) {
           return MaterialPageRoute(
             builder: (_) => MemberScreen(group: args),
           );
         }
         return _errorRoute();
-
+        //-------- ALL CONTRIBUTIONS IN A GROUP
+      case AppRoutes.allContributionsGroupScreen:
+        if (args is Group) {
+          return MaterialPageRoute(
+            builder: (_) => MemberScreen(group: args),
+          );
+        }
+        return _errorRoute();
+        //-------- ALL MY CONTRIBUTIONS IN A GROUP
+      case AppRoutes.contributionGroupScreen:
+        if (args is Group) {
+          return MaterialPageRoute(
+            builder: (_) => MemberScreen(group: args),
+          );
+        }
+        return _errorRoute();
+      //-------- ALL LOANS IN A GROUP
+      case AppRoutes.allLoansGroupScreen:
+        if (args is Group) {
+          return MaterialPageRoute(
+            builder: (_) => MemberScreen(group: args),
+          );
+        }
+        return _errorRoute();
+      //-------- ALL MY LOANS IN A GROUP
+      case AppRoutes.loanGroupScreen:
+        if (args is Group) {
+          return MaterialPageRoute(
+            builder: (_) => MemberScreen(group: args),
+          );
+        }
+        return _errorRoute();
+       //-------- ALL DISBURSEMENTS IN A GROUP
+      case AppRoutes.disbursementScreen:
+        if (args is Group) {
+          return MaterialPageRoute(
+            builder: (_) => MemberScreen(group: args),
+          );
+        }
+        return _errorRoute();
       case AppRoutes.loanScreen:
         if (args is Group) {
           return MaterialPageRoute(

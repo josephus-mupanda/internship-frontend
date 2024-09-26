@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:internship_frontend/features/group/group_menu_screen.dart';
 import 'package:internship_frontend/features/loan/loan_onboarding_screen.dart';
 import 'package:internship_frontend/features/loan/loan_screen.dart';
 import '../../core/utils/preferences.dart';
@@ -35,7 +36,7 @@ class MenuProvider with ChangeNotifier {
 
   // Check onboarding status
   Future<void> checkLoanOnboardingStatus() async {
-    _hasSeenLoanOnboarding = await Preferences.getHasSeenLoanOnboarding();
+    _hasSeenLoanOnboarding =  Preferences.getHasSeenLoanOnboarding();
     notifyListeners();
   }
 
@@ -55,7 +56,7 @@ class MenuProvider with ChangeNotifier {
             const Expanded(flex: 6, child: ListOfGroups()),
             Expanded(
               flex: 9,
-              child: groups.isNotEmpty ? MemberScreen(group: groups[0]) : Container(),
+              child: groups.isNotEmpty ? GroupMenuScreen(group: groups[0]) : Container(),
             ),
           ],
         );

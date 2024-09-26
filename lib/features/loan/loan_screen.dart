@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:internship_frontend/features/group/components/header.dart';
 import 'package:internship_frontend/features/loan/loan_onboarding_screen.dart';
 import 'package:provider/provider.dart';
 
@@ -51,7 +52,7 @@ class _LoanScreenState extends State<LoanScreen> {
               :
           Column(
             children: [
-              LoanHeader(group: selectedGroup),
+              GroupHeader(group: selectedGroup),
               const Divider(thickness: 1),
               Expanded(
                 child: SingleChildScrollView(
