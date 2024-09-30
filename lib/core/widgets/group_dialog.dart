@@ -8,6 +8,7 @@ import '../../data/models/group.dart';
 import '../../themes/color_palette.dart';
 import '../constants/constants.dart';
 import '../utils/loading.dart';
+import '../utils/preferences.dart';
 import '../utils/toast.dart';
 import 'input_widget.dart';
 
@@ -163,6 +164,11 @@ class _GroupDialogState extends State<GroupDialog> {
       return;
     }
     try {
+      // Retrieve the username from AuthService or other method
+      String? username = await _authService.getUsernameFromToken();
+      if (username != null) {
+        await Preferences.setGroupCreatorUsername(username);
+      }
       await _groupService.createGroup(group,token,context);
       formKey.currentState?.reset();
       setState(() {

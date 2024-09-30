@@ -10,6 +10,8 @@ class Preferences {
   static const _keyUserToken = 'userToken';
   static const _keyUsername = 'username';
   static const _keyEmail = 'email';
+  static const _keyGroupCreatorUsername = 'groupCreatorUsername';
+
 
   // Initialize SharedPreferences
   static Future init() async {
@@ -75,6 +77,15 @@ class Preferences {
     return _preferences?.getString(_keyUsername);
   }
 
+  // Setter for group creator username
+  static Future setGroupCreatorUsername(String username) async {
+    await _preferences?.setString(_keyGroupCreatorUsername, username);
+  }
+
+// Getter for group creator username
+  static String? getGroupCreatorUsername() {
+    return _preferences?.getString(_keyGroupCreatorUsername);
+  }
 
   // Method to clear all preferences (for logout)
   static Future clear() async {

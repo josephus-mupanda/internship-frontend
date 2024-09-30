@@ -72,7 +72,7 @@ class AuthService {
     final token = await getAccessToken(); // Get token from storage
     if (token != null && !JwtDecoder.isExpired(token)) {
       final decodedToken = JwtDecoder.decode(token); // Decode the token
-      final username = decodedToken['username'] as String?; // Extract username
+      final username = decodedToken['sub'] as String?; // Extract username
       return username;
     }
     return null;

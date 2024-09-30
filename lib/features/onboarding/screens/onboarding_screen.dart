@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:internship_frontend/core/utils/images.dart';
 import 'package:internship_frontend/features/onboarding/screens/page_right_screen.dart';
 import 'package:internship_frontend/routes/app_routes.dart';
@@ -220,7 +221,10 @@ class CreatePage extends StatelessWidget {
           children: [
             SizedBox(
               height: 300,
-              child: Image.asset(image),
+              child:  SvgPicture.asset(
+                image,
+                fit: BoxFit.contain,
+              ),
             ),
             const SizedBox(
               height: 20,

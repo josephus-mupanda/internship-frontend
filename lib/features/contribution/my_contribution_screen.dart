@@ -11,6 +11,7 @@ import 'package:provider/provider.dart';
 import '../../core/constants/constants.dart';
 import '../../core/layout/responsive_widget.dart';
 import '../../core/utils/toast.dart';
+import '../../core/widgets/contribution_dialog.dart';
 import '../../core/widgets/input_widget.dart';
 import '../../data/models/group.dart';
 import '../../data/models/member.dart';
@@ -82,6 +83,25 @@ class _MyContributionScreenState extends State<MyContributionScreen> {
     fetchMyContributions();
   }
 
+  void _showContributionDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return ContributionDialog(
+          title: "Create a monthly Contribution",
+          content: "Please fill in the details below:",
+          nameYes: "Contribute",
+          nameNo: "Cancel",
+          onContributionCreated: () {
+            // Refresh contributions after creating a new contribution
+            fetchMyContributions();
+          },
+        );
+      },
+    );
+  }
+
+
   @override
   Widget build(BuildContext context) {
 
@@ -95,7 +115,7 @@ class _MyContributionScreenState extends State<MyContributionScreen> {
         child: SafeArea(
           child: Column(
             children: [
-              Header(group: selectedGroup!),
+              MemberHeader(group: selectedGroup!),
               const Divider(thickness: 1),
               Padding(
                 padding:
@@ -159,9 +179,8 @@ class _MyContributionScreenState extends State<MyContributionScreen> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-        },
-        child: const Icon(Icons.add), // Customize the FAB color as needed
+        onPressed:_showContributionDialog,
+        child: const Icon(Icons.add),
       ),
     );
   }

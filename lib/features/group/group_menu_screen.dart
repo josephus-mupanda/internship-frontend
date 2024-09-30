@@ -1,11 +1,13 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:internship_frontend/data/services/group_service.dart';
 import 'package:internship_frontend/features/group/components/group_menu_card.dart';
 import 'package:internship_frontend/routes/app_routes.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/constants/constants.dart';
+import '../../core/utils/preferences.dart';
 import '../../core/utils/toast.dart';
 import '../../data/models/group.dart';
 import '../../data/models/member.dart';
@@ -25,12 +27,12 @@ class GroupMenuScreen extends StatefulWidget {
 }
 
 class _GroupMenuScreenState extends State<GroupMenuScreen> {
-  String? _username;
+  String? _username,_groupCreatorUsername;
   Member? currentMember;
 
   bool _isLoading = true;
   final AuthService _authService = AuthService();
-  final MemberService _memberService = MemberService();
+  final GroupService _groupService = GroupService();
 
   @override
   void initState() {
@@ -43,12 +45,22 @@ class _GroupMenuScreenState extends State<GroupMenuScreen> {
       // Get the token and username
       String? token = await _authService.getAccessToken();
       String? username = await _authService.getUsernameFromToken();
+      String? creatorUsername = Preferences.getGroupCreatorUsername();
+
+      // Print the token and username for debugging
+      print('Retrieved Token >>>>>>>>>>>>>>>>>>>: $token');
+      print('Retrieved Username >>>>>>>>>>>>>>>>: $username');
+      // Print the creator's username for debugging
+      print('Retrieved Group Creator Username >>>>>>>>>: $creatorUsername');
       // Fetch the member details by username
       if (token != null && username != null) {
-        final response = await _memberService.getMemberByUsername(token, context);
+        final response = await _groupService.getMemberByUsername(token, widget.group.id!, context);
+        // Print the response for debugging
+        print('Response from getMemberByUsername >>>>>>>>>> : ${response?.body}');
         if (response != null) {
           setState(() {
             _username = username;
+            _groupCreatorUsername = creatorUsername;
             currentMember = Member.fromJson(jsonDecode(response.body));
             _isLoading = false;
           });
@@ -102,7 +114,7 @@ class _GroupMenuScreenState extends State<GroupMenuScreen> {
                   child: Column(
                     children: [
                       GroupMenuCard(
-                        icon: Icons.request_quote,
+                        icon: Icons.people,
                         iconColor: Colors.blue,
                         title: 'All members',
                         press: () {
@@ -115,7 +127,7 @@ class _GroupMenuScreenState extends State<GroupMenuScreen> {
                       ),
                       const SizedBox(height: Constants.kDefaultPadding),
 
-                      if (_username == selectedGroup.createdBy) ...[
+                      if (_username == _groupCreatorUsername) ...[
                         GroupMenuCard(
                           icon: Icons.attach_money,
                           iconColor: Colors.green,

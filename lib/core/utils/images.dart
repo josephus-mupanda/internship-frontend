@@ -3,7 +3,7 @@ class ImagePath {
   static const String imageDir = "assets/images";
   static const String iconDir =  "assets/icons";
   // Logo
-  static const String logoDark = "$imageDir/logo/logo.png";
+  // static const String logoDark = "$imageDir/logo/logo.png";
   static const String companyLogo = "$imageDir/logo/Logo Outlook.png";
   static const String google = "$imageDir/google.png";
   //Badge
@@ -11,10 +11,10 @@ class ImagePath {
   //Profile
   static const String profile = "$imageDir/profile.png";
   //Onboarding
-  static const String onBoardingSvg = "$imageDir/svg/illustration.svg";
-  static const String onBoardingImageOne = "$imageDir/plant-one.png";
-  static const String onBoardingImageTwo = "$imageDir/plant-two.png";
-  static const String onBoardingImageThree = "$imageDir/plant-three.png";
+  static const String onBoardingSvg = "$imageDir/svg/on-boarding.svg";
+  static const String onBoardingImageOne = "$imageDir/svg/savings.svg";
+  static const String onBoardingImageTwo = "$imageDir/svg/groups.svg";
+  static const String onBoardingImageThree = "$imageDir/svg/achievements.svg";
   //Login
   static const String loginImage = "$imageDir/signin.png";
   static const String loginSvg = "$imageDir/svg/login.svg";
@@ -23,9 +23,9 @@ class ImagePath {
   static const String registerSvg = "$imageDir/svg/register.svg";
   //Reset Password
   static const String resetPasswordImage = "$imageDir/reset-password.png";
-  static const String resetPasswordSvg = "$imageDir/svg/resetpassword.svg";
+  static const String resetPasswordSvg = "$imageDir/svg/reset-password.svg";
   //Change Password
   static const String changePasswordImage = "$imageDir/reset-password.png";
-  static const String changePasswordSvg = "$imageDir/svg/resetpassword.svg";
+  static const String changePasswordSvg = "$imageDir/svg/change-password.svg";
 
 }

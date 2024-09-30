@@ -42,11 +42,13 @@ class _MemberScreenState extends State<MemberScreen> {
       Navigator.pushReplacementNamed(context, AppRoutes.login);
       return;
     }
+
     try {
-      final response = await _groupService.getMembersByGroup( widget.group.id!, token, context);
+      final response = await _groupService.getMembersByGroup(widget.group.id!, token, context);
       if (response?.statusCode == 200) {
-        // Decode the JSON data
+        // // Decode the JSON data
         List<dynamic> data = jsonDecode(response!.body);
+        print(" DATA ############ $data");
         // Convert the JSON data into a list of Member objects
         List<Member> fetchedMembers = data.map((membersJson) {
           return Member.fromJson(membersJson);
@@ -54,21 +56,23 @@ class _MemberScreenState extends State<MemberScreen> {
         // Update your state or provider with the fetched members
         setState(() {
           members = fetchedMembers;
-          Provider.of<MemberProvider>(context, listen: false).setMembers(members);
+         // Provider.of<MemberProvider>(context, listen: false).setMembers(members);
         });
       } else {
-        // Handle the error if the status code is not 200
-        throw Exception("Failed to load members");
+        print("Response error: ${response?.statusCode}");
       }
+    } on FormatException {
+      print("JSON Format Error: Check the structure of your response.");
     } catch (e) {
-      // Handle any exceptions
-      print("Error fetching members: $e");
+      print("Error: $e");
     }
   }
 
   @override
   void initState() {
     super.initState();
+    // Print the group ID to check if it's being passed correctly
+    print("Fetching members for group ID ################### : ${widget.group.id!}");
     fetchMembers();
   }
 
@@ -90,7 +94,7 @@ class _MemberScreenState extends State<MemberScreen> {
         child: SafeArea(
           child: Column(
               children: [
-              Header(group: selectedGroup!),
+                MemberHeader(group: selectedGroup!),
               const Divider(thickness: 1),
               Padding(
                 padding:
@@ -150,15 +154,11 @@ class _MemberScreenState extends State<MemberScreen> {
                         physics: const NeverScrollableScrollPhysics(),
                         itemCount: members.length,
                         itemBuilder: (context, index) {
-                          return Consumer<MemberProvider>(
-                            builder: (context, memberProvider, child){
-                              return MemberCard(
-                                member: members[index],
-                                press: () {
-                                },
-                                onMemberDeleted: _onMemberDeleted,
-                              );
-                            }
+                          return MemberCard(
+                            member: members[index],
+                            press: () {
+                            },
+                            onMemberDeleted: _onMemberDeleted,
                           );
                         }
                       ),

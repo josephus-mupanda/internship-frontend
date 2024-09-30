@@ -120,13 +120,20 @@ class _SideMenuState extends State<SideMenu> {
                         ),
                         const Spacer(),
                         // We don't want to show this close button on Desktop mood
-                        if (!Responsive.isDesktop(context)) const CloseButton(),
+                        if (!Responsive.isDesktop(context)) CloseButton(
+                          color:Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+                        ),
                       ],
                     ),
-                    const CircleAvatar(
+                     CircleAvatar(
                       backgroundColor: Colors.white,
                       radius: 40,
-                      backgroundImage: AssetImage(ImagePath.profile),
+                      //backgroundImage: AssetImage(ImagePath.profile),
+                      child: Icon(
+                        FeatherIcons.user,
+                        size: 40,
+                        color:Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+                      ),
                     ),
                     _user != null ? Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -253,16 +260,20 @@ class _SideMenuState extends State<SideMenu> {
   void _showLogoutDialog() {
     showDialog(
       context: context,
+      barrierDismissible: false,
       builder: (BuildContext context) {
-        return MyDialog(
-          title: "Logout",
-          content: "Are you sure you want to logout?",
-          nameYes: "Yes",
-          nameNo: "No",
-          ok: () async {
-            Navigator.of(context).pop(); // Close the dialog
-            await _logoutUser(); // Call logout method
-          },
+        return WillPopScope(
+          onWillPop: () async => false,
+          child: MyDialog(
+            title: "Logout",
+            content: "Are you sure you want to logout?",
+            nameYes: "Yes",
+            nameNo: "No",
+            ok: () async {
+              Navigator.of(context).pop(); // Close the dialog
+              await _logoutUser(); // Call logout method
+            },
+          ),
         );
       },
     );

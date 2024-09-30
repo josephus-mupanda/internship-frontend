@@ -109,22 +109,13 @@ class GroupHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<String?>(
-
-        future: _authService.getUsernameFromToken(),
-        builder: (context, snapshot) {
-          if (!snapshot.hasData) {
-            return const  CircularProgressIndicator();
-          }
-
-          String username = snapshot.data ?? '';
-          return InkWell(
-            onTap: () => _showGroupPopup(context, username),
+    return InkWell(
+            //onTap: () => _showGroupPopup(context, username),
             child: Padding(
               padding: const EdgeInsets.all(Constants.kDefaultPadding),
               child: Row(
                 children: [
-                  if (Responsive.isMobile(context)) BackButton(
+                  BackButton(
                     color:  Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
                   ),
                   CircleAvatar(
@@ -158,7 +149,5 @@ class GroupHeader extends StatelessWidget {
               ),
             ),
           );
-        }
-    );
   }
 }

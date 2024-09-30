@@ -95,7 +95,7 @@ class _MyLoanHistoryScreenState extends State<MyLoanHistoryScreen> {
         child: SafeArea(
           child: Column(
             children: [
-              Header(group: selectedGroup!),
+              MemberHeader(group: selectedGroup!),
               const Divider(thickness: 1),
               Padding(
                 padding:
@@ -144,16 +144,7 @@ class _MyLoanHistoryScreenState extends State<MyLoanHistoryScreen> {
                   ],
                 ),
               ),
-              const Expanded(
-                child: SingleChildScrollView(
-                  padding: EdgeInsets.all(Constants.kDefaultPadding),
-                  child: Column(
-                    children: [
-                      // This is our Search bar
-                    ],
-                  ),
-                ),
-              ),
+
             ],
           ),
         ),

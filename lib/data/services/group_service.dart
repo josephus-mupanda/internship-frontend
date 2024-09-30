@@ -161,9 +161,12 @@ class GroupService {
       );
       if (!context.mounted) return null;
 
+      // Log the response body
+      print('Response body ######################### : ${response.body}');
       // Check the status code and show appropriate toast messages
       if (response.statusCode == 200) {
-        showSuccessToast(context, 'Members retrieved successfully');
+        // showSuccessToast(context, 'Members retrieved successfully');
+        return response;
       } else if (response.statusCode == 400) {
         showErrorToast(context, 'Invalid token. Please log in again.');
       } else if (response.statusCode == 403) {
@@ -173,13 +176,38 @@ class GroupService {
       } else {
         showWarningToast(context, 'Failed to retrieve members. Please try again later.');
       }
-      return response;
     } catch (e) {
       // Handle network errors or parsing issues
       showErrorToast(context, 'An error occurred. Please check your connection.');
     }
     return null;
   }
+
+  Future<http.Response?> getMemberByUsername(String token, int groupId, BuildContext context) async {
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/$groupId/members/by-username'),
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      );
+      if (!context.mounted) return null;
+      if (response.statusCode == 200) {
+        return response;
+      } else if (response.statusCode == 400) {
+        showErrorToast(context, "Invalid token or bad request. Please try again.");
+      } else if (response.statusCode == 404) {
+        showWarningToast(context, "Member not found. Please check the member username.");
+      } else {
+        showWarningToast(context, "Failed to retrieve the member . Please try again later.");
+      }
+    }
+    catch(e){
+      showErrorToast(context, "An error occurred. Please check your connection.");
+    }
+    return null;
+  }
+
   // =============================== CONTRIBUTIONS =======================================
   // Create a new contribution
   Future<http.Response?> createContribution(int groupId,Contribution contribution, String token,BuildContext context) async {

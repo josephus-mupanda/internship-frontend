@@ -5,10 +5,10 @@ import 'package:websafe_svg/websafe_svg.dart';
 import '../../../core/layout/responsive_widget.dart';
 import '../../../data/models/group.dart';
 
-class Header extends StatelessWidget {
+class MemberHeader extends StatelessWidget {
   final Group group;
 
-  const Header({super.key,
+  const MemberHeader({super.key,
     required this.group,
   });
 
@@ -19,53 +19,37 @@ class Header extends StatelessWidget {
       child: Row(
         children: [
           // We need this back button on mobile only
-          if (Responsive.isMobile(context)) const BackButton(),
+           BackButton(
+            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+          ),
 
-          Expanded(
-            child: Text.rich(
-              TextSpan(
-                text: group.name   ?? "No Name",
+          CircleAvatar(
+            radius: 25,
+            child: Text(
+              group.name.isNotEmpty
+                  ? group.name[0].toUpperCase()
+                  : 'G',
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+          ),
+          const SizedBox(width: Constants.kDefaultPadding),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                group.name ?? "No Name",
                 style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w500,
                 ),
-                children: [
-                  TextSpan(
-                    text:  'Created by: ${group.createdBy ?? 'Unknown'}',
-                    style: Theme.of(context)
-                        .textTheme
-                        .bodyMedium
-                        ?.copyWith(
-                    ),
-                  ),
-                ],
               ),
-            ),
+              Text(
+                'Created by: ${group.createdBy ?? 'Unknown'}',
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+            ],
           ),
           const Spacer(),
-          // We don't need print option on mobile
-          if (Responsive.isDesktop(context))
-            IconButton(
-              icon: WebsafeSvg.asset(
-                "assets/Icons/Printer.svg",
-                width: 24,
-              ),
-              onPressed: () {},
-            ),
-          IconButton(
-            icon: WebsafeSvg.asset(
-              "assets/Icons/Markup.svg",
-              width: 24,
-            ),
-            onPressed: () {},
-          ),
-          IconButton(
-            icon: WebsafeSvg.asset(
-              "assets/Icons/More vertical.svg",
-              width: 24,
-            ),
-            onPressed: () {},
-          ),
         ],
       ),
     );

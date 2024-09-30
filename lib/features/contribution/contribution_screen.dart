@@ -90,7 +90,7 @@ class _ContributionScreenState extends State<ContributionScreen> {
         child: SafeArea(
           child: Column(
             children: [
-              Header(group: selectedGroup!),
+              MemberHeader(group: selectedGroup!),
               const Divider(thickness: 1),
               Padding(
                 padding:
