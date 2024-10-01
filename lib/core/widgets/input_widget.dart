@@ -36,7 +36,7 @@ class InputWidget extends StatelessWidget {
     this.kKey,
     this.kController,
     this.kInitialValue,
-    this.kReadOnly = false
+    this.kReadOnly = false,
   });
 
   @override

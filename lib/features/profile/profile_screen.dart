@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
+import 'package:provider/provider.dart';
 
 import '../../core/constants/constants.dart';
 import '../../core/layout/responsive_widget.dart';
@@ -9,6 +10,7 @@ import '../../core/utils/toast.dart';
 import '../../core/widgets/button_widget.dart';
 import '../../core/widgets/input_widget.dart';
 import '../../data/models/user.dart';
+import '../../data/providers/user_provider.dart';
 import '../../data/services/auth_service.dart';
 import '../../data/services/user_service.dart';
 import '../../routes/app_routes.dart';
@@ -25,6 +27,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _phoneNumberController = TextEditingController();
+
 
   String _username = "";
   String _email = "";
@@ -52,7 +59,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       String? username = await _authService.getUsernameFromToken();
 
       if (token == null || username == null) {
-        showErrorToast(context, 'Session expired. Please log in again.');
+        //showErrorToast(context, 'Session expired. Please log in again.');
         // Use logout method to clear session data and redirect to login
         await _authService.logout(context);
         Navigator.pushNamedAndRemoveUntil(context, AppRoutes.login, (route) => false);
@@ -66,6 +73,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
           _username = response.username;
           _email = response.email!;
           _phoneNumber = response.phoneNumber!;
+
+          // Update controllers with fetched values
+          _usernameController.text = _username;
+          _emailController.text = _email;
+          _phoneNumberController.text = _phoneNumber;
 
         });
       }
@@ -128,14 +140,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                       // Username Field
                       InputWidget(
-                        hintText: "Username",
+                        kController: _usernameController,
+                        //hintText: "Username",
                         prefixIcon: Icons.person,
                         onChanged: (value) {
                           setState(() {
                             _username = value; // Update username on change
                           });
                         },
-                        kInitialValue: _username,
+                        //kInitialValue: _username,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Please enter your username';
@@ -147,7 +160,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                       // Email Field
                       InputWidget(
-                        hintText: "Email",
+                        kController: _emailController,
+                        //hintText: "Email",
                         prefixIcon: Icons.mail,
                         keyboardType: TextInputType.emailAddress,
                         onChanged: (value) {
@@ -155,7 +169,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             _email = value; // Update email on change
                           });
                         },
-                        kInitialValue: _email,
+                        //kInitialValue: _email,
                         validator: (String? value) {
                           return value!.isEmpty ? "Field is required" : !_emailRegex.hasMatch(value) ? "Invalid email format" : null;
                         },
@@ -164,7 +178,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                       // Phone Number Field
                       InputWidget(
-                        hintText: "Phone Number",
+                        kController: _phoneNumberController,
+                        //hintText: "Phone Number",
                         prefixIcon: Icons.phone,
                         keyboardType: TextInputType.phone,
                         onChanged: (value) {
@@ -172,7 +187,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             _phoneNumber = value; // Update phone number on change
                           });
                         },
-                        kInitialValue: _phoneNumber,
+                        //kInitialValue: _phoneNumber,
                         validator: (String? value) {
                           return value!.isEmpty ? "Field is required" : !_phoneNumberRegex.hasMatch(value) ? "Invalid phone number format" : null;
                         },
@@ -211,7 +226,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     String? token = await _authService.getAccessToken();
     if (!context.mounted) return;
     if (token == null) {
-      showErrorToast(context, 'Session expired. Please log in again.');
+      //showErrorToast(context, 'Session expired. Please log in again.');
       // Use logout method to clear session data and redirect to login
       await _authService.logout(context);
       Navigator.pushNamedAndRemoveUntil(context, AppRoutes.login, (route) => false);
@@ -226,6 +241,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
         _email = user.email!;
         _phoneNumber = user.phoneNumber!;
       });
+      // Update the UserProvider with the new user data
+      Provider.of<UserProvider>(context, listen: false).updateUser(user);
 
       showSuccessToast(context, "Profile updated successfully");
     } catch (e) {

@@ -144,7 +144,7 @@ class _SideMenuState extends State<SideMenu> {
                           ],
                         ),
                         CircleAvatar(
-                          backgroundColor: Colors.white,
+                          backgroundColor: Theme.of(context).cardColor,
                           radius: 40,
                           //backgroundImage: AssetImage(ImagePath.profile),
                           child: Icon(

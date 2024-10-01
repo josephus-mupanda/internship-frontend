@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:internship_frontend/features/group/group_menu_screen.dart';
 import 'package:internship_frontend/features/loan/loan_onboarding_screen.dart';
 import 'package:internship_frontend/features/loan/loan_screen.dart';
+import 'package:internship_frontend/features/logout/logout_screen.dart';
 import '../../core/utils/preferences.dart';
 import '../../features/group/list_of_groups.dart';
 import '../../features/loan/list_of_loans.dart';
@@ -97,7 +98,7 @@ class MenuProvider with ChangeNotifier {
           children: [
             Expanded(
               flex: 12,
-              child: ProfileScreen(), // Replace with your ProfileScreen widget
+              child: LogoutScreen(),
             ),
           ],
         );

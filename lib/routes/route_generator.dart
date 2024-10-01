@@ -133,6 +133,15 @@ class RouteGenerator {
           );
         }
         return _errorRoute();
+
+      // case AppRoutes.loanOnboardingScreen:
+      //   if (args is Group) {
+      //     return MaterialPageRoute(
+      //       builder: (_) => LoanScreen(group: args),
+      //     );
+      //   }
+      //   return _errorRoute();
+
         // return MaterialPageRoute(builder: (_) => LoanOnboardingScreen(
         //   onboardingComplete: () {  },)
         // );
