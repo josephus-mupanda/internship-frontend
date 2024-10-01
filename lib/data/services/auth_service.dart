@@ -25,7 +25,7 @@ class AuthService {
       if (token != null && username != null && email != null) {
 
         await _storage.write(key: 'jwt_token', value: token); // Store securely
-        await Preferences.setUserToken(token); // Save the token using Preferences class
+        //await Preferences.setUserToken(token); // Save the token using Preferences class
         await Preferences.setIsLoggedIn(true); // Set login status to true
         await Preferences.setUsername(username); // Store username
         await Preferences.setEmail(email); // Store email

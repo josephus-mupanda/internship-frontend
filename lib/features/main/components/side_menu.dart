@@ -20,6 +20,7 @@ import '../../../data/models/user.dart';
 import '../../../data/providers/group_provider.dart';
 import '../../../data/providers/menu_provider.dart';
 import '../../../data/providers/theme_provider.dart';
+import '../../../data/providers/user_provider.dart';
 import '../../../data/services/auth_service.dart';
 import '../../../data/services/group_service.dart';
 import 'side_menu_item.dart';
@@ -85,6 +86,9 @@ class _SideMenuState extends State<SideMenu> {
 
   Future<void> _loadUserDetails() async {
     final user = await getUserDetails();
+    if (user != null) {
+      Provider.of<UserProvider>(context, listen: false).setUser(user);
+    }
     setState(() {
       _user = user;
     });
@@ -101,154 +105,161 @@ class _SideMenuState extends State<SideMenu> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: double.infinity,
-      padding: const EdgeInsets.only(top: kIsWeb ? Constants.kDefaultPadding : 0),
-      color: Theme.of(context).colorScheme.background,
-      child: SafeArea(
-        child: Column(
-          children: [
-            Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: Constants.kDefaultPadding),
-                child: Column(
-                  children: [
-                    Row(
+    return Consumer<UserProvider>(
+      builder: (context,userProvider,child){
+        return Container(
+          height: double.infinity,
+          padding: const EdgeInsets.only(top: kIsWeb ? Constants.kDefaultPadding : 0),
+          color: Theme.of(context).colorScheme.background,
+          child: SafeArea(
+            child: Column(
+              children: [
+                Expanded(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.symmetric(horizontal: Constants.kDefaultPadding),
+                    child: Column(
                       children: [
-                        Image.asset(
-                          ImagePath.companyLogo,
-                          width: 46,
+                        Row(
+                          children: [
+                            Image.asset(
+                              ImagePath.companyLogo,
+                              width: 46,
+                            ),
+                            const Spacer(),
+                            IconButton(
+                              icon: Icon(
+                                Provider.of<ThemeProvider>(context).isDarkTheme
+                                    ? Icons.wb_sunny
+                                    : Icons.nights_stay,
+                                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+                              ),
+                              onPressed: () {
+                                Provider.of<ThemeProvider>(context, listen: false).toggleTheme();
+                              },
+                            ),
+                            const SizedBox(width: Constants.kDefaultPadding/2),
+                            if (!Responsive.isDesktop(context)) CloseButton(
+                              color:Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+                            ),
+                          ],
                         ),
-                        const Spacer(),
-                        IconButton(
-                          icon: Icon(
-                            Provider.of<ThemeProvider>(context).isDarkTheme
-                                ? Icons.wb_sunny
-                                : Icons.nights_stay,
-                            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+                        CircleAvatar(
+                          backgroundColor: Colors.white,
+                          radius: 40,
+                          //backgroundImage: AssetImage(ImagePath.profile),
+                          child: Icon(
+                            FeatherIcons.user,
+                            size: 40,
+                            color:Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
                           ),
-                          onPressed: () {
-                            Provider.of<ThemeProvider>(context, listen: false).toggleTheme();
-                          },
                         ),
-                        const SizedBox(width: Constants.kDefaultPadding/2),
-                        if (!Responsive.isDesktop(context)) CloseButton(
-                          color:Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
-                        ),
-                      ],
-                    ),
-                     CircleAvatar(
-                      backgroundColor: Colors.white,
-                      radius: 40,
-                      //backgroundImage: AssetImage(ImagePath.profile),
-                      child: Icon(
-                        FeatherIcons.user,
-                        size: 40,
-                        color:Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
-                      ),
-                    ),
-                    _user != null ? Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          _user!.username,
-                          overflow: TextOverflow.ellipsis,
-                          style: Theme.of(context).textTheme.bodyMedium,
-                        ),
-                        const SizedBox(height: 5),
-                        Text(
-                          _user!.email!,
-                          overflow: TextOverflow.ellipsis,
+                        //_user != null ?
+                        userProvider.user != null ? Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                             // _user!.username,
+                              userProvider.user!.username,
+                              overflow: TextOverflow.ellipsis,
+                              style: Theme.of(context).textTheme.bodyMedium,
+                            ),
+                            const SizedBox(height: 5),
+                            Text(
+                              //_user!.email!,
+                              userProvider.user!.email!,
+                              overflow: TextOverflow.ellipsis,
+                              style: Theme.of(context).textTheme.bodySmall,
+                            ),
+                          ],
+                        ) : Text(
+                          'Loading...',
                           style: Theme.of(context).textTheme.bodySmall,
                         ),
+                        const SizedBox(height: Constants.kDefaultPadding),
+                        SizedBox(
+                            width: double.infinity,
+                            child:  TextButton.icon(
+                              style: TextButton.styleFrom(
+                                padding: const EdgeInsets.symmetric(vertical: Constants.kDefaultPadding),
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                                backgroundColor: ColorPalette.primaryColor, // Use backgroundColor instead of color
+                                //foregroundColor: kTextColor, // Set the text color here
+                              ),
+                              onPressed: () {
+                                _showGroupDialog();
+                              },
+                              icon: const Icon( FeatherIcons.edit, color:Colors.white, size: 16,),
+                              label: const Text(
+                                "Create a group",
+                                style: TextStyle(color: Colors.white),
+                              ),
+                            )
+                        ),
+                        const SizedBox(height: Constants.kDefaultPadding * 2),
+                        Consumer<MenuProvider>(
+                            builder: (context, menuProvider, child) {
+                              return Column(
+                                children: [
+                                  MenuItem(
+                                    title: "Groups",
+                                    groupValue: MenuItemSelect.GROUPS,
+                                    value: menuProvider.selectedItem,
+                                    onChanged: (value) {
+                                      menuProvider.selectItem(MenuItemSelect.GROUPS);
+                                    },
+                                    icon: FeatherIcons.users,
+                                  ),
+                                  MenuItem(
+                                    title: "Loans",
+                                    groupValue: MenuItemSelect.LOANS,
+                                    value: menuProvider.selectedItem,
+                                    onChanged: (value) {
+                                      menuProvider.selectItem(MenuItemSelect.LOANS);
+                                    },
+                                    icon: FontAwesomeIcons.wallet,
+                                  ),
+                                  MenuItem(
+                                    title: "Transactions",
+                                    groupValue: MenuItemSelect.TRANSACTIONS,
+                                    value: menuProvider.selectedItem,
+                                    onChanged:(value) {
+                                      menuProvider.selectItem(MenuItemSelect.TRANSACTIONS);
+                                    },
+                                    icon: FeatherIcons.creditCard,
+                                  ),
+                                  MenuItem(
+                                    title: "Profile",
+                                    groupValue: MenuItemSelect.PROFILE,
+                                    value: menuProvider.selectedItem,
+                                    onChanged: (value) {
+                                      menuProvider.selectItem(MenuItemSelect.PROFILE);
+                                    },
+                                    icon: FeatherIcons.user,
+                                  ),
+                                  MenuItem(
+                                    title: "Logout",
+                                    groupValue: MenuItemSelect.LOGOUT,
+                                    value: menuProvider.selectedItem,
+                                    onChanged: (value) async {
+                                      menuProvider.selectItem(MenuItemSelect.LOGOUT);
+                                      _showLogoutDialog();
+                                    },
+                                    icon: FeatherIcons.power,
+                                  ),
+                                ],
+                              );
+                            }
+                        ),
+                        const SizedBox(height: Constants.kDefaultPadding * 2),
                       ],
-                    ) : Text(
-                      'Loading...',
-                      style: Theme.of(context).textTheme.bodySmall,
                     ),
-                    const SizedBox(height: Constants.kDefaultPadding),
-                    SizedBox(
-                    width: double.infinity,
-                      child:  TextButton.icon(
-                        style: TextButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: Constants.kDefaultPadding),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                          backgroundColor: ColorPalette.primaryColor, // Use backgroundColor instead of color
-                          //foregroundColor: kTextColor, // Set the text color here
-                        ),
-                        onPressed: () {
-                          _showGroupDialog();
-                        },
-                        icon: const Icon( FeatherIcons.edit, color:Colors.white, size: 16,),
-                        label: const Text(
-                          "Create a group",
-                          style: TextStyle(color: Colors.white),
-                        ),
-                      )
-                    ),
-                    const SizedBox(height: Constants.kDefaultPadding * 2),
-                    Consumer<MenuProvider>(
-                        builder: (context, menuProvider, child) {
-                            return Column(
-                              children: [
-                                MenuItem(
-                                  title: "Groups",
-                                  groupValue: MenuItemSelect.GROUPS,
-                                  value: menuProvider.selectedItem,
-                                  onChanged: (value) {
-                                    menuProvider.selectItem(MenuItemSelect.GROUPS);
-                                  },
-                                  icon: FeatherIcons.users,
-                                ),
-                                MenuItem(
-                                  title: "Loans",
-                                  groupValue: MenuItemSelect.LOANS,
-                                  value: menuProvider.selectedItem,
-                                  onChanged: (value) {
-                                    menuProvider.selectItem(MenuItemSelect.LOANS);
-                                  },
-                                  icon: FontAwesomeIcons.wallet,
-                                ),
-                                MenuItem(
-                                  title: "Transactions",
-                                  groupValue: MenuItemSelect.TRANSACTIONS,
-                                  value: menuProvider.selectedItem,
-                                  onChanged:(value) {
-                                    menuProvider.selectItem(MenuItemSelect.TRANSACTIONS);
-                                  },
-                                  icon: FeatherIcons.creditCard,
-                                ),
-                                MenuItem(
-                                  title: "Profile",
-                                  groupValue: MenuItemSelect.PROFILE,
-                                  value: menuProvider.selectedItem,
-                                  onChanged: (value) {
-                                    menuProvider.selectItem(MenuItemSelect.PROFILE);
-                                  },
-                                  icon: FeatherIcons.user,
-                                ),
-                                MenuItem(
-                                  title: "Logout",
-                                  groupValue: MenuItemSelect.LOGOUT,
-                                  value: menuProvider.selectedItem,
-                                  onChanged: (value) async {
-                                    menuProvider.selectItem(MenuItemSelect.LOGOUT);
-                                    _showLogoutDialog();
-                                  },
-                                  icon: FeatherIcons.power,
-                                ),
-                              ],
-                            );
-                        }
-                    ),
-                    const SizedBox(height: Constants.kDefaultPadding * 2),
-                  ],
+                  ),
                 ),
-              ),
+              ],
             ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 

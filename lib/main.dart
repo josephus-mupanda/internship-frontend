@@ -4,6 +4,7 @@ import 'package:app_links/app_links.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:internship_frontend/data/providers/theme_provider.dart';
+import 'package:internship_frontend/data/providers/user_provider.dart';
 import 'package:internship_frontend/routes/app_routes.dart';
 import 'package:internship_frontend/routes/route_generator.dart';
 import 'package:internship_frontend/themes/app_theme.dart';
@@ -24,6 +25,7 @@ void main() async {
       providers: [
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
         ChangeNotifierProvider(create: (_) => MenuProvider()),
+        ChangeNotifierProvider(create: (_) => UserProvider()),
         ChangeNotifierProvider(create: (_) => GroupProvider()),
         ChangeNotifierProvider(create: (_) => MemberProvider())
       ],

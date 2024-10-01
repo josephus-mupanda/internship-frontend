@@ -4,7 +4,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'package:internship_frontend/core/config/environment.dart';
 import '../../core/config/app_config.dart';
-
 import '../../core/utils/toast.dart';
 import '../models/user.dart';
 
@@ -35,7 +34,34 @@ class UserService {
     }
     return null;
   }
+  // Get user by username
+  Future<User?> getUserByUsername(String username, String token, BuildContext context) async {
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/username/$username'),
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      );
 
+      if (!context.mounted) return null;
+
+      if (response.statusCode == 200) {
+        // Parse the response body into UserDTO format
+        final Map<String, dynamic> userMap = jsonDecode(response.body);
+        return User.fromJson(userMap); // Assuming your User model has a `fromJson` method
+      } else if (response.statusCode == 400) {
+        showErrorToast(context, "Invalid token or bad request. Please try again.");
+      } else if (response.statusCode == 404) {
+        showWarningToast(context, "User not found. Please check the username.");
+      } else {
+        showWarningToast(context, "Failed to retrieve the user. Please try again later.");
+      }
+    } catch (e) {
+      showErrorToast(context, "An error occurred. Please check your connection.");
+    }
+    return null;
+  }
   // Register a new user
   Future<http.Response> registerUser(User user) async {
     final response = await http.post(

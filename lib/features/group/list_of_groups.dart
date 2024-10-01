@@ -40,7 +40,9 @@ class _ListOfGroupsState extends State<ListOfGroups> {
     // Retrieve the token from secure storage
     String? token = await _authService.getAccessToken();
     if (token == null) {
-      Navigator.pushReplacementNamed(context, AppRoutes.login);
+      showErrorToast(context, 'Session expired. Please log in again.');
+      await _authService.logout(context);
+      Navigator.pushNamedAndRemoveUntil(context, AppRoutes.login, (route) => false);
       return;
     }
 
