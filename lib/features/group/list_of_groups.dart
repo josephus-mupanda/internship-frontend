@@ -33,13 +33,13 @@ class _ListOfGroupsState extends State<ListOfGroups> {
   final GroupService _groupService = GroupService();
   final AuthService _authService = AuthService();
   List<Group> groups = [];
+  List<Group> filteredGroups = [];
 
   Future<void> fetchGroups() async {
 
     // Retrieve the token from secure storage
     String? token = await _authService.getAccessToken();
     if (token == null) {
-      //showErrorToast(context, 'Token not found. Please log in again.');
       Navigator.pushReplacementNamed(context, AppRoutes.login);
       return;
     }
@@ -49,14 +49,13 @@ class _ListOfGroupsState extends State<ListOfGroups> {
       if (response.statusCode == 200) {
         // Decode the JSON data
         List<dynamic> data = jsonDecode(response.body);
-        // Convert the JSON data into a list of Group objects
         List<Group> fetchedGroups = data.map((groupJson) {
           return Group.fromJson(groupJson);
         }).toList();
         // Update your state or provider with the fetched groups
         setState(() {
           groups = fetchedGroups;
-          // Update GroupProvider with the fetched groups
+          filteredGroups = groups;
           Provider.of<GroupProvider>(context, listen: false).setGroups(groups);
         });
       } else {
@@ -67,6 +66,26 @@ class _ListOfGroupsState extends State<ListOfGroups> {
       // Handle any exceptions
       print("Error fetching groups: $e");
     }
+  }
+
+  void filterGroups(String query) {
+    setState(() {
+      filteredGroups = groups.where((group) {
+        return group.name.toLowerCase().contains(query.toLowerCase()) ||
+            group.description.toLowerCase().contains(query.toLowerCase());
+      }).toList();
+    });
+  }
+
+  void sortGroupsByDate(bool ascending) {
+    setState(() {
+      filteredGroups.sort((a, b) {
+        if (a.createdAt == null && b.createdAt == null) return 0; // Both are null
+        if (a.createdAt == null) return ascending ? 1 : -1; // a is null, b is not
+        if (b.createdAt == null) return ascending ? -1 : 1; // b is null, a is not
+        return ascending ? a.createdAt!.compareTo(b.createdAt!) : b.createdAt!.compareTo(a.createdAt!);
+      });
+    });
   }
 
   @override
@@ -132,7 +151,9 @@ class _ListOfGroupsState extends State<ListOfGroups> {
                           onPressed: () {
                           },
                         ),
-                        onChanged: (String? value) {},
+                        onChanged: (String? value) {
+                          filterGroups(value ?? "");
+                        },
                         validator: (String? value) {},
                       ),
                     ),
@@ -145,19 +166,23 @@ class _ListOfGroupsState extends State<ListOfGroups> {
                 const EdgeInsets.symmetric(horizontal: Constants.kDefaultPadding),
                 child: Row(
                   children: [
-                    Icon(
-                      FeatherIcons.chevronDown,
-                      color: theme.colorScheme.onSurface.withOpacity(0.5),
-                    ),
                     const SizedBox(width: 5),
                     Text(
                       "Sort by date",
                       style: theme.textTheme.bodyMedium,
                     ),
                     const Spacer(),
-                    Icon(
-                      FeatherIcons.filter,
-                      color: theme.colorScheme.onSurface.withOpacity(0.5),
+                    IconButton(
+                      icon: Icon(Icons.arrow_upward, color: theme.colorScheme.onSurface.withOpacity(0.5)),
+                      onPressed: () {
+                        sortGroupsByDate(true); // Ascending
+                      },
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.arrow_downward, color: theme.colorScheme.onSurface.withOpacity(0.5)),
+                      onPressed: () {
+                        sortGroupsByDate(false); // Descending
+                      },
                     ),
                   ],
                 ),
@@ -165,7 +190,7 @@ class _ListOfGroupsState extends State<ListOfGroups> {
               const SizedBox(height: Constants.kDefaultPadding),
               Expanded(
                 child: ListView.builder(
-                  itemCount: groups.length,
+                  itemCount: filteredGroups.length,
                   itemBuilder: (context, index) {
 
                     return Consumer<GroupProvider>(
@@ -175,16 +200,16 @@ class _ListOfGroupsState extends State<ListOfGroups> {
                         //   groupProvider.selectGroup(groups[0]);
                         // }
 
-                        final isSelected = groupProvider.selectedGroup == groups[index];
+                        final isSelected = groupProvider.selectedGroup == filteredGroups[index];
                         return GroupCard(
                           isActive: Responsive.isMobile(context) ? false : isSelected, // Responsive.isMobile(context) ? false : index == 0,
-                          group: groups[index],
+                          group: filteredGroups[index],
                           press: () {
-                            groupProvider.selectGroup(groups[index]);
+                            groupProvider.selectGroup(filteredGroups[index]);
                             if(Responsive.isMobile(context)) {
                               Navigator.pushNamed(context,
                                 AppRoutes.groupMenuScreen,
-                                arguments: groups[index],
+                                arguments: filteredGroups[index],
                               );
                             }
                           },
