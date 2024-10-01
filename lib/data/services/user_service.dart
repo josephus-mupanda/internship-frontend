@@ -92,4 +92,33 @@ class UserService {
     );
     return response;
   }
+
+  // Update user profile
+  Future<http.Response?> updateUser(User user, String token, BuildContext context) async {
+    try {
+      final response = await http.put(
+        Uri.parse('$baseUrl/update'),
+        headers: Environment.getJsonHeaders(token),
+        body: jsonEncode(user.toJson()), // Convert user object to JSON
+      );
+
+      if (!context.mounted) return null;
+
+      if (response.statusCode == 200) {
+        // Successfully updated the user profile
+        return response;
+      } else if (response.statusCode == 400) {
+        showErrorToast(context, "Invalid token or bad request. Please try again.");
+      } else if (response.statusCode == 404) {
+        showWarningToast(context, "User not found. Please check the user ID.");
+      } else if (response.statusCode == 409) {
+        showWarningToast(context, "Username already taken. Please choose another username.");
+      } else {
+        showWarningToast(context, "Failed to update user profile. Please try again later.");
+      }
+    } catch (e) {
+      showErrorToast(context, "An error occurred. Please check your connection.");
+    }
+    return null;
+  }
 }

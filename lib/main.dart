@@ -16,7 +16,6 @@ import 'data/providers/member_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
   // Initialize SharedPreferences
   await Preferences.init();
 
@@ -52,7 +51,6 @@ void handleIncomingLinks() async {
       }
     });
   }
-
   // Web URL handling
   if (kIsWeb) {
     final Uri uri = Uri.base; // Gets the current URL in the browser
