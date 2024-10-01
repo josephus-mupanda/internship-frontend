@@ -11,7 +11,7 @@ class Preferences {
   static const _keyUsername = 'username';
   static const _keyEmail = 'email';
   static const _keyGroupCreatorUsername = 'groupCreatorUsername';
-
+  static const _keyTheme = 'isDarkTheme';
 
   // Initialize SharedPreferences
   static Future init() async {
@@ -82,9 +82,19 @@ class Preferences {
     await _preferences?.setString(_keyGroupCreatorUsername, username);
   }
 
-// Getter for group creator username
+  // Getter for group creator username
   static String? getGroupCreatorUsername() {
     return _preferences?.getString(_keyGroupCreatorUsername);
+  }
+
+  // Setter for theme preference
+  static Future setIsDarkTheme(bool isDarkTheme) async {
+    await _preferences?.setBool(_keyTheme, isDarkTheme);
+  }
+
+  // Getter for theme preference
+  static bool? getIsDarkTheme() {
+    return _preferences?.getBool(_keyTheme);
   }
 
   // Method to clear all preferences (for logout)

@@ -19,6 +19,7 @@ import '../../../data/models/group.dart';
 import '../../../data/models/user.dart';
 import '../../../data/providers/group_provider.dart';
 import '../../../data/providers/menu_provider.dart';
+import '../../../data/providers/theme_provider.dart';
 import '../../../data/services/auth_service.dart';
 import '../../../data/services/group_service.dart';
 import 'side_menu_item.dart';
@@ -119,7 +120,18 @@ class _SideMenuState extends State<SideMenu> {
                           width: 46,
                         ),
                         const Spacer(),
-                        // We don't want to show this close button on Desktop mood
+                        IconButton(
+                          icon: Icon(
+                            Provider.of<ThemeProvider>(context).isDarkTheme
+                                ? Icons.wb_sunny
+                                : Icons.nights_stay,
+                            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+                          ),
+                          onPressed: () {
+                            Provider.of<ThemeProvider>(context, listen: false).toggleTheme();
+                          },
+                        ),
+                        const SizedBox(width: Constants.kDefaultPadding/2),
                         if (!Responsive.isDesktop(context)) CloseButton(
                           color:Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
                         ),

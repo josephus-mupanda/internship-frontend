@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:app_links/app_links.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:internship_frontend/data/providers/theme_provider.dart';
 import 'package:internship_frontend/routes/app_routes.dart';
 import 'package:internship_frontend/routes/route_generator.dart';
 import 'package:internship_frontend/themes/app_theme.dart';
@@ -22,6 +23,7 @@ void main() async {
   runApp(
     MultiProvider(
       providers: [
+        ChangeNotifierProvider(create: (_) => ThemeProvider()),
         ChangeNotifierProvider(create: (_) => MenuProvider()),
         ChangeNotifierProvider(create: (_) => GroupProvider()),
         ChangeNotifierProvider(create: (_) => MemberProvider())
@@ -101,9 +103,11 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+
     return MaterialApp(
       title: 'Ikimina',
-      theme: AppTheme.darkTheme,
+      theme: themeProvider.isDarkTheme ? AppTheme.darkTheme : AppTheme.lightTheme,
       debugShowCheckedModeBanner: false,
       initialRoute: AppRoutes.splash,
       onGenerateRoute: RouteGenerator.generateRoute,
