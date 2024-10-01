@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:internship_frontend/data/providers/member_provider.dart';
+import 'package:internship_frontend/data/providers/menu_provider.dart';
 import 'package:internship_frontend/data/services/group_service.dart';
 import 'package:provider/provider.dart';
 
@@ -43,29 +44,29 @@ class _MemberScreenState extends State<MemberScreen> {
       return;
     }
 
-    try {
-      final response = await _groupService.getMembersByGroup(widget.group.id!, token, context);
-      if (response?.statusCode == 200) {
-        // // Decode the JSON data
-        List<dynamic> data = jsonDecode(response!.body);
-        print(" DATA ############ $data");
-        // Convert the JSON data into a list of Member objects
-        List<Member> fetchedMembers = data.map((membersJson) {
-          return Member.fromJson(membersJson);
-        }).toList();
-        // Update your state or provider with the fetched members
-        setState(() {
-          members = fetchedMembers;
-         // Provider.of<MemberProvider>(context, listen: false).setMembers(members);
-        });
-      } else {
-        print("Response error: ${response?.statusCode}");
-      }
-    } on FormatException {
-      print("JSON Format Error: Check the structure of your response.");
-    } catch (e) {
-      print("Error: $e");
-    }
+    // try {
+    //   final response = await _groupService.getMembersByGroup(widget.group.id!, token, context);
+    //   if (response?.statusCode == 200) {
+    //     // // Decode the JSON data
+    //     List<dynamic> data = jsonDecode(response!.body);
+    //     print(" DATA ############ $data");
+    //     // Convert the JSON data into a list of Member objects
+    //     List<Member> fetchedMembers = data.map((membersJson) {
+    //       return Member.fromJson(membersJson);
+    //     }).toList();
+    //     // Update your state or provider with the fetched members
+    //     setState(() {
+    //       members = fetchedMembers;
+    //       Provider.of<MemberProvider>(context, listen: false).setMembers(members);
+    //     });
+    //   } else {
+    //     print("Response error: ${response?.statusCode}");
+    //   }
+    // } on FormatException {
+    //   print("JSON Format Error: Check the structure of your response.");
+    // } catch (e) {
+    //   print("Error: $e");
+    // }
   }
 
   @override
@@ -85,16 +86,16 @@ class _MemberScreenState extends State<MemberScreen> {
   Widget build(BuildContext context) {
 
     final ThemeData theme = Theme.of(context);
-    final groupProvider = Provider.of<GroupProvider>(context);
-    final selectedGroup = groupProvider.selectedGroup;
+    final menuProvider = Provider.of<MenuProvider>(context);
+    final selectedGroup = menuProvider.selectedGroup ?? widget.group;
 
     return Scaffold(
       body: Container(
         color: theme.colorScheme.background,
         child: SafeArea(
           child: Column(
-              children: [
-                MemberHeader(group: selectedGroup!),
+            children: [
+              MemberHeader(group: selectedGroup),
               const Divider(thickness: 1),
               Padding(
                 padding:
@@ -143,25 +144,12 @@ class _MemberScreenState extends State<MemberScreen> {
                   ],
                 ),
               ),
-              Expanded(
+              const Expanded(
                 child: SingleChildScrollView(
-                  padding: const EdgeInsets.all(Constants.kDefaultPadding),
+                  padding: EdgeInsets.all(Constants.kDefaultPadding),
                   child: Column(
                     children: [
                       // This is our Search bar
-                      ListView.builder(
-                        shrinkWrap: true, // Let it take only required space
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemCount: members.length,
-                        itemBuilder: (context, index) {
-                          return MemberCard(
-                            member: members[index],
-                            press: () {
-                            },
-                            onMemberDeleted: _onMemberDeleted,
-                          );
-                        }
-                      ),
                     ],
                   ),
                 ),

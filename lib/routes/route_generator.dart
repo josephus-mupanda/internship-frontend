@@ -5,6 +5,7 @@ import 'package:internship_frontend/features/group/group_menu_screen.dart';
 import 'package:internship_frontend/features/loan/loan_onboarding_screen.dart';
 import 'package:internship_frontend/features/loan/loan_screen.dart';
 import 'package:internship_frontend/features/main/main_screen.dart';
+import 'package:internship_frontend/features/main/not_found_screen.dart';
 import '../data/models/group.dart';
 import '../data/models/member.dart';
 import '../features/authentication/screens/change_password_screen.dart';
@@ -153,14 +154,7 @@ class RouteGenerator {
 
   static Route<dynamic> _errorRoute() {
     return MaterialPageRoute(builder: (_) {
-      return Scaffold(
-        appBar: AppBar(
-          title: const Text('Error'),
-        ),
-        body: const Center(
-          child: Text('Page not found!'),
-        ),
-      );
+      return const NotFoundScreen();
     });
   }
 }

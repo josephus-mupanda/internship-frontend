@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:internship_frontend/data/models/loan.dart';
 import 'package:internship_frontend/data/providers/loan_provider.dart';
+import 'package:internship_frontend/data/providers/menu_provider.dart';
 import 'package:internship_frontend/data/services/group_service.dart';
 import 'package:provider/provider.dart';
 
@@ -80,8 +81,8 @@ class _LoanHistoryScreenState extends State<LoanHistoryScreen> {
   Widget build(BuildContext context) {
 
     final ThemeData theme = Theme.of(context);
-    final groupProvider = Provider.of<GroupProvider>(context);
-    final selectedGroup = groupProvider.selectedGroup;
+    final groupProvider = Provider.of<MenuProvider>(context);
+    final selectedGroup = groupProvider.selectedGroup ?? widget.group;
 
     return Scaffold(
       body: Container(
@@ -89,7 +90,7 @@ class _LoanHistoryScreenState extends State<LoanHistoryScreen> {
         child: SafeArea(
           child: Column(
             children: [
-              MemberHeader(group: selectedGroup!),
+              MemberHeader(group: selectedGroup),
               const Divider(thickness: 1),
               Padding(
                 padding:

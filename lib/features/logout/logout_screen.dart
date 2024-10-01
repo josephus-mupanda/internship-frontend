@@ -103,7 +103,7 @@ class _LogoutScreenState extends State<LogoutScreen> {
                                                             style: Theme.of(context).textTheme.headlineMedium,
                                                           ),
                                                           const SizedBox(
-                                                            height: 20,
+                                                            height: Constants.kDefaultPadding
                                                           ),
                                                           Text(
                                                             "Are you sure you want to logout?",
@@ -111,7 +111,7 @@ class _LogoutScreenState extends State<LogoutScreen> {
                                                             style: Theme.of(context).textTheme.bodyMedium,
                                                           ),
                                                           const SizedBox(
-                                                            height: 20,
+                                                            height: Constants.kDefaultPadding,
                                                           ),
                                                         ],
                                                       ),

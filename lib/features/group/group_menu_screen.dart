@@ -42,11 +42,6 @@ class _GroupMenuScreenState extends State<GroupMenuScreen> {
   }
   // Fetch the username from the token
   Future<void> _loadUsernameAndMember() async {
-      // // Print the token and username for debugging
-      // print('Retrieved Token >>>>>>>>>>>>>>>>>>>: $token');
-      // print('Retrieved Username >>>>>>>>>>>>>>>>: $username');
-      // print('Retrieved Group Creator Username >>>>>>>>>: $creatorUsername');
-
       try {
         String? token = await _authService.getAccessToken();
         String? username = await _authService.getUsernameFromToken();
@@ -58,7 +53,7 @@ class _GroupMenuScreenState extends State<GroupMenuScreen> {
             setState(() {
               _username = username;
               _groupCreatorUsername = creatorUsername;
-              //currentMember = Member.fromJson(jsonDecode(response.body));
+              currentMember = Member.fromJson(jsonDecode(response.body));
               _isLoading = false;
             });
           }
@@ -106,7 +101,7 @@ class _GroupMenuScreenState extends State<GroupMenuScreen> {
                           Navigator.pushNamed(
                               context,
                               AppRoutes.allMembersGroupScreen,
-                              arguments:selectedGroup
+                              arguments:widget.group
                           );
                         },
                       ),
@@ -121,7 +116,7 @@ class _GroupMenuScreenState extends State<GroupMenuScreen> {
                             Navigator.pushNamed(
                                 context,
                                 AppRoutes.allContributionsGroupScreen,
-                                arguments:selectedGroup
+                                arguments: widget.group
                             );
                           },
                         ),

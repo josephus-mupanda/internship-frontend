@@ -81,16 +81,13 @@ class _ContributionScreenState extends State<ContributionScreen> {
   Widget build(BuildContext context) {
 
     final ThemeData theme = Theme.of(context);
-    final groupProvider = Provider.of<GroupProvider>(context);
-    final selectedGroup = groupProvider.selectedGroup;
-
     return Scaffold(
       body: Container(
         color: theme.colorScheme.background,
         child: SafeArea(
           child: Column(
             children: [
-              MemberHeader(group: selectedGroup!),
+              MemberHeader(group: widget.group),
               const Divider(thickness: 1),
               Padding(
                 padding:
