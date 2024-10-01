@@ -86,7 +86,7 @@ class MyDialog extends StatelessWidget {
                         onPressed: () {
                           Navigator.of(context).pop();
                           },
-                        icon: const Icon( FeatherIcons.x, color:Colors.white, size: 16,),
+                        icon:Icon( FeatherIcons.x, color:theme.colorScheme.onSurface.withOpacity(0.5), size: 16,),
                         label: Text(
                           nameNo,
                           style: theme.textTheme.bodyMedium,
@@ -185,7 +185,7 @@ class MyLogoutDialog extends StatelessWidget {
                           final menuProvider = Provider.of<MenuProvider>(context, listen: false);
                           menuProvider.resetSelection();
                         },
-                        icon: const Icon( FeatherIcons.x, color:Colors.white, size: 16,),
+                        icon:  Icon( FeatherIcons.x, color: theme.colorScheme.onSurface.withOpacity(0.5), size: 16,),
                         label: Text(
                           nameNo,
                           style: theme.textTheme.bodyMedium,

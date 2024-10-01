@@ -4,9 +4,9 @@ import 'package:internship_frontend/features/loan/loan_onboarding_screen.dart';
 import 'package:internship_frontend/features/loan/loan_screen.dart';
 import 'package:internship_frontend/features/logout/logout_screen.dart';
 import '../../core/utils/preferences.dart';
+import '../../features/group/empty_group_screen.dart';
 import '../../features/group/list_of_groups.dart';
 import '../../features/loan/list_of_loans.dart';
-import '../../features/member/member_screen.dart';
 import '../../features/profile/profile_screen.dart';
 import '../../features/transaction/transaction_screen.dart';
 import '../models/group.dart';
@@ -17,9 +17,11 @@ class MenuProvider with ChangeNotifier {
 
   MenuItemSelect _selectedItem = MenuItemSelect.GROUPS;
   List<Group> groups = [];
+  Group? _selectedGroup;
   bool? _hasSeenLoanOnboarding = false;
 
   MenuItemSelect get selectedItem => _selectedItem;
+  Group? get selectedGroup => _selectedGroup;
 
   void selectItem(MenuItemSelect item) {
     _selectedItem = item;
@@ -27,11 +29,17 @@ class MenuProvider with ChangeNotifier {
   }
   void resetSelection() {
     _selectedItem = MenuItemSelect.GROUPS;
+    _selectedGroup = null;
     notifyListeners();
   }
 
   void updateGroups(List<Group> newGroups) {
     groups = newGroups;
+    notifyListeners();
+  }
+
+  void selectGroup(Group group) {
+    _selectedGroup = group;
     notifyListeners();
   }
 
@@ -57,7 +65,10 @@ class MenuProvider with ChangeNotifier {
             const Expanded(flex: 6, child: ListOfGroups()),
             Expanded(
               flex: 9,
-              child: groups.isNotEmpty ? GroupMenuScreen(group: groups[0]) : Container(),
+              child: _selectedGroup != null
+                  ?
+              GroupMenuScreen(group: _selectedGroup!):
+              const EmptyGroupScreen(),
             ),
           ],
         );
@@ -67,11 +78,11 @@ class MenuProvider with ChangeNotifier {
             const Expanded(flex: 6, child: ListOfLoans()),
             Expanded(
               flex: 9,
-              child: groups.isNotEmpty
+              child: _selectedGroup != null
                   ? _hasSeenLoanOnboarding!
-                  ? LoanScreen(group: groups[0])
+                  ? LoanScreen(group: _selectedGroup!)
                   : LoanOnboardingScreen(onboardingComplete: completeLoanOnboarding)
-                  : Container(),
+                  : const EmptyGroupScreen(),
             ),
           ],
         );
@@ -108,7 +119,10 @@ class MenuProvider with ChangeNotifier {
             const Expanded(flex: 6, child: ListOfGroups()),
             Expanded(
               flex: 9,
-              child: groups.isNotEmpty ? MemberScreen(group: groups[0]) : Container(),
+              child: _selectedGroup != null
+                  ?
+              GroupMenuScreen(group: _selectedGroup!):
+              const EmptyGroupScreen(),
             ),
           ],
         );

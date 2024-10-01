@@ -1,10 +1,14 @@
 
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:internship_frontend/data/services/auth_service.dart';
 import 'package:internship_frontend/data/services/group_service.dart';
 import 'package:internship_frontend/routes/app_routes.dart';
+import 'package:provider/provider.dart';
 import '../../data/models/group.dart';
+import '../../data/providers/group_provider.dart';
 import '../../themes/color_palette.dart';
 import '../constants/constants.dart';
 import '../utils/loading.dart';
@@ -159,8 +163,10 @@ class _GroupDialogState extends State<GroupDialog> {
     String? token = await _authService.getAccessToken();
 
     if (token == null) {
-      showErrorToast(context, 'Token not found. Please log in again.');
-      Navigator.pushNamed(context, AppRoutes.login);
+      //showErrorToast(context, 'Session expired. Please log in again.');
+      // Use logout method to clear session data and redirect to login
+      await _authService.logout(context);
+      Navigator.pushNamedAndRemoveUntil(context, AppRoutes.login, (route) => false);
       return;
     }
     try {
@@ -169,12 +175,16 @@ class _GroupDialogState extends State<GroupDialog> {
       if (username != null) {
         await Preferences.setGroupCreatorUsername(username);
       }
-      await _groupService.createGroup(group,token,context);
+      final response = await _groupService.createGroup(group,token,context);
+
+      Group newGroup = Group.fromJson(jsonDecode(response!.body));
       formKey.currentState?.reset();
       setState(() {
         name = null;
         description = null;
       });
+
+      Provider.of<GroupProvider>(context, listen: false).setGroups([...Provider.of<GroupProvider>(context, listen: false).groups, newGroup]);
       widget.onGroupCreated();
     } catch (e) {
       // Handle errors and show a toast or dialog with the error message

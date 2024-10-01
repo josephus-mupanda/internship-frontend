@@ -9,7 +9,7 @@ class GroupProvider with ChangeNotifier {
   bool _isLoading = false;
 
   Group? get selectedGroup => _selectedGroup;
-  List<Group> get groups => _groups!;
+  List<Group> get groups => _groups ?? [];
   bool get isLoading => _isLoading;
 
   // Method to set loading state

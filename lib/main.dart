@@ -107,7 +107,7 @@ class MyApp extends StatelessWidget {
 
     return MaterialApp(
       title: 'Ikimina',
-      theme: themeProvider.isDarkTheme ? AppTheme.darkTheme : AppTheme.lightTheme,
+      theme: !themeProvider.isDarkTheme ? AppTheme.darkTheme : AppTheme.lightTheme,
       debugShowCheckedModeBanner: false,
       initialRoute: AppRoutes.splash,
       onGenerateRoute: RouteGenerator.generateRoute,

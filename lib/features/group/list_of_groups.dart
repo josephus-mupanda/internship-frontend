@@ -15,6 +15,7 @@ import '../../data/providers/group_provider.dart';
 
 import 'package:flutter/foundation.dart' show kIsWeb;
 
+import '../../data/providers/menu_provider.dart';
 import '../../routes/app_routes.dart';
 import '../main/components/side_menu.dart';
 import 'components/group_card.dart';
@@ -88,6 +89,7 @@ class _ListOfGroupsState extends State<ListOfGroups> {
         return ascending ? a.createdAt!.compareTo(b.createdAt!) : b.createdAt!.compareTo(a.createdAt!);
       });
     });
+    showSuccessToast(context, ascending ? 'Sorted by ascending date' : 'Sorted by descending date');
   }
 
   @override
@@ -95,7 +97,7 @@ class _ListOfGroupsState extends State<ListOfGroups> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       // Check if there are groups and no selected group, then select the first group
-      final groupProvider = Provider.of<GroupProvider>(context, listen: false);
+      final groupProvider = Provider.of<MenuProvider>(context, listen: false);
       if (groupProvider.groups.isNotEmpty && groupProvider.selectedGroup == null) {
         groupProvider.selectGroup(groupProvider.groups[0]);
       }
@@ -111,6 +113,7 @@ class _ListOfGroupsState extends State<ListOfGroups> {
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
+    final menuProvider = Provider.of<MenuProvider>(context);
 
     return Scaffold(
       key: _scaffoldKey,
@@ -194,31 +197,46 @@ class _ListOfGroupsState extends State<ListOfGroups> {
                 child: ListView.builder(
                   itemCount: filteredGroups.length,
                   itemBuilder: (context, index) {
-
-                    return Consumer<GroupProvider>(
-                      builder: (context, groupProvider, child) {
-                        //
-                        // if (groupProvider.selectedGroup == null && groups.isNotEmpty) {
-                        //   groupProvider.selectGroup(groups[0]);
-                        // }
-
-                        final isSelected = groupProvider.selectedGroup == filteredGroups[index];
-                        return GroupCard(
-                          isActive: Responsive.isMobile(context) ? false : isSelected, // Responsive.isMobile(context) ? false : index == 0,
-                          group: filteredGroups[index],
-                          press: () {
-                            groupProvider.selectGroup(filteredGroups[index]);
-                            if(Responsive.isMobile(context)) {
-                              Navigator.pushNamed(context,
-                                AppRoutes.groupMenuScreen,
-                                arguments: filteredGroups[index],
-                              );
-                            }
-                          },
-                          onGroupDeleted: _onGroupDeleted,
-                        );
-                      }
+                    final isSelected = menuProvider.selectedGroup == filteredGroups[index];
+                    return GroupCard(
+                      isActive: Responsive.isMobile(context) ? false : isSelected, // Responsive.isMobile(context) ? false : index == 0,
+                      group: filteredGroups[index],
+                      press: () {
+                        menuProvider.selectGroup(filteredGroups[index]);
+                        if(Responsive.isMobile(context)) {
+                          Navigator.pushNamed(context,
+                            AppRoutes.groupMenuScreen,
+                            arguments: filteredGroups[index],
+                          );
+                        }
+                      },
+                      onGroupDeleted: _onGroupDeleted,
                     );
+
+                    // return Consumer<GroupProvider>(
+                    //   builder: (context, groupProvider, child) {
+                    //     //
+                    //     // if (groupProvider.selectedGroup == null && groups.isNotEmpty) {
+                    //     //   groupProvider.selectGroup(groups[0]);
+                    //     // }
+                    //
+                    //     final isSelected = groupProvider.selectedGroup == filteredGroups[index];
+                    //     return GroupCard(
+                    //       isActive: Responsive.isMobile(context) ? false : isSelected, // Responsive.isMobile(context) ? false : index == 0,
+                    //       group: filteredGroups[index],
+                    //       press: () {
+                    //         groupProvider.selectGroup(filteredGroups[index]);
+                    //         if(Responsive.isMobile(context)) {
+                    //           Navigator.pushNamed(context,
+                    //             AppRoutes.groupMenuScreen,
+                    //             arguments: filteredGroups[index],
+                    //           );
+                    //         }
+                    //       },
+                    //       onGroupDeleted: _onGroupDeleted,
+                    //     );
+                    //   }
+                    // );
                   }
                 ),
               ),

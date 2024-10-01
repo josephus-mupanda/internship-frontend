@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:internship_frontend/data/providers/menu_provider.dart';
 import 'package:internship_frontend/data/services/group_service.dart';
 import 'package:internship_frontend/features/group/components/group_menu_card.dart';
 import 'package:internship_frontend/routes/app_routes.dart';
@@ -41,60 +42,44 @@ class _GroupMenuScreenState extends State<GroupMenuScreen> {
   }
   // Fetch the username from the token
   Future<void> _loadUsernameAndMember() async {
-    try {
-      // Get the token and username
-      String? token = await _authService.getAccessToken();
-      String? username = await _authService.getUsernameFromToken();
-      String? creatorUsername = Preferences.getGroupCreatorUsername();
+      // // Print the token and username for debugging
+      // print('Retrieved Token >>>>>>>>>>>>>>>>>>>: $token');
+      // print('Retrieved Username >>>>>>>>>>>>>>>>: $username');
+      // print('Retrieved Group Creator Username >>>>>>>>>: $creatorUsername');
 
-      // Print the token and username for debugging
-      print('Retrieved Token >>>>>>>>>>>>>>>>>>>: $token');
-      print('Retrieved Username >>>>>>>>>>>>>>>>: $username');
-      // Print the creator's username for debugging
-      print('Retrieved Group Creator Username >>>>>>>>>: $creatorUsername');
-      // Fetch the member details by username
-      if (token != null && username != null) {
-        final response = await _groupService.getMemberByUsername(token, widget.group.id!, context);
-        // Print the response for debugging
-        print('Response from getMemberByUsername >>>>>>>>>> : ${response?.body}');
-        if (response != null) {
-          setState(() {
-            _username = username;
-            _groupCreatorUsername = creatorUsername;
-            currentMember = Member.fromJson(jsonDecode(response.body));
-            _isLoading = false;
-          });
-        } else {
-          setState(() {
-            _isLoading = false;
-          });
+      try {
+        String? token = await _authService.getAccessToken();
+        String? username = await _authService.getUsernameFromToken();
+        String? creatorUsername = Preferences.getGroupCreatorUsername();
+
+        if (token != null && username != null) {
+          final response = await _groupService.getMemberByUsername(token, widget.group.id!, context);
+          if (response != null) {
+            setState(() {
+              _username = username;
+              _groupCreatorUsername = creatorUsername;
+              //currentMember = Member.fromJson(jsonDecode(response.body));
+              _isLoading = false;
+            });
+          }
         }
-      } else {
+      } catch (error) {
         setState(() {
           _isLoading = false;
         });
+        showErrorToast(context, "Failed to load user data.");
       }
-    } catch (error) {
-      setState(() {
-        _isLoading = false;
-      });
-      showErrorToast(context, "Failed to load user data.");
-    }
   }
 
   @override
   Widget build(BuildContext context) {
 
     final ThemeData theme = Theme.of(context);
-    final groupProvider = Provider.of<GroupProvider>(context);
-    final selectedGroup = groupProvider.selectedGroup;
+    final groupProvider = Provider.of<MenuProvider>(context);
+    final selectedGroup = groupProvider.selectedGroup ?? widget.group;
 
     if (_isLoading) {
-      return const Scaffold(
-        body: Center(
-          child: CircularProgressIndicator(),
-        ),
-      );
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
     return Scaffold (
       body: Container(
