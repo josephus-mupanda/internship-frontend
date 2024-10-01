@@ -264,7 +264,7 @@ class _SideMenuState extends State<SideMenu> {
       builder: (BuildContext context) {
         return WillPopScope(
           onWillPop: () async => false,
-          child: MyDialog(
+          child: MyLogoutDialog(
             title: "Logout",
             content: "Are you sure you want to logout?",
             nameYes: "Yes",
