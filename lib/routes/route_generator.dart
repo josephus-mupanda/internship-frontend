@@ -6,6 +6,7 @@ import 'package:internship_frontend/features/loan/loan_onboarding_screen.dart';
 import 'package:internship_frontend/features/loan/loan_screen.dart';
 import 'package:internship_frontend/features/main/main_screen.dart';
 import 'package:internship_frontend/features/main/not_found_screen.dart';
+import 'package:internship_frontend/features/member/add_member_screen.dart';
 import '../data/models/group.dart';
 import '../data/models/member.dart';
 import '../features/authentication/screens/change_password_screen.dart';
@@ -54,6 +55,7 @@ class RouteGenerator {
         return _errorRoute();
       case AppRoutes.dashboard:
         return MaterialPageRoute(builder: (_) => const MainScreen());
+
         //=============== GROUP MENU =======================
       case AppRoutes.groupMenuScreen:
         if (args is Group) {
@@ -62,6 +64,7 @@ class RouteGenerator {
           );
         }
         return _errorRoute();
+
         //-------- ALL MEMBERS IN A GROUP
       case AppRoutes.allMembersGroupScreen:
         if (args is Group) {
@@ -70,6 +73,16 @@ class RouteGenerator {
           );
         }
         return _errorRoute();
+
+      //-------- ADD MEMBER IN A GROUP
+      case AppRoutes.addMemberInGroupScreen:
+        if (args is Group) {
+          return MaterialPageRoute(
+            builder: (_) => AddMemberScreen(group: args),
+          );
+        }
+        return _errorRoute();
+
         //-------- ALL CONTRIBUTIONS IN A GROUP
       case AppRoutes.allContributionsGroupScreen:
         if (args is Group) {

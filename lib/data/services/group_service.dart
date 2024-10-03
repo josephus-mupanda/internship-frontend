@@ -90,6 +90,34 @@ class GroupService {
       //throw Exception("Failed to delete group: $e");
     }
   }
+  // -------------------------------- USER IN THE GROUP
+  // Function to check if the user is in the group
+  Future<bool> isUserInGroup(int groupId, int userId, String token, BuildContext context) async {
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/$groupId/membership/$userId'),
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      );
+      if (!context.mounted) return false;
+      if (response.statusCode == 200) {
+        bool isInGroup = jsonDecode(response.body) as bool;
+        return isInGroup;
+      } else {
+        if (response.statusCode == 404) {
+          showWarningToast(context,'Group or User not found');
+        } else if (response.statusCode == 400) {
+          showErrorToast(context,'Invalid token or bad request');
+        } else {
+          showWarningToast(context,'Unexpected error: ${response.statusCode}');
+        }
+      }
+    } catch (e) {
+      showErrorToast(context,'An error occurred: $e');
+    }
+    return false;
+  }
 
   // Retrieve all groups
   Future<http.Response> getAllGroups(String token) async {

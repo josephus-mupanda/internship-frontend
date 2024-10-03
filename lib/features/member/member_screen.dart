@@ -33,24 +33,24 @@ class _MemberScreenState extends State<MemberScreen> {
 
   final GroupService _groupService = GroupService();
   final AuthService _authService = AuthService();
-  final UserService _userService = UserService();
 
   List<Member> members = [];
   List<Member> filteredMembers = [];
+  String? username;
 
   Future<void> fetchMembers() async {
     // Retrieve the token from secure storage
     String? token = await _authService.getAccessToken();
-    if (token == null) {
+    username = await _authService.getUsernameFromToken();
+
+    if (token == null && username == null) {
       await _authService.logout(context);
       Navigator.pushNamedAndRemoveUntil(context, AppRoutes.login, (route) => false);
       return;
     }
-    try {
-      // Log the group ID
-      print('Fetching members for group ID###############: ${widget.group.id}');
 
-      final response = await _groupService.getMembersByGroup(widget.group.id!, token, context);
+    try {
+      final response = await _groupService.getMembersByGroup(widget.group.id!, token!, context);
       if (response?.statusCode == 200) {
         List<dynamic> data = jsonDecode(response!.body);
         List<Member> fetchedMembers = data.map((membersJson) {
@@ -180,11 +180,20 @@ class _MemberScreenState extends State<MemberScreen> {
           ),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-        },
-        child: const Icon(Icons.add), // Customize the FAB color as needed
-    ),
+      floatingActionButton: (username == widget.group.createdBy)
+          ?
+          FloatingActionButton(
+            onPressed: () {
+              Navigator.pushNamed(
+                context,
+                AppRoutes.addMemberInGroupScreen,
+                arguments: widget.group,
+              );
+            },
+            child: const Icon(Icons.add),
+          )
+              :
+      null,
     );
   }
 }

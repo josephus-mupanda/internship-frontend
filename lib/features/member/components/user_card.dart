@@ -1,19 +1,22 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:internship_frontend/data/services/group_service.dart';
 import 'package:internship_frontend/data/services/user_service.dart';
 import 'package:internship_frontend/themes/color_palette.dart';
 
 import '../../../core/constants/constants.dart';
 import '../../../core/utils/loading.dart';
 import '../../../core/utils/toast.dart';
+import '../../../data/models/group.dart';
 import '../../../data/models/user.dart';
 import '../../../data/services/auth_service.dart';
 import '../../../routes/app_routes.dart';
 
 class UserCard extends StatefulWidget {
   final User user;
+  final Group group;
   const UserCard({super.key,
-    required this.user,
+    required this.user, required this.group,
   });
 
   @override
@@ -22,12 +25,41 @@ class UserCard extends StatefulWidget {
 
 class _UserCardState extends State<UserCard> {
 
-  final UserService _userService = UserService();
+  final GroupService _groupService = GroupService();
   final AuthService _authService = AuthService();
+
+  bool _isInGroup = false;
+  bool _loading = true;
 
   @override
   void initState() {
     super.initState();
+    _checkUserInGroup();
+  }
+
+  // Function to check if the user is in the group
+  Future<void> _checkUserInGroup() async {
+    String? token = await _authService.getAccessToken();
+    if (token == null) {
+      await _authService.logout(context);
+      Navigator.pushNamedAndRemoveUntil(context, AppRoutes.login, (route) => false);
+      return;
+    }
+    try {
+      bool isInGroup = await _groupService.isUserInGroup(widget.group.id!, widget.user.id!, token, context);
+      if (mounted) {
+        setState(() {
+          _isInGroup = isInGroup;
+          _loading = false;
+        });
+      }
+    } catch (e) {
+      // Handle the error appropriately (e.g., show a toast or dialog)
+      showErrorToast(context, 'An error occurred while checking membership.');
+      setState(() {
+        _loading = false; // Stop loading
+      });
+    }
   }
 
   // Function to generate a random color
@@ -89,23 +121,29 @@ class _UserCardState extends State<UserCard> {
                         // maxLines: 1,
                       ),
                     ),
-                    TextButton.icon(
-                      style: TextButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: Constants.kDefaultPadding),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                        backgroundColor: ColorPalette.primaryColor,
+                    if (_loading)
+                      const CircularProgressIndicator()
+                    else if (!_isInGroup)
+                      TextButton.icon(
+                        style: TextButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: Constants.kDefaultPadding),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10)),
+                          backgroundColor: ColorPalette.primaryColor,
+                        ),
+                        onPressed: () async {
+                          await _addMemberInTheGroup();
+                        },
+                        icon: const Icon(
+                          Icons.add,
+                          color: Colors.white,
+                          size: 16,
+                        ),
+                        label: Text("Add",
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                                color: Colors.white)),
                       ),
-                      onPressed:()  async {
-                        await _addMemberInTheGroup();
-                      },
-                      icon: const Icon(Icons.add, color:Colors.white, size: 16,),
-                      label:Text(
-                          "Add",
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                              color: Colors.white
-                          )
-                      ),
-                    )
                   ],
                 ),
               ],

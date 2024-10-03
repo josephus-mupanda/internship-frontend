@@ -12,6 +12,7 @@ class AppRoutes {
   static const String groupMenuScreen = '$dashboard/groups';
   //========================================================
   static const String allMembersGroupScreen = '$groupMenuScreen/members';
+  static const String addMemberInGroupScreen = '$groupMenuScreen/addMember';
   static const String contributionGroupScreen = '$groupMenuScreen/myContribution';
   static const String allContributionsGroupScreen = '$groupMenuScreen/allContributions';
   static const String disbursementScreen = '$groupMenuScreen/disbursements';

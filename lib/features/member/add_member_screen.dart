@@ -13,8 +13,10 @@ import '../../core/layout/responsive_widget.dart';
 import '../../core/utils/toast.dart';
 import '../../core/widgets/input_widget.dart';
 import '../../data/models/group.dart';
+import '../../data/models/member.dart';
 import '../../data/models/user.dart';
 import '../../data/services/auth_service.dart';
+import '../../data/services/group_service.dart';
 import '../../data/services/user_service.dart';
 import '../../routes/app_routes.dart';
 
@@ -63,7 +65,6 @@ class _AddMemberScreenState extends State<AddMemberScreen> {
       showErrorToast(context, "An error occurred: $e");
     }
   }
-
   void sortGroupsByUsername(bool ascending) {
     setState(() {
       filteredUsers.sort((a, b) {
@@ -81,6 +82,7 @@ class _AddMemberScreenState extends State<AddMemberScreen> {
       }).toList();
     });
   }
+
 
   @override
   void initState() {
@@ -163,6 +165,7 @@ class _AddMemberScreenState extends State<AddMemberScreen> {
                     itemBuilder: (context, index) {
                       return UserCard(
                         user: filteredUsers[index],
+                        group: widget.group,
                       );
                     }
                 ),

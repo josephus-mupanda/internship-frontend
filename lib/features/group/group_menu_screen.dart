@@ -152,7 +152,7 @@ class _GroupMenuScreenState extends State<GroupMenuScreen> {
                             Navigator.pushNamed(
                               context,
                               AppRoutes.contributionGroupScreen,
-                              arguments: MyArguments(selectedGroup, currentMember! as Member),
+                              arguments: MyArguments(selectedGroup, currentMember!),
                             );
                           } else {
                             showErrorToast(context, 'Failed to load current member data.');
@@ -170,7 +170,7 @@ class _GroupMenuScreenState extends State<GroupMenuScreen> {
                             Navigator.pushNamed(
                               context,
                               AppRoutes.loanGroupScreen,
-                              arguments: MyArguments(selectedGroup, currentMember! as Member),
+                              arguments: MyArguments(selectedGroup, currentMember!),
                             );
                           } else {
                             showErrorToast(context, 'Failed to load current member data.');

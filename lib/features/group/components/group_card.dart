@@ -5,12 +5,16 @@ import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:internship_frontend/data/services/auth_service.dart';
 import 'package:internship_frontend/data/services/group_service.dart';
 import 'package:internship_frontend/themes/color_palette.dart';
+import 'package:provider/provider.dart';
 
 import '../../../core/constants/constants.dart';
+import '../../../core/layout/responsive_widget.dart';
 import '../../../core/utils/loading.dart';
+import '../../../core/utils/preferences.dart';
 import '../../../core/utils/toast.dart';
 import '../../../core/widgets/alert_widget.dart';
 import '../../../data/models/group.dart';
+import '../../../data/providers/menu_provider.dart';
 import '../../../routes/app_routes.dart';
 
 class GroupCard extends StatefulWidget {
@@ -31,6 +35,11 @@ class GroupCard extends StatefulWidget {
 }
 
 class _GroupCardState extends State<GroupCard> {
+
+  bool? isInGroup; // Nullable variable to track membership status
+  bool isLoading = true; // To show loading indicator while checking status
+  String? currentUsername;
+
   // Function to generate a random color
   Color getRandomColor() {
     Random random = Random();
@@ -42,9 +51,45 @@ class _GroupCardState extends State<GroupCard> {
     );
   }
 
+  // Function to check membership status with error handling
+  Future<void> checkMembershipStatus() async {
+    try {
+      // Retrieve the token and userId
+      String? token = await _authService.getAccessToken();
+      int? userId = Preferences.getUserId();
+
+      if (token != null && userId != null) {
+        bool result = await _groupService.isUserInGroup(widget.group.id!, userId, token, context);
+        currentUsername = await _authService.getUsernameFromToken();
+        setState(() {
+          isInGroup = result;
+          isLoading = false;
+        });
+      } else {
+        print('No valid token found');
+      }
+    } catch (e) {
+      print('Error checking membership status: $e');
+      setState(() {
+        isInGroup = false; // Default to false if error occurs
+        isLoading = false;
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    checkMembershipStatus();
+  }
+
+
   @override
   Widget build(BuildContext context) {
-    //  Here the shadow is not showing properly
+
+    final menuProvider = Provider.of<MenuProvider>(context);
+    final ThemeData theme = Theme.of(context);
+
     return Padding(
       padding: const EdgeInsets.symmetric(
           horizontal: Constants.kDefaultPadding, vertical: Constants.kDefaultPadding / 2),
@@ -96,29 +141,88 @@ class _GroupCardState extends State<GroupCard> {
                           // maxLines: 1,
                         ),
                       ),
-                      Column(
-                        children: [
-                          IconButton(
-                              onPressed: (){
+                      if (currentUsername == widget.group.createdBy) ...[
+                        Column(
+                          children: [
+                            IconButton(
+                                onPressed: (){
 
-                              },
-                              icon: Icon(
-                                FeatherIcons.edit,
-                                color: widget.isActive ? Colors.white70 : null,
+                                },
+                                icon: Icon(
+                                  FeatherIcons.edit,
+                                  color: widget.isActive ? Colors.white70 : null,
+                                )
+                            ),
+                            const SizedBox(height: 5),
+                            IconButton(
+                                onPressed: (){
+                                  _showDeleteGroupDialog();
+                                },
+                                icon: Icon(
+                                  FeatherIcons.trash,
+                                  color: widget.isActive ? Colors.white70 : null,
+                                )
+                            ),
+
+                          ],
+                        ),
+                        const SizedBox(width: Constants.kDefaultPadding / 2),
+                      ],
+
+                      // Loading indicator or the actual button
+                      if (isLoading)
+                        const CircularProgressIndicator()
+                      else
+                        isInGroup != null && isInGroup!
+                            ?
+                        TextButton.icon(
+                          style: TextButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(vertical: Constants.kDefaultPadding),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                            backgroundColor: widget.isActive ? ColorPalette.secondaryColor : ColorPalette.primaryColor,
+                          ),
+
+                          onPressed: () {
+                            menuProvider.selectGroup( widget.group);
+                            if(Responsive.isMobile(context)) {
+                              Navigator.pushNamed(context,
+                                AppRoutes.groupMenuScreen,
+                                arguments: widget.group,
+                              );
+                            }
+                          },
+                          icon: const Icon(Icons.add, color:Colors.white, size: 16,),
+                          label:Text(
+                              "Open Group",
+                              style: theme.textTheme.bodyMedium?.copyWith(
+                                  color: Colors.white
                               )
                           ),
-                          const SizedBox(height: 5),
-                          IconButton(
-                              onPressed: (){
-                                _showDeleteGroupDialog();
-                              },
-                              icon: Icon(
-                                FeatherIcons.trash,
-                                color: widget.isActive ? Colors.white70 : null,
+                        )
+                            :
+                        TextButton.icon(
+                          style: TextButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(vertical: Constants.kDefaultPadding),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                            backgroundColor: widget.isActive ? ColorPalette.secondaryColor : ColorPalette.primaryColor,
+                          ),
+                          onPressed: () {
+                            menuProvider.selectGroup( widget.group);
+                            if(Responsive.isMobile(context)) {
+                              Navigator.pushNamed(context,
+                                AppRoutes.groupMenuScreen,
+                                arguments: widget.group,
+                              );
+                            }
+                          },
+                          icon: const Icon(Icons.add, color:Colors.white, size: 16,),
+                          label:Text(
+                              "Join Group",
+                              style: theme.textTheme.bodyMedium?.copyWith(
+                                  color: Colors.white
                               )
                           ),
-                        ],
-                      ),
+                        ),
                     ],
                   ),
                   const SizedBox(height: Constants.kDefaultPadding / 2),
