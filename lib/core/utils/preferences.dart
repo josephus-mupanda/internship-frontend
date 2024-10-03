@@ -7,7 +7,7 @@ class Preferences {
   static const _keyIsLoggedIn = 'isLoggedIn';
   static const _keyHasSeenOnboarding = 'hasSeenOnboarding';
   static const _keyHasSeenLoanOnboarding = 'hasSeenLoanOnboarding';
-  static const _keyUserToken = 'userToken';
+  static const _keyUserID = 'userID';
   static const _keyUsername = 'username';
   static const _keyEmail = 'email';
   static const _keyGroupCreatorUsername = 'groupCreatorUsername';
@@ -48,14 +48,14 @@ class Preferences {
     return _preferences?.getBool(_keyHasSeenLoanOnboarding);
   }
 
-  // Example: Setter for a user token
-  static Future setUserToken(String token) async {
-    await _preferences?.setString(_keyUserToken, token);
+  // Example: Setter for a user ID
+  static Future setUserId(int userId) async {
+    await _preferences?.setInt(_keyUserID, userId);
   }
 
-  // Example: Getter for a user token
-  static String? getUserToken() {
-    return _preferences?.getString(_keyUserToken);
+  // Example: Getter for a user ID
+  static int? getUserId() {
+    return _preferences?.getInt(_keyUserID);
   }
 
   // Setter for username

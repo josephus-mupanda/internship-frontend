@@ -165,8 +165,8 @@ class _GroupCardState extends State<GroupCard> {
     // Retrieve the token from secure storage
     String? token = await _authService.getAccessToken();
     if (token == null) {
-      showErrorToast(context, 'Token not found. Please log in again.');
-      Navigator.pushReplacementNamed(context, AppRoutes.login);
+      await _authService.logout(context);
+      Navigator.pushNamedAndRemoveUntil(context, AppRoutes.login, (route) => false);
       return;
     }
     // Show loading dialog

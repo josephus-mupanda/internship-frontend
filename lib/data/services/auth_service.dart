@@ -13,22 +13,24 @@ class AuthService {
   final _storage = const FlutterSecureStorage();
   final _userService = UserService();
 
-  Future<String?> login(BuildContext context,User user) async {
+  Future<String?> login(BuildContext context, User user) async {
     final response = await _userService.loginUser(user);
     if (response.statusCode == 200) {
 
       final responseBody = jsonDecode(response.body);
+      final userId = responseBody['userId'] as int?;
       final token = responseBody['token'] as String?;
       final username = responseBody['username'] as String?;
       final email = responseBody['email'] as String?;
 
-      if (token != null && username != null && email != null) {
+      if (token != null && username != null && email != null && userId != null) {
 
         await _storage.write(key: 'jwt_token', value: token); // Store securely
-        //await Preferences.setUserToken(token); // Save the token using Preferences class
-        await Preferences.setIsLoggedIn(true); // Set login status to true
-        await Preferences.setUsername(username); // Store username
-        await Preferences.setEmail(email); // Store email
+
+        await Preferences.setUserId(userId);
+        await Preferences.setIsLoggedIn(true);
+        await Preferences.setUsername(username);
+        await Preferences.setEmail(email);
 
         return token;
       }

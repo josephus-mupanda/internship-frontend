@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:internship_frontend/data/models/contribution.dart';
 import 'package:internship_frontend/data/providers/contribution_provider.dart';
+import 'package:internship_frontend/data/providers/menu_provider.dart';
 import 'package:internship_frontend/data/services/group_service.dart';
 import 'package:provider/provider.dart';
 
@@ -18,6 +19,7 @@ import '../../data/models/member.dart';
 import '../../data/providers/group_provider.dart';
 import '../../data/services/auth_service.dart';
 import '../../routes/app_routes.dart';
+import '../group/components/header.dart';
 import '../member/components/header.dart';
 
 class MyContributionScreen extends StatefulWidget {
@@ -106,8 +108,8 @@ class _MyContributionScreenState extends State<MyContributionScreen> {
   Widget build(BuildContext context) {
 
     final ThemeData theme = Theme.of(context);
-    final groupProvider = Provider.of<GroupProvider>(context);
-    final selectedGroup = groupProvider.selectedGroup;
+    final menuProvider = Provider.of<MenuProvider>(context);
+    final selectedGroup = menuProvider.selectedGroup ?? widget.group;
 
     return Scaffold(
       body: Container(
@@ -115,12 +117,17 @@ class _MyContributionScreenState extends State<MyContributionScreen> {
         child: SafeArea(
           child: Column(
             children: [
-              MemberHeader(group: selectedGroup!),
+              GroupHeaderWithArrow(group: selectedGroup),
               const Divider(thickness: 1),
               Padding(
                 padding:
                 const EdgeInsets.symmetric(horizontal: Constants.kDefaultPadding),
-                child: Row(
+                child:  myContributions.isEmpty?
+                  const Center(
+                      child: CircularProgressIndicator()
+                  )
+                    :
+                Row(
                   children: [
                     if (!Responsive.isDesktop(context)) const SizedBox(width: 5),
                     Expanded(

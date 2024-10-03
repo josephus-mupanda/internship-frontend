@@ -14,9 +14,11 @@ import '../../core/utils/toast.dart';
 import '../../core/widgets/input_widget.dart';
 import '../../data/models/group.dart';
 import '../../data/providers/group_provider.dart';
+import '../../data/providers/menu_provider.dart';
 import '../../data/services/auth_service.dart';
 import '../../routes/app_routes.dart';
 
+import '../group/components/header.dart';
 import '../member/components/header.dart';
 
 class ContributionScreen extends StatefulWidget {
@@ -81,18 +83,26 @@ class _ContributionScreenState extends State<ContributionScreen> {
   Widget build(BuildContext context) {
 
     final ThemeData theme = Theme.of(context);
+    final menuProvider = Provider.of<MenuProvider>(context);
+    final selectedGroup = menuProvider.selectedGroup ?? widget.group;
+
     return Scaffold(
       body: Container(
         color: theme.colorScheme.background,
         child: SafeArea(
           child: Column(
             children: [
-              MemberHeader(group: widget.group),
+              GroupHeaderWithArrow(group: selectedGroup),
               const Divider(thickness: 1),
               Padding(
                 padding:
                 const EdgeInsets.symmetric(horizontal: Constants.kDefaultPadding),
-                child: Row(
+                child: contributions.isEmpty?
+                const Center(
+                    child: CircularProgressIndicator()
+                )
+                    :
+                Row(
                   children: [
                     if (!Responsive.isDesktop(context)) const SizedBox(width: 5),
                     Expanded(

@@ -21,7 +21,7 @@ class UserService {
       );
       if (!context.mounted) return null;
       if (response.statusCode == 200) {
-        return jsonDecode(response.body);
+        return response;
       } else if (response.statusCode == 400) {
         showErrorToast(context, "Invalid token or bad request. Please try again.");
       } else if (response.statusCode == 404) {

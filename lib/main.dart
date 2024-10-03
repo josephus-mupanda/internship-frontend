@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:app_links/app_links.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:internship_frontend/data/providers/contribution_provider.dart';
 import 'package:internship_frontend/data/providers/theme_provider.dart';
 import 'package:internship_frontend/data/providers/user_provider.dart';
 import 'package:internship_frontend/routes/app_routes.dart';
@@ -27,7 +28,8 @@ void main() async {
         ChangeNotifierProvider(create: (_) => MenuProvider()),
         ChangeNotifierProvider(create: (_) => UserProvider()),
         ChangeNotifierProvider(create: (_) => GroupProvider()),
-        ChangeNotifierProvider(create: (_) => MemberProvider())
+        ChangeNotifierProvider(create: (_) => MemberProvider()),
+        ChangeNotifierProvider(create: (_) => ContributionProvider())
       ],
       child: const MyApp(),
     ),

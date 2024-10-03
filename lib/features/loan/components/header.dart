@@ -19,8 +19,9 @@ class LoanHeader extends StatelessWidget {
       child: Row(
         children: [
           // We need this back button on mobile only
-          if (Responsive.isMobile(context)) const BackButton(),
-
+          if (Responsive.isMobile(context)) BackButton(
+            color:  Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+          ),
           Expanded(
             child: Text.rich(
               TextSpan(

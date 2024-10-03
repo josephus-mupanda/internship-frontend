@@ -160,12 +160,8 @@ class GroupService {
         },
       );
       if (!context.mounted) return null;
-
-      // Log the response body
-      print('Response body ######################### : ${response.body}');
       // Check the status code and show appropriate toast messages
       if (response.statusCode == 200) {
-        // showSuccessToast(context, 'Members retrieved successfully');
         return response;
       } else if (response.statusCode == 400) {
         showErrorToast(context, 'Invalid token. Please log in again.');
@@ -183,10 +179,10 @@ class GroupService {
     return null;
   }
 
-  Future<http.Response?> getMemberByUsername(String token, int groupId, BuildContext context) async {
+  Future<http.Response?> getMemberByUsername(String token, int groupId, int userId, BuildContext context) async {
     try {
       final response = await http.get(
-        Uri.parse('$baseUrl/$groupId/members/by-username'),
+        Uri.parse('$baseUrl/$groupId/users/$userId'),
         headers: {
           'Authorization': 'Bearer $token',
         },

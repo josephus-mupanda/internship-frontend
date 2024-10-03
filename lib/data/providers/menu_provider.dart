@@ -35,11 +35,17 @@ class MenuProvider with ChangeNotifier {
 
   void updateGroups(List<Group> newGroups) {
     groups = newGroups;
+    if (groups.isNotEmpty ) {
+      _selectedGroup = groups.first;
+    }
+    print("Selected Group (after updateGroups): ID=${_selectedGroup?.id}, Name=${_selectedGroup?.name}");
+    print("Groups updated. First group selected: ${_selectedGroup?.id}");
     notifyListeners();
   }
 
   void selectGroup(Group group) {
     _selectedGroup = group;
+    print("Selected Group ID >>>>>>>>>>>>>>>>>>>>>>>: ${_selectedGroup?.id}");
     notifyListeners();
   }
 

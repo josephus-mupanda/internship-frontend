@@ -12,7 +12,6 @@ import '../../core/utils/preferences.dart';
 import '../../core/utils/toast.dart';
 import '../../data/models/group.dart';
 import '../../data/models/member.dart';
-import '../../data/providers/group_provider.dart';
 import '../../data/services/auth_service.dart';
 import '../../data/services/member_service.dart';
 import '../../routes/route_generator.dart';
@@ -21,7 +20,7 @@ import 'components/header.dart';
 class GroupMenuScreen extends StatefulWidget {
   final Group group;
 
-  const GroupMenuScreen({super.key, required this.group,});
+  const GroupMenuScreen({super.key, required this.group});
 
   @override
   State<GroupMenuScreen> createState() => _GroupMenuScreenState();
@@ -38,23 +37,35 @@ class _GroupMenuScreenState extends State<GroupMenuScreen> {
   @override
   void initState() {
     super.initState();
-    _loadUsernameAndMember();
+    Group selectedGroup = widget.group;
+    _loadUsernameAndMember(selectedGroup);
   }
+
   // Fetch the username from the token
-  Future<void> _loadUsernameAndMember() async {
+  Future<void> _loadUsernameAndMember(Group selectedGroup) async {
       try {
         String? token = await _authService.getAccessToken();
         String? username = await _authService.getUsernameFromToken();
         String? creatorUsername = Preferences.getGroupCreatorUsername();
+        int? userId =  Preferences.getUserId();
 
-        if (token != null && username != null) {
-          final response = await _groupService.getMemberByUsername(token, widget.group.id!, context);
+        // Log values for debugging
+        // print('Token >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>: $token');
+        // print('Username >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>: $username');
+        // print('Group Creator Username >>>>>>>>>>>>>>>>>>>>>>>>>: $creatorUsername');
+        // print('User ID >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>: $userId');
+        // print('Group ID >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>: ${selectedGroup.id}');
+
+        if (token != null && username != null  && userId != null ) {
+          final response = await _groupService.getMemberByUsername(token, selectedGroup.id!, userId, context);
           if (response != null) {
             setState(() {
               _username = username;
               _groupCreatorUsername = creatorUsername;
               currentMember = Member.fromJson(jsonDecode(response.body));
               _isLoading = false;
+              // Log current member for debugging
+              print('Current Member >>>>>>>>>>>>>>>>>>>>>>>>>>>>>: ${currentMember?.toJson()}');
             });
           }
         }
@@ -70,8 +81,8 @@ class _GroupMenuScreenState extends State<GroupMenuScreen> {
   Widget build(BuildContext context) {
 
     final ThemeData theme = Theme.of(context);
-    final groupProvider = Provider.of<MenuProvider>(context);
-    final selectedGroup = groupProvider.selectedGroup ?? widget.group;
+    final menuProvider = Provider.of<MenuProvider>(context);
+    final selectedGroup = menuProvider.selectedGroup;
 
     if (_isLoading) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
@@ -80,13 +91,9 @@ class _GroupMenuScreenState extends State<GroupMenuScreen> {
       body: Container(
         color: theme.colorScheme.background,
         child: SafeArea(
-          child: selectedGroup == null
-              ?
-          const Center(child: Text("Select first a group ...."))
-              :
-          Column(
+          child: Column(
             children: [
-              GroupHeader(group: selectedGroup),
+              GroupHeader(group: selectedGroup!),
               const Divider(thickness: 1),
               Expanded(
                 child: SingleChildScrollView(
@@ -101,7 +108,7 @@ class _GroupMenuScreenState extends State<GroupMenuScreen> {
                           Navigator.pushNamed(
                               context,
                               AppRoutes.allMembersGroupScreen,
-                              arguments:widget.group
+                              arguments: widget.group
                           );
                         },
                       ),
@@ -116,7 +123,7 @@ class _GroupMenuScreenState extends State<GroupMenuScreen> {
                             Navigator.pushNamed(
                                 context,
                                 AppRoutes.allContributionsGroupScreen,
-                                arguments: widget.group
+                                arguments: selectedGroup
                             );
                           },
                         ),
@@ -141,11 +148,15 @@ class _GroupMenuScreenState extends State<GroupMenuScreen> {
                         iconColor: Colors.orange,
                         title: 'My Contributions',
                         press: () {
-                          Navigator.pushNamed(
+                          if (currentMember != null) {
+                            Navigator.pushNamed(
                               context,
                               AppRoutes.contributionGroupScreen,
-                              arguments: MyArguments(selectedGroup, currentMember!)
-                          );
+                              arguments: MyArguments(selectedGroup, currentMember! as Member),
+                            );
+                          } else {
+                            showErrorToast(context, 'Failed to load current member data.');
+                          }
                         },
                       ),
                       const SizedBox(height: Constants.kDefaultPadding),
@@ -155,11 +166,15 @@ class _GroupMenuScreenState extends State<GroupMenuScreen> {
                         iconColor: Colors.purple,
                         title: 'My Loans',
                         press: () {
-                          Navigator.pushNamed(
+                          if (currentMember != null) {
+                            Navigator.pushNamed(
                               context,
                               AppRoutes.loanGroupScreen,
-                              arguments:MyArguments(selectedGroup, currentMember!)
-                          );
+                              arguments: MyArguments(selectedGroup, currentMember! as Member),
+                            );
+                          } else {
+                            showErrorToast(context, 'Failed to load current member data.');
+                          }
                         },
                       ),
                     ],

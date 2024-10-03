@@ -41,7 +41,7 @@ class _ListOfGroupsState extends State<ListOfGroups> {
     // Retrieve the token from secure storage
     String? token = await _authService.getAccessToken();
     if (token == null) {
-      showErrorToast(context, 'Session expired. Please log in again.');
+      //showErrorToast(context, 'Session expired. Please log in again.');
       await _authService.logout(context);
       Navigator.pushNamedAndRemoveUntil(context, AppRoutes.login, (route) => false);
       return;
@@ -59,7 +59,8 @@ class _ListOfGroupsState extends State<ListOfGroups> {
         setState(() {
           groups = fetchedGroups;
           filteredGroups = groups;
-          Provider.of<GroupProvider>(context, listen: false).setGroups(groups);
+          Provider.of<MenuProvider>(context, listen: false).updateGroups(groups);
+          //Provider.of<GroupProvider>(context, listen: false).setGroups(groups);
         });
       } else {
         // Handle the error if the status code is not 200
@@ -197,7 +198,8 @@ class _ListOfGroupsState extends State<ListOfGroups> {
                 child: ListView.builder(
                   itemCount: filteredGroups.length,
                   itemBuilder: (context, index) {
-                    final isSelected = menuProvider.selectedGroup == filteredGroups[index];
+                    final selectedGroup = menuProvider.selectedGroup;
+                    final isSelected = selectedGroup == filteredGroups[index];
                     return GroupCard(
                       isActive: Responsive.isMobile(context) ? false : isSelected, // Responsive.isMobile(context) ? false : index == 0,
                       group: filteredGroups[index],
@@ -212,31 +214,6 @@ class _ListOfGroupsState extends State<ListOfGroups> {
                       },
                       onGroupDeleted: _onGroupDeleted,
                     );
-
-                    // return Consumer<GroupProvider>(
-                    //   builder: (context, groupProvider, child) {
-                    //     //
-                    //     // if (groupProvider.selectedGroup == null && groups.isNotEmpty) {
-                    //     //   groupProvider.selectGroup(groups[0]);
-                    //     // }
-                    //
-                    //     final isSelected = groupProvider.selectedGroup == filteredGroups[index];
-                    //     return GroupCard(
-                    //       isActive: Responsive.isMobile(context) ? false : isSelected, // Responsive.isMobile(context) ? false : index == 0,
-                    //       group: filteredGroups[index],
-                    //       press: () {
-                    //         groupProvider.selectGroup(filteredGroups[index]);
-                    //         if(Responsive.isMobile(context)) {
-                    //           Navigator.pushNamed(context,
-                    //             AppRoutes.groupMenuScreen,
-                    //             arguments: filteredGroups[index],
-                    //           );
-                    //         }
-                    //       },
-                    //       onGroupDeleted: _onGroupDeleted,
-                    //     );
-                    //   }
-                    // );
                   }
                 ),
               ),

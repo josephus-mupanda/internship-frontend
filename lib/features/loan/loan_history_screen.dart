@@ -7,6 +7,7 @@ import 'package:internship_frontend/data/models/loan.dart';
 import 'package:internship_frontend/data/providers/loan_provider.dart';
 import 'package:internship_frontend/data/providers/menu_provider.dart';
 import 'package:internship_frontend/data/services/group_service.dart';
+import 'package:internship_frontend/features/group/components/header.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/constants/constants.dart';
@@ -90,12 +91,17 @@ class _LoanHistoryScreenState extends State<LoanHistoryScreen> {
         child: SafeArea(
           child: Column(
             children: [
-              MemberHeader(group: selectedGroup),
+              GroupHeaderWithArrow(group: selectedGroup),
               const Divider(thickness: 1),
               Padding(
                 padding:
                 const EdgeInsets.symmetric(horizontal: Constants.kDefaultPadding),
-                child: Row(
+                child:  loans.isEmpty?
+                  const Center(
+                      child: CircularProgressIndicator()
+                  )
+                    :
+                Row(
                   children: [
                     if (!Responsive.isDesktop(context)) const SizedBox(width: 5),
                     Expanded(

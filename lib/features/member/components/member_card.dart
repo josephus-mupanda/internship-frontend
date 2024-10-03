@@ -7,6 +7,11 @@ import 'package:internship_frontend/data/services/user_service.dart';
 import 'package:internship_frontend/themes/color_palette.dart';
 
 import '../../../core/constants/constants.dart';
+import '../../../core/utils/loading.dart';
+import '../../../core/utils/preferences.dart';
+import '../../../core/utils/toast.dart';
+import '../../../core/widgets/alert_widget.dart';
+import '../../../core/widgets/view_member_dialog.dart';
 import '../../../data/models/member.dart';
 import '../../../data/services/auth_service.dart';
 import '../../../routes/app_routes.dart';
@@ -39,23 +44,40 @@ class _MemberCardState extends State<MemberCard> {
     super.initState();
     fetchUsername();
   }
-  // Fetch the username based on member's userId
+
   Future<void> fetchUsername() async {
     // Retrieve the token from secure storage
     String? token = await _authService.getAccessToken();
     if (token == null) {
-      //showErrorToast(context, 'Token not found. Please log in again.');
-      Navigator.pushReplacementNamed(context, AppRoutes.login);
+      await _authService.logout(context);
+      Navigator.pushNamedAndRemoveUntil(context, AppRoutes.login, (route) => false);
       return;
     }
-    final response = await _userService.getUserById(widget.member.userId!, token, context);
-    if (response != null) {
-      Map<String, dynamic> data = jsonDecode(response.body);
-      setState(() {
-        username = data['username'];
-      });
+
+    try {
+      // Make the API call to get the user details by ID
+      final response = await _userService.getUserById(widget.member.userId!, token, context);
+
+      if (response != null && response.statusCode == 200) {
+        // Log the response for debugging
+        // print('Response body for userId ${widget.member.userId}: ${response.body}');
+        // Parse the JSON response
+        Map<String, dynamic> data = jsonDecode(response.body);
+
+        // Update the username state
+        setState(() {
+          username = data['username'];
+        });
+      } else {
+        // Log the error response
+        print('Failed to fetch username for userId ${widget.member.userId}. Status code: ${response?.statusCode}');
+      }
+    } catch (e) {
+      // Log any errors that occur during the fetch
+      print('Error fetching username for userId ${widget.member.userId}: $e');
     }
   }
+
 
 
   // Function to generate a random color
@@ -119,20 +141,46 @@ class _MemberCardState extends State<MemberCard> {
                       ),
                       Column(
                         children: [
-                          Text(
-                            "View",
-                            style: Theme.of(context).textTheme.bodySmall,
+                          IconButton(
+                            icon:Icon(Icons.visibility,
+                            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+                            ),
+                            onPressed: () {
+                              // Show the member view dialog on button press
+                              showDialog(
+                                context: context,
+                                builder: (context) => ViewMemberDialog(
+                                  title: "View Member Details",
+                                  member: widget.member,
+                                  username: username!,
+                                ),
+                              );
+                            },
                           ),
-                          const SizedBox(height: 5),
-                          Text(
-                            "Edit",
-                            style: Theme.of(context).textTheme.bodySmall,
+                          IconButton(
+                            icon:Icon(Icons.exit_to_app,
+                              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+                            ),
+                            onPressed: () {
+                              showDialog(
+                                context: context,
+                                builder: (context) => MyDialog(
+                                  title: "Leave the Group",
+                                  content: "Are you sure you want to leave this group?",
+                                  nameYes: "Yes",
+                                  nameNo: "No",
+                                  ok: () async {
+                                    Navigator.of(context).pop(); // Close the dialog
+                                    await _leaveGroup();
+                                  },
+                                )
+                              );
+                            },
                           ),
                         ],
                       ),
                     ],
                   ),
-                  const SizedBox(height: Constants.kDefaultPadding / 2),
                 ],
               ),
             ),
@@ -162,6 +210,27 @@ class _MemberCardState extends State<MemberCard> {
         ),
       ),
     );
+  }
+
+  Future<void> _leaveGroup() async {
+    // Retrieve the token from secure storage
+    String? token = await _authService.getAccessToken();
+    if (token == null) {
+      await _authService.logout(context);
+      Navigator.pushNamedAndRemoveUntil(context, AppRoutes.login, (route) => false);
+      return;
+    }
+    // Show loading dialog
+    showLoadingDialog(context);
+    try {
+      // await _groupService.deleteGroup(widget.group.id!, token, context);
+      // widget.onGroupDeleted?.call();
+    } catch (e) {
+      // Handle errors and show a toast or dialog with the error message
+      showErrorToast(context, 'An error occurred during deletion');
+    } finally {
+      Navigator.of(context).pop(); // Close the loading dialog
+    }
   }
 }
 

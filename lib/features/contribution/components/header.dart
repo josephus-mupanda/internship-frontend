@@ -4,10 +4,10 @@ import 'package:internship_frontend/core/constants/constants.dart';
 import '../../../core/layout/responsive_widget.dart';
 import '../../../data/models/group.dart';
 
-class MemberHeader extends StatelessWidget {
+class ContributionHeader extends StatelessWidget {
   final Group group;
 
-  const MemberHeader({super.key,
+  const ContributionHeader({super.key,
     required this.group,
   });
 

@@ -37,7 +37,6 @@ class RouteGenerator {
         return MaterialPageRoute(builder: (_) => const RegisterScreen());
       case AppRoutes.resetPassword:
         return MaterialPageRoute(builder: (_) => const ResetPasswordScreen());
-
       case AppRoutes.changePassword:
         if (args is String) {
           return MaterialPageRoute(
