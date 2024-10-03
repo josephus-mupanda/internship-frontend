@@ -1,11 +1,16 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:internship_frontend/core/utils/preferences.dart';
 import 'package:internship_frontend/themes/color_palette.dart';
 
 import '../../../core/constants/constants.dart';
+import '../../../core/utils/toast.dart';
 import '../../../data/models/group.dart';
+import '../../../data/services/auth_service.dart';
+import '../../../data/services/group_service.dart';
+import '../../../routes/app_routes.dart';
 
-class GroupCard extends StatelessWidget {
+class GroupCard extends StatefulWidget {
   const GroupCard({super.key,
     this.isActive = true,
     required this.group,
@@ -16,6 +21,49 @@ class GroupCard extends StatelessWidget {
   final Group group;
   final VoidCallback? press;
 
+  @override
+  State<GroupCard> createState() => _GroupCardState();
+}
+
+class _GroupCardState extends State<GroupCard> {
+
+
+  final GroupService _groupService = GroupService();
+  final AuthService _authService = AuthService();
+
+  bool _isUserInGroup  = false;
+  bool _loading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkUserInGroup();
+  }
+  // Function to check if the user is in the group
+  Future<void> _checkUserInGroup() async {
+    String? token = await _authService.getAccessToken();
+    int? userId = Preferences.getUserId();
+    if (token == null) {
+      await _authService.logout(context);
+      Navigator.pushNamedAndRemoveUntil(context, AppRoutes.login, (route) => false);
+      return;
+    }
+    try {
+      bool isInGroup = await _groupService.isUserInGroup(widget.group.id!, userId!, token, context);
+      if (mounted) {
+        setState(() {
+          _isUserInGroup = isInGroup;
+          _loading = false;
+        });
+      }
+    } catch (e) {
+      // Handle the error appropriately (e.g., show a toast or dialog)
+      showErrorToast(context, 'An error occurred while checking membership.');
+      setState(() {
+        _loading = false; // Stop loading
+      });
+    }
+  }
 
   // Function to generate a random color
   Color getRandomColor() {
@@ -28,6 +76,7 @@ class GroupCard extends StatelessWidget {
     );
   }
 
+
   @override
   Widget build(BuildContext context) {
     //  Here the shadow is not showing properly
@@ -35,13 +84,13 @@ class GroupCard extends StatelessWidget {
       padding: const EdgeInsets.symmetric(
           horizontal: Constants.kDefaultPadding, vertical: Constants.kDefaultPadding / 2),
       child: InkWell(
-        onTap: press,
+        onTap: widget.press,
         child: Stack(
           children: [
             Container(
               padding: const EdgeInsets.all(Constants.kDefaultPadding),
               decoration: BoxDecoration(
-                color: isActive ? ColorPalette.primaryColor : Theme.of(context).colorScheme.background,
+                color: widget.isActive ? ColorPalette.primaryColor : Theme.of(context).colorScheme.background,
                 borderRadius: BorderRadius.circular(15),
               ),
               child: Column(
@@ -53,7 +102,7 @@ class GroupCard extends StatelessWidget {
                         child: CircleAvatar(
                             backgroundColor: getRandomColor(),
                           child: Text(
-                            group.name[0].toUpperCase(),
+                            widget.group.name[0].toUpperCase(),
                             style: const TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.bold, // Make the text bold
@@ -65,42 +114,48 @@ class GroupCard extends StatelessWidget {
                       Expanded(
                         child: Text.rich(
                           TextSpan(
-                            text: "${group.name} \n",
+                            text: "${widget.group.name} \n",
                             style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                               fontWeight: FontWeight.bold,
                             ),
                             children: [
                               TextSpan(
-                                text: "Created By : ${group.createdBy}",
+                                text: "Created By : ${widget.group.createdBy}",
                                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                  color: isActive ? Colors.white : null,
+                                  color: widget.isActive ? Colors.white : null,
                                 ),
                               ),
                             ],
                           ),
                         ),
                       ),
-                      Column(
-                        children: [
-                          Text(
-                            "Request",
-                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: isActive ? Colors.white70 : null,
+                      _loading
+                          ? const CircularProgressIndicator() // Show loading indicator while checking membership
+                          : _isUserInGroup
+                          ?
+                        Column(
+                          children: [
+                            const SizedBox(height: 10),
+                            Text(
+                              "Request",
+                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                color: widget.isActive ? Colors.white70 : null,
+                              ),
                             ),
-                          ),
-                          const SizedBox(height: 5),
-                        ],
-                      ),
+                          ],
+                        )
+                            :
+                        Container(),
                     ],
                   ),
                   const SizedBox(height: Constants.kDefaultPadding / 2),
                   Text(
-                    group.description,
+                    widget.group.description,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       height: 1.5,
-                      color: isActive ? Colors.white70 : null,
+                      color: widget.isActive ? Colors.white70 : null,
                     ),
                   )
                 ],

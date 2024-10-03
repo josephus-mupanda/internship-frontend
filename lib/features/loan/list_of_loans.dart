@@ -12,6 +12,7 @@ import '../../data/providers/group_provider.dart';
 
 import 'package:flutter/foundation.dart' show kIsWeb;
 
+import '../../data/providers/menu_provider.dart';
 import '../../data/services/auth_service.dart';
 import '../../data/services/group_service.dart';
 import '../../routes/app_routes.dart';
@@ -31,6 +32,7 @@ class _ListOfLoansState extends State<ListOfLoans> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final GroupService _groupService = GroupService();
   final AuthService _authService = AuthService();
+
   List<Group> groups = [];
   List<Group> filteredGroups = [];
 
@@ -93,17 +95,18 @@ class _ListOfLoansState extends State<ListOfLoans> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      // Check if there are groups and no selected group, then select the first group
-      final groupProvider = Provider.of<GroupProvider>(context, listen: false);
-      if (groupProvider.groups.isNotEmpty && groupProvider.selectedGroup == null) {
-        groupProvider.selectGroup(groupProvider.groups[0]);
+      final menuProvider = Provider.of<MenuProvider>(context, listen: false);
+      if (menuProvider.groups.isNotEmpty && menuProvider.selectedGroup == null) {
+        menuProvider.selectGroup(menuProvider.groups[0]);
       }
     });
     fetchGroups();
   }
   @override
   Widget build(BuildContext context) {
+
     final ThemeData theme = Theme.of(context);
+    final menuProvider = Provider.of<MenuProvider>(context);
 
     return Scaffold(
         key: _scaffoldKey,
@@ -186,21 +189,17 @@ class _ListOfLoansState extends State<ListOfLoans> {
                   child: ListView.builder(
                       itemCount: filteredGroups.length,
                       itemBuilder: (context, index) {
-
-                        return Consumer<GroupProvider>(
-                            builder: (context, groupProvider, child) {
-                              final isSelected = groupProvider.selectedGroup == filteredGroups[index];
-                              return GroupCard(
-                                isActive: Responsive.isMobile(context) ? false : isSelected, // Responsive.isMobile(context) ? false : index == 0,
-                                group: filteredGroups[index],
-                                press: () {
-                                  groupProvider.selectGroup(filteredGroups[index]);
-                                  if(Responsive.isMobile(context)) {
-                                    Navigator.pushNamed(context, AppRoutes.loanScreen);
-                                  }
-                                },
-                              );
+                        final selectedGroup = menuProvider.selectedGroup;
+                        final isSelected = selectedGroup == filteredGroups[index];
+                        return GroupCard(
+                          isActive: Responsive.isMobile(context) ? false : isSelected, // Responsive.isMobile(context) ? false : index == 0,
+                          group: filteredGroups[index],
+                          press: () {
+                            menuProvider.selectGroup(filteredGroups[index]);
+                            if(Responsive.isMobile(context)) {
+                              Navigator.pushNamed(context, AppRoutes.loanScreen);
                             }
+                          },
                         );
                       }
                   ),
@@ -209,7 +208,6 @@ class _ListOfLoansState extends State<ListOfLoans> {
             ),
           ),
         ),
-
     );
   }
 }

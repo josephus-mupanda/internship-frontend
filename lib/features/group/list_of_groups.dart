@@ -97,9 +97,9 @@ class _ListOfGroupsState extends State<ListOfGroups> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       // Check if there are groups and no selected group, then select the first group
-      final groupProvider = Provider.of<MenuProvider>(context, listen: false);
-      if (groupProvider.groups.isNotEmpty && groupProvider.selectedGroup == null) {
-        groupProvider.selectGroup(groupProvider.groups[0]);
+      final menuProvider = Provider.of<MenuProvider>(context, listen: false);
+      if (menuProvider.groups.isNotEmpty && menuProvider.selectedGroup == null) {
+        menuProvider.selectGroup(menuProvider.groups[0]);
       }
     });
     fetchGroups();
