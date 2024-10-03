@@ -147,4 +147,15 @@ class UserService {
     }
     return null;
   }
+
+  // Retrieve all users
+  Future<http.Response> getAllUsers(String token) async {
+    final response = await http.get(
+      Uri.parse(baseUrl),
+      headers: {
+        'Authorization': 'Bearer $token',
+      },
+    );
+    return response;
+  }
 }

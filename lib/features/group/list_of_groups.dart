@@ -60,7 +60,6 @@ class _ListOfGroupsState extends State<ListOfGroups> {
           groups = fetchedGroups;
           filteredGroups = groups;
           Provider.of<MenuProvider>(context, listen: false).updateGroups(groups);
-          //Provider.of<GroupProvider>(context, listen: false).setGroups(groups);
         });
       } else {
         // Handle the error if the status code is not 200
