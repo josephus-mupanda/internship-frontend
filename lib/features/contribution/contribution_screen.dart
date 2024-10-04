@@ -84,9 +84,9 @@ class _ContributionScreenState extends State<ContributionScreen> {
       } else {
         contributions = contributions.where((contribution) {
           return contribution.amount.toString().contains(query) ||
-              contribution.group.name.toString().contains(query) ||
+              contribution.group.toString().contains(query) ||
               contribution.id.toString().contains(query) ||
-              contribution.member.user!.username.toString().contains(query) ||
+              contribution.user.toString().contains(query) ||
               DateFormat('yyyy-MM-dd').format(contribution.date).contains(query);
         }).toList();
       }
@@ -99,11 +99,11 @@ class _ContributionScreenState extends State<ContributionScreen> {
       ascending ? a.id.compareTo(b.id) : b.id.compareTo(a.id));
     } else if (columnIndex == 1) {
       contributions.sort((a, b) =>
-      ascending ? a.group.name.compareTo(b.group.name) : b.group.name.compareTo(a.group.name));
+      ascending ? a.group.compareTo(b.group) : b.group.compareTo(a.group));
     }
     else if (columnIndex == 2) {
       contributions.sort((a, b) =>
-      ascending ? a.member.user!.username.compareTo(b.member.user!.username) : b.member.user!.username.compareTo(a.member.user!.username));
+      ascending ? a.user.compareTo(b.user) : b.user.compareTo(a.user));
     }
     else if (columnIndex == 3) {
       contributions.sort((a, b) =>
@@ -289,8 +289,8 @@ class _ContributionScreenState extends State<ContributionScreen> {
                 ),
                 cells: [
                   DataCell(Text(contribution.id.toString())),
-                  DataCell(Text(contribution.group.name)),
-                  DataCell(Text(contribution.member.user!.username)),
+                  DataCell(Text(contribution.group)),
+                  DataCell(Text(contribution.user)),
                   DataCell(
                     Text(
                         NumberFormat.currency(symbol: '\$').format(contribution.amount)

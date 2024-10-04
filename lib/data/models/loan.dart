@@ -34,20 +34,20 @@ enum ReservedAmountType {
 // ReservedAmount model
 class ReservedAmount {
   final int id;
-  final Group group;
-  final MyMember member;
   final double amount;
   final DateTime date;
-  final ReservedAmountType type;
+  final String reservedAmountType;
+  final String group;
+  final String user;
   final double originalLoanAmount;
 
   ReservedAmount({
     required this.id,
-    required this.group,
-    required this.member,
     required this.amount,
     required this.date,
-    required this.type,
+    required this.reservedAmountType,
+    required this.group,
+    required this.user,
     required this.originalLoanAmount
   });
 
@@ -55,13 +55,11 @@ class ReservedAmount {
   factory ReservedAmount.fromJson(Map<String, dynamic> json) {
     return ReservedAmount(
       id: json['id'],
-      group: json['group'],
-      member: json['member'],
       amount: json['amount'],
       date: DateTime.parse(json['date']),
-      type: ReservedAmountType.values.firstWhere(
-            (e) => e.toString() == 'ReservedAmountType.' + json['type'],
-      ),
+      reservedAmountType: json['reservedAmountType'],
+      group: json['group'],
+      user: json['user'],
       originalLoanAmount: json['originalLoanAmount'],
     );
   }
@@ -69,11 +67,11 @@ class ReservedAmount {
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'group': group,
-      'member': member,
       'amount': amount,
       'date': date.toIso8601String(),
-      'type': type.toString().split('.').last,
+      'type': reservedAmountType,
+      'group': group,
+      'user': user,
       'originalLoanAmount': originalLoanAmount,
     };
   }

@@ -85,10 +85,10 @@ class _LoanHistoryScreenState extends State<LoanHistoryScreen> {
       } else {
         loans = loans.where((loan) {
           return loan.amount.toString().contains(query) ||
-              loan.group.name.toString().contains(query) ||
+              loan.group.toString().contains(query) ||
               loan.id.toString().contains(query) ||
-              loan.member.user!.username.toString().contains(query) ||
-              loan.type.name.toLowerCase().contains(query.toLowerCase()) ||
+              loan.user.toString().contains(query) ||
+              loan.reservedAmountType.toLowerCase().contains(query.toLowerCase()) ||
               DateFormat('yyyy-MM-dd').format(loan.date).contains(query);
         }).toList();
       }
@@ -101,11 +101,11 @@ class _LoanHistoryScreenState extends State<LoanHistoryScreen> {
       ascending ? a.id.compareTo(b.id) : b.id.compareTo(a.id));
     } else if (columnIndex == 1) {
       loans.sort((a, b) =>
-      ascending ? a.group.name.compareTo(b.group.name) : b.group.name.compareTo(a.group.name));
+      ascending ? a.group.compareTo(b.group) : b.group.compareTo(a.group));
     }
     else if (columnIndex == 2) {
       loans.sort((a, b) =>
-      ascending ? a.member.user!.username.compareTo(b.member.user!.username) : b.member.user!.username.compareTo(a.member.user!.username));
+      ascending ? a.user.compareTo(b.user) : b.user.compareTo(a.user));
     }
     else if (columnIndex == 3) {
       loans.sort((a, b) =>
@@ -291,8 +291,8 @@ class _LoanHistoryScreenState extends State<LoanHistoryScreen> {
             return DataRow(
               cells: [
                 DataCell(Text(loan.id.toString())),
-                DataCell(Text(loan.group.name)),
-                DataCell(Text(loan.member.user!.username)),
+                DataCell(Text(loan.group)),
+                DataCell(Text(loan.user)),
                 DataCell(
                   Text(
                       NumberFormat.currency(symbol: '\$').format(loan.amount)
@@ -300,7 +300,7 @@ class _LoanHistoryScreenState extends State<LoanHistoryScreen> {
                 ),
                 DataCell(Text(DateFormat('yyyy-MM-dd').format(loan.date))),
                 DataCell(
-                  _buildLoanType(loan.type, theme),
+                  _buildLoanType(loan.reservedAmountType, theme),
                 ),
                 DataCell(
                   Text(
@@ -316,20 +316,20 @@ class _LoanHistoryScreenState extends State<LoanHistoryScreen> {
   }
 
   // Function to build the customized transaction type container
-  Widget _buildLoanType(ReservedAmountType type, ThemeData theme) {
+  Widget _buildLoanType(String type, ThemeData theme) {
     final Color typeColor;
     final String typeLabel;
 
     switch (type) {
-      case ReservedAmountType.LOAN:
+      case "LOAN":
         typeColor = theme.colorScheme.primary;
         typeLabel = 'Loan';
         break;
-      case ReservedAmountType.DISBURSEMENT:
+      case "DISBURSEMENT":
         typeColor = theme.colorScheme.secondary;
         typeLabel = 'Disbursement';
         break;
-      case ReservedAmountType.MEMBERSHIP_FEES:
+      case "MEMBERSHIP_FEES":
         typeColor = theme.colorScheme.error;
         typeLabel = 'Membership';
         break;

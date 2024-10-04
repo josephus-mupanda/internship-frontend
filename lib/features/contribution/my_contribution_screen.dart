@@ -110,9 +110,9 @@ class _MyContributionScreenState extends State<MyContributionScreen> {
       } else {
         myContributions = myContributions.where((contribution) {
           return contribution.amount.toString().contains(query) ||
-              contribution.group.name.toString().contains(query) ||
+              contribution.group.toString().contains(query) ||
               contribution.id.toString().contains(query) ||
-              contribution.member.user!.username.toString().contains(query) ||
+              contribution.user.toString().contains(query) ||
               DateFormat('yyyy-MM-dd').format(contribution.date).contains(query);
         }).toList();
       }
@@ -125,11 +125,11 @@ class _MyContributionScreenState extends State<MyContributionScreen> {
       ascending ? a.id.compareTo(b.id) : b.id.compareTo(a.id));
     } else if (columnIndex == 1) {
       myContributions.sort((a, b) =>
-      ascending ? a.group.name.compareTo(b.group.name) : b.group.name.compareTo(a.group.name));
+      ascending ? a.group.compareTo(b.group) : b.group.compareTo(a.group));
     }
     else if (columnIndex == 2) {
       myContributions.sort((a, b) =>
-      ascending ? a.member.user!.username.compareTo(b.member.user!.username) : b.member.user!.username.compareTo(a.member.user!.username));
+      ascending ? a.user.compareTo(b.user) : b.user.compareTo(a.user));
     }
     else if (columnIndex == 3) {
       myContributions.sort((a, b) =>
@@ -168,12 +168,7 @@ class _MyContributionScreenState extends State<MyContributionScreen> {
                 Padding(
                   padding:
                   const EdgeInsets.symmetric(horizontal: Constants.kDefaultPadding),
-                  child:  myContributions.isEmpty?
-                    const Center(
-                        child: CircularProgressIndicator()
-                    )
-                      :
-                  Row(
+                  child: Row(
                     children: [
                       if (!Responsive.isDesktop(context)) const SizedBox(width: 5),
                       Expanded(
@@ -202,100 +197,9 @@ class _MyContributionScreenState extends State<MyContributionScreen> {
                 ),
                 const SizedBox(height: Constants.kDefaultPadding),
                 Expanded(
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: SingleChildScrollView(
-                      child: DataTable(
-                        sortAscending: _sortAscending,
-                        sortColumnIndex: _sortColumnIndex,
-                        columns: [
-                          DataColumn(
-                            label: Text(
-                              'ID',
-                              style: textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
-                            ),
-                            onSort: (columnIndex, _) {
-                              _onSort(columnIndex, !_sortAscending);
-                            },
-                            tooltip: 'Sort by ID',
-                          ),
-                          DataColumn(
-                            label: Text(
-                              'Group Name',
-                              style: textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
-                            ),
-                            onSort: (columnIndex, _) {
-                              _onSort(columnIndex, !_sortAscending);
-                            },
-                            tooltip: 'Sort By Group Name',
-                          ),
-                          // New Member Username Column
-                          DataColumn(
-                            label: Text(
-                              'Member',
-                              style: textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
-                            ),
-                            onSort: (columnIndex, _) {
-                              _onSort(columnIndex, !_sortAscending);
-                            },
-                            tooltip: 'Sort By Member',
-                          ),
-                          DataColumn(
-                            label: Text(
-                              'Amount',
-                              style: textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
-                            ),
-                            onSort: (columnIndex, _) {
-                              _onSort(columnIndex, !_sortAscending);
-                            },
-                            tooltip: 'Sort by Amount',
-                          ),
-                          DataColumn(
-                            label: Text(
-                              'Date',
-                              style: textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
-                            ),
-                            onSort: (columnIndex, _) {
-                              _onSort(columnIndex, !_sortAscending);
-                            },
-                            tooltip: 'Sort by Date',
-                          ),
-                        ],
-                        rows: List<DataRow>.generate(
-                          myContributions.length,
-                              (index) {
-                            final contribution = myContributions[index];
-                            final isEven = index % 2 == 0;
-                            return DataRow(
-                              color: WidgetStateProperty.resolveWith<Color?>(
-                                    (Set<WidgetState> states) {
-                                  return isEven
-                                      ? theme.colorScheme.background.withOpacity(0.05)
-                                      : theme.colorScheme.background.withOpacity(0.15);
-                                },
-                              ),
-                              cells: [
-                                DataCell(Text(contribution.id.toString())),
-                                DataCell(Text(contribution.group.name)),
-                                DataCell(Text(contribution.member.user!.username)),
-                                DataCell(
-                                  Text(
-                                      NumberFormat.currency(symbol: '\$').format(contribution.amount)
-                                  ),
-                                ),
-                                DataCell(
-                                    Text(
-                                      DateFormat('yyyy-MM-dd').format(contribution.date),
-                                    )
-                                ),
-
-                              ],
-                            );
-                          },
-                        ),
-                      ),
-                    ),
-                  ),
+                  child: myContributions.isEmpty
+                      ? _buildSkeletonTable(context)
+                      : _buildContributionTable(context, textTheme),
                 ),
               ],
             ),
@@ -414,8 +318,8 @@ class _MyContributionScreenState extends State<MyContributionScreen> {
               ),
               cells: [
                 DataCell(Text(contribution.id.toString())),
-                DataCell(Text(contribution.group.name)),
-                DataCell(Text(contribution.member.user!.username)),
+                DataCell(Text(contribution.group)),
+                DataCell(Text(contribution.user)),
                 DataCell(
                   Text(
                       NumberFormat.currency(symbol: '\$').format(contribution.amount)

@@ -99,9 +99,9 @@ class _MyLoanHistoryScreenState extends State<MyLoanHistoryScreen> {
       } else {
         myLoans = myLoans.where((loan) {
           return loan.amount.toString().contains(query) ||
-              loan.group.name.toString().contains(query) ||
+              loan.group.toString().contains(query) ||
               loan.id.toString().contains(query) ||
-              loan.type.name.toLowerCase().contains(query.toLowerCase()) ||
+              loan.reservedAmountType.toLowerCase().contains(query.toLowerCase()) ||
               DateFormat('yyyy-MM-dd').format(loan.date).contains(query);
         }).toList();
       }
@@ -114,7 +114,7 @@ class _MyLoanHistoryScreenState extends State<MyLoanHistoryScreen> {
       ascending ? a.id.compareTo(b.id) : b.id.compareTo(a.id));
     } else if (columnIndex == 1) {
       myLoans.sort((a, b) =>
-      ascending ? a.group.name.compareTo(b.group.name) : b.group.name.compareTo(a.group.name));
+      ascending ? a.group.compareTo(b.group) : b.group.compareTo(a.group));
     }
     else if (columnIndex == 2) {
       myLoans.sort((a, b) =>
@@ -287,7 +287,7 @@ class _MyLoanHistoryScreenState extends State<MyLoanHistoryScreen> {
             return DataRow(
               cells: [
                 DataCell(Text(loan.id.toString())),
-                DataCell(Text(loan.group.name)),
+                DataCell(Text(loan.group)),
                 DataCell(
                   Text(
                       NumberFormat.currency(symbol: '\$').format(loan.amount)
@@ -295,7 +295,7 @@ class _MyLoanHistoryScreenState extends State<MyLoanHistoryScreen> {
                 ),
                 DataCell(Text(DateFormat('yyyy-MM-dd').format(loan.date))),
                 DataCell(
-                  _buildLoanType(loan.type, theme),
+                  _buildLoanType(loan.reservedAmountType, theme),
                 ),
                 DataCell(
                   Text(
@@ -309,20 +309,20 @@ class _MyLoanHistoryScreenState extends State<MyLoanHistoryScreen> {
       ),
     );
   }
-  Widget _buildLoanType(ReservedAmountType type, ThemeData theme) {
+  Widget _buildLoanType(String type, ThemeData theme) {
     final Color typeColor;
     final String typeLabel;
 
     switch (type) {
-      case ReservedAmountType.LOAN:
+      case "LOAN":
         typeColor = theme.colorScheme.primary;
         typeLabel = 'Loan';
         break;
-      case ReservedAmountType.DISBURSEMENT:
+      case "DISBURSEMENT":
         typeColor = theme.colorScheme.secondary;
         typeLabel = 'Disbursement';
         break;
-      case ReservedAmountType.MEMBERSHIP_FEES:
+      case "MEMBERSHIP_FEES":
         typeColor = theme.colorScheme.error;
         typeLabel = 'Membership';
         break;
