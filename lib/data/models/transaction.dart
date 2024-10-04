@@ -1,6 +1,3 @@
-import 'group.dart';
-import 'member.dart';
-
 // Enum for transaction types
 enum TransactionType {
   CONTRIBUTION,
@@ -13,32 +10,30 @@ enum TransactionType {
 // Transaction model
 class Transaction {
   final int id;
-  final Group group;
-  final MyMember member;
   final double amount;
   final DateTime date;
-  final TransactionType type;
+  final String transactionType;
+  final String group;
+  final String user;
 
   Transaction({
     required this.id,
-    required this.group,
-    required this.member,
     required this.amount,
     required this.date,
-    required this.type,
+    required this.transactionType,
+    required this.group,
+    required this.user,
   });
 
   // Factory method for creating a Transaction from JSON
   factory Transaction.fromJson(Map<String, dynamic> json) {
     return Transaction(
       id: json['id'],
-      group: json['group'],
-      member: json['member'],
       amount: json['amount'],
       date: DateTime.parse(json['date']),
-      type: TransactionType.values.firstWhere(
-            (e) => e.toString() == 'TransactionType.' + json['type'],
-      ),
+      transactionType:json['transactionType'],
+      group: json['group'],
+      user: json['user'],
     );
   }
 
@@ -46,11 +41,11 @@ class Transaction {
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'group': group,
-      'member': member,
       'amount': amount,
       'date': date.toIso8601String(),
-      'type': type.toString().split('.').last,
+      'type': transactionType,
+      'group': group,
+      'user': user,
     };
   }
 }

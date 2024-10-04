@@ -108,9 +108,10 @@ class _GroupCardState extends State<GroupCard> {
                   Row(
                     children: [
                       SizedBox(
-                        width: 32,
+                        width: 40,
                         child: CircleAvatar(
-                            backgroundColor: getRandomColor(),
+                          radius: 30,
+                            // backgroundColor: getRandomColor(),
                           child: Text(
                             widget.group.name[0].toUpperCase(),
                             style: const TextStyle(

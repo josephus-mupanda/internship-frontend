@@ -80,8 +80,8 @@ class _TransactionScreenState extends State<TransactionScreen> {
         transactions = transactions.where((transaction) {
           return transaction.amount.toString().contains(query) ||
               transaction.id.toString().contains(query) ||
-              transaction.group.name.toString().contains(query) ||
-              transaction.type.name.toLowerCase().contains(query.toLowerCase()) ||
+              transaction.group.toString().contains(query) ||
+              transaction.transactionType.toLowerCase().contains(query.toLowerCase()) ||
               DateFormat('yyyy-MM-dd').format(transaction.date).contains(query);
         }).toList();
       }
@@ -94,7 +94,7 @@ class _TransactionScreenState extends State<TransactionScreen> {
       ascending ? a.id.compareTo(b.id) : b.id.compareTo(a.id));
     } else if (columnIndex == 1) {
       transactions.sort((a, b) =>
-      ascending ? a.group.name.compareTo(b.group.name) : b.group.name.compareTo(a.group.name));
+      ascending ? a.group.compareTo(b.group) : b.group.compareTo(a.group));
     }
     else if (columnIndex == 2) {
       transactions.sort((a, b) =>
@@ -287,7 +287,7 @@ class _TransactionScreenState extends State<TransactionScreen> {
               ),
               cells: [
                 DataCell(Text(transaction.id.toString())),
-                DataCell(Text(transaction.group.name)),
+                DataCell(Text(transaction.group)),
                 DataCell(
                   Text(
                       NumberFormat.currency(symbol: '\$').format(transaction.amount)
@@ -295,7 +295,7 @@ class _TransactionScreenState extends State<TransactionScreen> {
                 ),
                 DataCell(Text(DateFormat('yyyy-MM-dd').format(transaction.date))),
                 DataCell(
-                  _buildTransactionType(transaction.type, theme),
+                  _buildTransactionType(transaction.transactionType, theme),
                 ),
               ],
             );
@@ -306,20 +306,20 @@ class _TransactionScreenState extends State<TransactionScreen> {
     );
   }
   // Function to build the customized transaction type container
-  Widget _buildTransactionType(TransactionType type, ThemeData theme) {
+  Widget _buildTransactionType(String type, ThemeData theme) {
     final Color typeColor;
     final String typeLabel;
 
     switch (type) {
-      case TransactionType.CONTRIBUTION:
+      case "CONTRIBUTION":
         typeColor = theme.colorScheme.primary;
         typeLabel = 'Contribution';
         break;
-      case TransactionType.DISBURSEMENT:
+      case "DISBURSEMENT":
         typeColor = theme.colorScheme.secondary;
         typeLabel = 'Disbursement';
         break;
-      case TransactionType.MEMBERSHIP_FEES:
+      case "MEMBERSHIP_FEES":
         typeColor = theme.colorScheme.error;
         typeLabel = 'Membership';
         break;

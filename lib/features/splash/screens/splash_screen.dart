@@ -95,9 +95,6 @@ class MobileSplashScreen extends StatelessWidget {
                 },
               ),
             ),
-            // CircularProgressIndicator(
-            //   valueColor: AlwaysStoppedAnimation<Color>( Theme.of(context).primaryColor),
-            // ),
           ],
         ),
       ),
