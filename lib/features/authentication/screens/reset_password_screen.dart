@@ -75,7 +75,10 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                                                   mainAxisAlignment: MainAxisAlignment.center,
                                                   crossAxisAlignment: CrossAxisAlignment.start,
                                                   children: [
-                                                    Center(child: Image.asset(ImagePath.resetPasswordImage,height: 100,)),
+                                                    Center(
+                                                      child: Image.asset(ImagePath.companyLogo,
+                                                        height: 100,),
+                                                    ),
                                                     Text(
                                                       'Forgot\nPassword',
                                                       style: theme.textTheme.headlineLarge?.copyWith(

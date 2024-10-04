@@ -76,7 +76,10 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                                                   mainAxisAlignment: MainAxisAlignment.center,
                                                   crossAxisAlignment: CrossAxisAlignment.start,
                                                   children: [
-                                                    Center(child: Image.asset(ImagePath.changePasswordImage,height: 200,)),
+                                                    Center(
+                                                      child: Image.asset(ImagePath.companyLogo,
+                                                        height: 100,),
+                                                    ),
                                                     Text(
                                                       'Change Password',
                                                       style: theme.textTheme.headlineLarge?.copyWith(

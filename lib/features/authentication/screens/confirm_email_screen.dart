@@ -80,7 +80,7 @@ class MobileConfirmEmailScreen extends StatelessWidget {
         children: [
           Image.asset(
             ImagePath.companyLogo,
-            width: 120, // Adjust as needed
+            width: 100, // Adjust as needed
           ),
           const SizedBox(height: 20),
           isLoading

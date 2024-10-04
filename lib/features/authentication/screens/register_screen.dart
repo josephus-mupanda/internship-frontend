@@ -80,7 +80,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                                   mainAxisAlignment: MainAxisAlignment.center,
                                                   crossAxisAlignment: CrossAxisAlignment.start,
                                                   children: [
-                                                    Center(child: Image.asset(ImagePath.registerImage, height: 100,)),
+                                                    Center(
+                                                      child: Image.asset(ImagePath.companyLogo,
+                                                        height: 100,),
+                                                    ),
                                                     Text(
                                                       'Sign Up',
                                                       style: theme.textTheme.headlineLarge?.copyWith(

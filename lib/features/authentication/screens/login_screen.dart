@@ -75,8 +75,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                               crossAxisAlignment: CrossAxisAlignment.start,
                                               children: [
                                                 Center(
-                                                  child: Image.asset(ImagePath.loginImage,
-                                                  height: 200,),
+                                                  child: Image.asset(ImagePath.companyLogo,
+                                                  height: 100,),
                                                 ),
                                                 Text(
                                                   'Sign In',
