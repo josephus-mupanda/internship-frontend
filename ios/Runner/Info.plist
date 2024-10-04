@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Internship Frontend</string>
+	<string>Ikimina BK</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -13,7 +13,9 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>internship_frontend</string>
+	<string>Ikimina BK</string>
+	<key>NSHumanReadableDescription</key>
+    <string>Ikimina BK is a Group Contributions & Savings project should consist of rotating assignments, automated disbursements, interest calculations, and other vital features that a group contributions and savings project would have.</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
