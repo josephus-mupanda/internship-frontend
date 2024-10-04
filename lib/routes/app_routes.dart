@@ -18,6 +18,8 @@ class AppRoutes {
   static const String disbursementScreen = '$groupMenuScreen/disbursements';
   static const String loanGroupScreen = '$groupMenuScreen/myLoan';
   static const String allLoansGroupScreen = '$groupMenuScreen/allLoans';
+  static const String transactionGroupScreen = '$groupMenuScreen/myTransaction';
+  static const String allTransactionsGroupScreen = '$groupMenuScreen/allTransactions';
 
   static const String loanOnboardingScreen = '$dashboard/loanOnboarding';
   static const String loanScreen = '$dashboard/loan';

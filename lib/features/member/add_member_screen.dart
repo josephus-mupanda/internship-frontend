@@ -47,9 +47,9 @@ class _AddMemberScreenState extends State<AddMemberScreen> {
     }
     try {
 
-      final response = await _userService.getAllUsers(token);
-      if (response.statusCode == 200) {
-        List<dynamic> data = jsonDecode(response.body);
+      final response = await _userService.getAllUsers(token, context);
+      if (response?.statusCode == 200) {
+        List<dynamic> data = jsonDecode(response!.body);
         List<User> fetchedUsers = data.map((usersJson) {
           return User.fromJson(usersJson);
         }).toList();
@@ -59,7 +59,7 @@ class _AddMemberScreenState extends State<AddMemberScreen> {
           Provider.of<UserProvider>(context, listen: false).setUsers(users);
         });
       } else {
-        showErrorToast(context, "Failed to fetch users. Status Code: ${response.statusCode}");
+        showErrorToast(context, "Failed to fetch users. Status Code: ${response?.statusCode}");
       }
     } catch (e) {
       showErrorToast(context, "An error occurred: $e");
@@ -91,86 +91,92 @@ class _AddMemberScreenState extends State<AddMemberScreen> {
     fetchUsers();
   }
 
+  Future<void> _onRefresh() async {
+    await fetchUsers();
+  }
   @override
   Widget build(BuildContext context) {
 
     final ThemeData theme = Theme.of(context);
 
     return Scaffold(
-      body: Container(
-        color: theme.colorScheme.background,
-        child: SafeArea(
-          child: Column(
-            children: [
-              GroupHeaderWithArrow(group: widget.group),
-              const Divider(thickness: 1),
-              Padding(
-                padding:
-                const EdgeInsets.symmetric(horizontal: Constants.kDefaultPadding),
-                child: Row(
-                  children: [
-                    if (!Responsive.isDesktop(context)) const SizedBox(width: 5),
-                    Expanded(
-                      child: InputWidget(
-                        hintText: 'Search user here...',
-                        keyboardType: TextInputType.name,
-                        suffixIcon: IconButton(
-                          icon: Icon(
-                            FeatherIcons.search,
-                            color: theme.colorScheme.onSurface.withOpacity(0.5),
+      body: RefreshIndicator(
+        onRefresh: _onRefresh,
+        child: Container(
+          color: theme.colorScheme.background,
+          child: SafeArea(
+            child: Column(
+              children: [
+                GroupHeaderWithArrow(group: widget.group),
+                const Divider(thickness: 1),
+                Padding(
+                  padding:
+                  const EdgeInsets.symmetric(horizontal: Constants.kDefaultPadding),
+                  child: Row(
+                    children: [
+                      if (!Responsive.isDesktop(context)) const SizedBox(width: 5),
+                      Expanded(
+                        child: InputWidget(
+                          hintText: 'Search user here...',
+                          keyboardType: TextInputType.name,
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              FeatherIcons.search,
+                              color: theme.colorScheme.onSurface.withOpacity(0.5),
+                            ),
+                            onPressed: () {
+                            },
                           ),
-                          onPressed: () {
+                          onChanged: (String? value) {
+                            filterUsers(value ?? "");
                           },
+                          validator: (String? value) {},
                         ),
-                        onChanged: (String? value) {
-                          filterUsers(value ?? "");
-                        },
-                        validator: (String? value) {},
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-              const SizedBox(height: Constants.kDefaultPadding),
-              Padding(
-                padding:
-                const EdgeInsets.symmetric(horizontal: Constants.kDefaultPadding),
-                child: Row(
-                  children: [
-                    const SizedBox(width: 5),
-                    Text(
-                      "Sort by username",
-                      style: theme.textTheme.bodyMedium,
-                    ),
-                    const Spacer(),
-                    IconButton(
-                      icon: Icon(Icons.arrow_upward, color: theme.colorScheme.onSurface.withOpacity(0.5)),
-                      onPressed: () {
-                        sortGroupsByUsername(true); // Ascending
-                      },
-                    ),
-                    IconButton(
-                      icon: Icon(Icons.arrow_downward, color: theme.colorScheme.onSurface.withOpacity(0.5)),
-                      onPressed: () {
-                        sortGroupsByUsername(false); // Descending
-                      },
-                    ),
-                  ],
+                const SizedBox(height: Constants.kDefaultPadding),
+                Padding(
+                  padding:
+                  const EdgeInsets.symmetric(horizontal: Constants.kDefaultPadding),
+                  child: Row(
+                    children: [
+                      const SizedBox(width: 5),
+                      Text(
+                        "Sort by username",
+                        style: theme.textTheme.bodyMedium,
+                      ),
+                      const Spacer(),
+                      IconButton(
+                        icon: Icon(Icons.arrow_upward, color: theme.colorScheme.onSurface.withOpacity(0.5)),
+                        onPressed: () {
+                          sortGroupsByUsername(true); // Ascending
+                        },
+                      ),
+                      IconButton(
+                        icon: Icon(Icons.arrow_downward, color: theme.colorScheme.onSurface.withOpacity(0.5)),
+                        onPressed: () {
+                          sortGroupsByUsername(false); // Descending
+                        },
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              const SizedBox(height: Constants.kDefaultPadding),
-              Expanded(
-                child: ListView.builder(
-                    itemCount: filteredUsers.length,
-                    itemBuilder: (context, index) {
-                      return UserCard(
-                        user: filteredUsers[index],
-                        group: widget.group,
-                      );
-                    }
+                const SizedBox(height: Constants.kDefaultPadding),
+                Expanded(
+                  child: ListView.builder(
+                      itemCount: filteredUsers.length,
+                      itemBuilder: (context, index) {
+                        return UserCard(
+                          user: filteredUsers[index],
+                          group: widget.group,
+                        );
+                      }
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

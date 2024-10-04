@@ -7,18 +7,16 @@ import 'package:internship_frontend/data/models/loan.dart';
 import 'package:internship_frontend/data/providers/loan_provider.dart';
 import 'package:internship_frontend/data/services/group_service.dart';
 import 'package:internship_frontend/features/group/components/header.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/constants/constants.dart';
 import '../../core/layout/responsive_widget.dart';
-import '../../core/utils/toast.dart';
 import '../../core/widgets/input_widget.dart';
 import '../../data/models/group.dart';
 import '../../data/models/member.dart';
-import '../../data/providers/group_provider.dart';
 import '../../data/services/auth_service.dart';
 import '../../routes/app_routes.dart';
-import '../member/components/header.dart';
 
 class MyLoanHistoryScreen extends StatefulWidget {
   final Group group;
@@ -38,28 +36,33 @@ class _MyLoanHistoryScreenState extends State<MyLoanHistoryScreen> {
 
   final GroupService _groupService = GroupService();
   final AuthService _authService = AuthService();
-  List<Loan> myLoans = [];
+
+  List<ReservedAmount> myLoans = [];
+  bool _isLoading = true;
+  bool _sortAscending = true;
+  int _sortColumnIndex = 0;
 
   Future<void> fetchMyLoans() async {
-    // Retrieve the token from secure storage
+    setState(() {
+      _isLoading = true;
+    });
+
     String? token = await _authService.getAccessToken();
     if (token == null) {
-      showErrorToast(context, 'Token not found. Please log in again.');
-      Navigator.pushReplacementNamed(context, AppRoutes.login);
+      await _authService.logout(context);
+      Navigator.pushNamedAndRemoveUntil(context, AppRoutes.login, (route) => false);
       return;
     }
     try {
       final response = await _groupService.getLoansByGroupAndMember(widget.group.id!, widget.member.id!, token, context);
       if (response?.statusCode == 200) {
-        // Decode the JSON data
         List<dynamic> data = jsonDecode(response!.body);
-        // Convert the JSON data into a list of Loan objects
-        List<Loan> fetchedMyLoans = data.map((loansJson) {
-          return Loan.fromJson(loansJson);
+        List<ReservedAmount> fetchedMyLoans = data.map((loansJson) {
+          return ReservedAmount.fromJson(loansJson);
         }).toList();
-        // Update your state or provider with the fetched loans
         setState(() {
           myLoans = fetchedMyLoans;
+          _isLoading = false;
           Provider.of<LoanProvider>(context, listen: false).setLoans(myLoans);
         });
       } else {
@@ -67,8 +70,10 @@ class _MyLoanHistoryScreenState extends State<MyLoanHistoryScreen> {
         throw Exception("Failed to load loans");
       }
     } catch (e) {
-      // Handle any exceptions
       print("Error fetching loans: $e");
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 
@@ -78,81 +83,265 @@ class _MyLoanHistoryScreenState extends State<MyLoanHistoryScreen> {
     fetchMyLoans();
   }
 
+  Future<void> _onRefresh() async {
+    await fetchMyLoans();
+  }
+
   void _onLoanDeleted() {
     // Refresh the list after deletion
     fetchMyLoans();
   }
 
+  void _onSearch(String? query) {
+    setState(() {
+      if (query == null || query.isEmpty) {
+        fetchMyLoans();
+      } else {
+        myLoans = myLoans.where((loan) {
+          return loan.amount.toString().contains(query) ||
+              loan.group.name.toString().contains(query) ||
+              loan.id.toString().contains(query) ||
+              loan.type.name.toLowerCase().contains(query.toLowerCase()) ||
+              DateFormat('yyyy-MM-dd').format(loan.date).contains(query);
+        }).toList();
+      }
+    });
+  }
+
+  void _onSort(int columnIndex, bool ascending) {
+    if (columnIndex == 0) {
+      myLoans.sort((a, b) =>
+      ascending ? a.id.compareTo(b.id) : b.id.compareTo(a.id));
+    } else if (columnIndex == 1) {
+      myLoans.sort((a, b) =>
+      ascending ? a.group.name.compareTo(b.group.name) : b.group.name.compareTo(a.group.name));
+    }
+    else if (columnIndex == 2) {
+      myLoans.sort((a, b) =>
+      ascending ? a.amount.compareTo(b.amount) : b.amount.compareTo(a.amount));
+    }
+    else if (columnIndex == 3) {
+      myLoans.sort((a, b) =>
+      ascending ? a.date.compareTo(b.date) : b.date.compareTo(a.date));
+    }
+
+    setState(() {
+      _sortColumnIndex = columnIndex;
+      _sortAscending = ascending;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-
     final ThemeData theme = Theme.of(context);
-    final groupProvider = Provider.of<GroupProvider>(context);
-    final selectedGroup = groupProvider.selectedGroup ?? widget.group;
-
+    final ColorScheme colorScheme = theme.colorScheme;
+    final TextTheme textTheme = theme.textTheme;
     return Scaffold(
-      body: Container(
-        color: theme.colorScheme.background,
-        child: SafeArea(
-          child: Column(
-            children: [
-              GroupHeaderWithArrow(group: selectedGroup),
-              const Divider(thickness: 1),
-              Padding(
-                padding:
-                const EdgeInsets.symmetric(horizontal: Constants.kDefaultPadding),
-                child: myLoans.isEmpty?
-                  const Center(
-                      child: CircularProgressIndicator()
-                  )
-                    :
-                Row(
-                  children: [
-                    if (!Responsive.isDesktop(context)) const SizedBox(width: 5),
-                    Expanded(
-                      child: InputWidget(
-                        hintText: 'Search my loan here...',
-                        keyboardType: TextInputType.name,
-                        suffixIcon: IconButton(
-                          icon: Icon(
-                            FeatherIcons.search,
-                            color: theme.colorScheme.onSurface.withOpacity(0.5),
+      body: RefreshIndicator(
+        onRefresh: _onRefresh,
+        child: Container(
+          color: theme.colorScheme.background,
+          child: SafeArea(
+            child: Column(
+              children: [
+                GroupHeaderWithArrow(group: widget.group),
+                const Divider(thickness: 1),
+                Padding(
+                  padding:
+                  const EdgeInsets.symmetric(horizontal: Constants.kDefaultPadding),
+                  child: Row(
+                    children: [
+                      if (!Responsive.isDesktop(context)) const SizedBox(width: 5),
+                      Expanded(
+                        child: InputWidget(
+                          hintText: 'Search my loan here...',
+                          keyboardType: TextInputType.name,
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              FeatherIcons.search,
+                              color: theme.colorScheme.onSurface.withOpacity(0.5),
+                            ),
+                            onPressed: () {
+                            },
                           ),
-                          onPressed: () {
+                          onChanged: _onSearch,
+                          validator: (String? value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter a search term';
+                            }
+                            return null;
                           },
-                        ),
-                        onChanged: (String? value) {},
-                        validator: (String? value) {},
+                        )
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-              Padding(
-                padding:
-                const EdgeInsets.symmetric(horizontal: Constants.kDefaultPadding),
-                child: Row(
-                  children: [
-                    Icon(
-                      FeatherIcons.chevronDown,
-                      color: theme.colorScheme.onSurface.withOpacity(0.5),
-                    ),
-                    const SizedBox(width: 5),
-                    Text(
-                      "Sort by date",
-                      style: theme.textTheme.bodyMedium,
-                    ),
-                    const Spacer(),
-                    Icon(
-                      FeatherIcons.filter,
-                      color: theme.colorScheme.onSurface.withOpacity(0.5),
-                    ),
-                  ],
+                const SizedBox(height: Constants.kDefaultPadding),
+                Expanded(
+                  child: myLoans.isEmpty
+                      ? _buildSkeletonTable(context)
+                      : _buildLoanTable(context, textTheme),
                 ),
-              ),
-
-            ],
+              ],
+            ),
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSkeletonTable(BuildContext context) {
+    final theme = Theme.of(context);
+    final skeletonColor = theme.colorScheme.onSurface.withOpacity(0.1);
+    final TextTheme textTheme = theme.textTheme;
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: SingleChildScrollView(
+        child: DataTable(
+          columns: const [
+            DataColumn(label: Text('ID')),
+            DataColumn(label: Text('Group Name')),
+            DataColumn(label: Text('Amount')),
+            DataColumn(label: Text('Date')),
+            DataColumn(label: Text('Type')),
+            DataColumn(label: Text('Original Loan Amount')),
+          ],
+          rows: List<DataRow>.generate(5, (index) {
+            return DataRow(
+              cells: List<DataCell>.generate(6, (cellIndex) {
+                return DataCell(Container(
+                  width: 100,
+                  height: 20,
+                  color: skeletonColor,
+                ));
+              }),
+            );
+          }),
+        ),
+      ),
+    );
+  }
+  Widget _buildLoanTable(BuildContext context, TextTheme textTheme) {
+    final ThemeData theme = Theme.of(context);
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: SingleChildScrollView(
+        child: DataTable(
+          sortAscending: _sortAscending,
+          sortColumnIndex: _sortColumnIndex,
+          columns: [
+            DataColumn(
+              label: Text(
+                'ID',
+                style: textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
+              ),
+              onSort: (columnIndex, _) {
+                _onSort(columnIndex, !_sortAscending);
+              },
+              tooltip: 'Sort by ID',
+            ),
+            DataColumn(
+              label: Text(
+                'Group Name',
+                style: textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
+              ),
+              onSort: (columnIndex, _) {
+                _onSort(columnIndex, !_sortAscending);
+              },
+              tooltip: 'Group Identification',
+            ),
+            DataColumn(
+              label: Text(
+                'Amount',
+                style: textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
+              ),
+              onSort: (columnIndex, _) {
+                _onSort(columnIndex, !_sortAscending);
+              },
+              tooltip: 'Sort by Amount',
+            ),
+            DataColumn(
+              label: Text(
+                'Date',
+                style: textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
+              ),
+              onSort: (columnIndex, _) {
+                _onSort(columnIndex, !_sortAscending);
+              },
+              tooltip: 'Sort by Date',
+            ),
+            DataColumn(
+              label: Text(
+                'Type',
+                style: textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
+              ),
+            ),
+            DataColumn(
+              label: Text(
+                'Original Loan Amount',
+                style: textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
+              ),
+            ),
+          ],
+          rows: myLoans.map((loan) {
+            return DataRow(
+              cells: [
+                DataCell(Text(loan.id.toString())),
+                DataCell(Text(loan.group.name)),
+                DataCell(
+                  Text(
+                      NumberFormat.currency(symbol: '\$').format(loan.amount)
+                  ),
+                ),
+                DataCell(Text(DateFormat('yyyy-MM-dd').format(loan.date))),
+                DataCell(
+                  _buildLoanType(loan.type, theme),
+                ),
+                DataCell(
+                  Text(
+                      NumberFormat.currency(symbol: '\$').format(loan.originalLoanAmount)
+                  ),
+                ),
+              ],
+            );
+          }).toList(),
+        ),
+      ),
+    );
+  }
+  Widget _buildLoanType(ReservedAmountType type, ThemeData theme) {
+    final Color typeColor;
+    final String typeLabel;
+
+    switch (type) {
+      case ReservedAmountType.LOAN:
+        typeColor = theme.colorScheme.primary;
+        typeLabel = 'Loan';
+        break;
+      case ReservedAmountType.DISBURSEMENT:
+        typeColor = theme.colorScheme.secondary;
+        typeLabel = 'Disbursement';
+        break;
+      case ReservedAmountType.MEMBERSHIP_FEES:
+        typeColor = theme.colorScheme.error;
+        typeLabel = 'Membership';
+        break;
+      default:
+        typeColor = theme.colorScheme.onSurface;
+        typeLabel = 'Unknown';
+    }
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        color: typeColor.withOpacity(0.15),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Text(
+        typeLabel,
+        style: theme.textTheme.bodyMedium?.copyWith(
+          color: typeColor,
+          fontWeight: FontWeight.bold,
         ),
       ),
     );

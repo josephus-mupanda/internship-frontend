@@ -1,20 +1,29 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:internship_frontend/data/providers/menu_provider.dart';
 import 'package:internship_frontend/features/group/components/header.dart';
 import 'package:internship_frontend/features/loan/loan_onboarding_screen.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/constants/constants.dart';
 import '../../core/utils/preferences.dart';
+import '../../core/utils/toast.dart';
 import '../../core/widgets/repay_loan_dialog.dart';
 import '../../core/widgets/request_loan_widget.dart';
 import '../../data/models/group.dart';
-import '../../data/providers/group_provider.dart';
-import 'components/header.dart';
+import '../../data/models/loan.dart';
+import '../../data/models/member.dart';
+import '../../data/providers/loan_provider.dart';
+import '../../data/services/auth_service.dart';
+import '../../data/services/group_service.dart';
+import '../../routes/app_routes.dart';
+import '../../routes/route_generator.dart';
+import '../group/empty_join_group_screen.dart';
 import 'components/loan_card.dart';
 
 class LoanScreen extends StatefulWidget {
   final Group group;
-
   const LoanScreen({super.key, required this.group,});
 
   @override
@@ -22,22 +31,128 @@ class LoanScreen extends StatefulWidget {
 }
 
 class _LoanScreenState extends State<LoanScreen> {
+
   bool _showOnboarding = false;
+  Member? currentMember;
+  List<ReservedAmount> loans = [];
+
+  bool _isLoading = true;
+  bool _isInGroup = false;
+  bool _loading = true;
+
+  final AuthService _authService = AuthService();
+  final GroupService _groupService = GroupService();
+
+  @override
+  void initState() {
+    super.initState();
+    Group selectedGroup = widget.group;
+    _loadUsernameAndMember(selectedGroup);
+    _checkUserInGroup();
+    fetchLoans();
+  }
+
+  // Fetch the username from the token
+  Future<void> _loadUsernameAndMember(Group selectedGroup) async {
+    try {
+      String? token = await _authService.getAccessToken();
+      int? userId =  Preferences.getUserId();
+
+      if (token != null && userId != null ) {
+        final response = await _groupService.getMemberByUsername(token, selectedGroup.id!, userId, context);
+        if (response != null) {
+          setState(() {
+            currentMember = Member.fromJson(jsonDecode(response.body));
+            _isLoading = false;
+            print('Current Member >>>>>>>>>>>>>>>>>>>>>>>>>>>>>: ${currentMember?.toJson()}');
+          });
+        }
+      }
+    } catch (error) {
+      setState(() {
+        _isLoading = false;
+      });
+      showErrorToast(context, "Failed to load user data.");
+    }
+  }
+
+  Future<void> fetchLoans() async {
+    // Retrieve the token from secure storage
+    String? token = await _authService.getAccessToken();
+    if (token == null) {
+      await _authService.logout(context);
+      Navigator.pushNamedAndRemoveUntil(context, AppRoutes.login, (route) => false);
+      return;
+    }
+    try {
+      final response = await _groupService.getLoansByGroup(widget.group.id!, token, context);
+      if (response?.statusCode == 200) {
+        List<dynamic> data = jsonDecode(response!.body);
+        List<ReservedAmount> fetchedLoans = data.map((loansJson) {
+          return ReservedAmount.fromJson(loansJson);
+        }).toList();
+        setState(() {
+          loans = fetchedLoans;
+          Provider.of<LoanProvider>(context, listen: false).setLoans(loans);
+        });
+      } else {
+        // Handle the error if the status code is not 200
+        throw Exception("Failed to load loans");
+      }
+    } catch (e) {
+      // Handle any exceptions
+      print("Error fetching loans: $e");
+    }
+  }
+
+  // Function to check if the user is in the group
+  Future<void> _checkUserInGroup() async {
+    String? token = await _authService.getAccessToken();
+    int? userId =  Preferences.getUserId();
+    if (token == null && userId == null) {
+      await _authService.logout(context);
+      Navigator.pushNamedAndRemoveUntil(context, AppRoutes.login, (route) => false);
+      return;
+    }
+    try {
+      bool isInGroup = await _groupService.isUserInGroup(widget.group.id!, userId!, token!, context);
+      print("isUserInGroup result: $isInGroup");
+      if (mounted) {
+        setState(() {
+          _isInGroup = isInGroup;
+          _loading = false;
+        });
+      }
+    } catch (e) {
+      showErrorToast(context, 'An error occurred while checking membership.');
+      setState(() {
+        _loading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
 
     final ThemeData theme = Theme.of(context);
-    final groupProvider = Provider.of<GroupProvider>(context);
-    final selectedGroup = groupProvider.selectedGroup;
+    final menuProvider = Provider.of<MenuProvider>(context);
+    final selectedGroup = menuProvider.selectedGroup;
+
+    if (_loading) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+    else if (!_isInGroup) {
+      return const EmptyJoinGroupScreen();
+    }
 
     return _showOnboarding
         ?
     LoanOnboardingScreen(
         onboardingComplete: () {
-            // Handle completion of onboarding here if needed
             setState(() {
-              _showOnboarding = false; // Go back to LoanScreen
+              _showOnboarding = false;
             });
           }
         )
@@ -48,7 +163,7 @@ class _LoanScreenState extends State<LoanScreen> {
         child: SafeArea(
           child: selectedGroup == null
               ?
-          const Center(child: Text("Select first a group ...."))
+          const Center(child: Text("Please select a group to view loan options."))
               :
           Column(
             children: [
@@ -57,7 +172,11 @@ class _LoanScreenState extends State<LoanScreen> {
               Expanded(
                 child: SingleChildScrollView(
                   padding: const EdgeInsets.all(Constants.kDefaultPadding),
-                  child: Column(
+                  child: _isLoading
+                      ?
+                  const CircularProgressIndicator()
+                      :
+                  Column(
                     children: [
                       // Loan Card for Requesting a Loan
                       LoanCard(
@@ -70,12 +189,13 @@ class _LoanScreenState extends State<LoanScreen> {
                             context: context,
                             builder: (context) {
                               return RequestLoanDialog(
+                                group: selectedGroup,
                                 title: 'Request Loan',
                                 content: 'Enter the amount you wish to borrow.',
                                 nameYes: 'Request',
                                 nameNo: 'Cancel',
                                 onLoanRequested: () {
-                                  // Refresh the UI or perform necessary actions
+                                  fetchLoans();
                                 },
                               );
                             },
@@ -94,12 +214,13 @@ class _LoanScreenState extends State<LoanScreen> {
                             context: context,
                             builder: (context) {
                               return RepayLoanDialog(
+                                group: selectedGroup,
                                 title: 'Repay Loan',
                                 content: 'Enter the amount you wish to repay.',
                                 nameYes: 'Repay',
                                 nameNo: 'Cancel',
                                 onLoanRepaid: () {
-                                  // Refresh the UI or perform necessary actions
+                                  fetchLoans();
                                 },
                               );
                             },
@@ -113,11 +234,18 @@ class _LoanScreenState extends State<LoanScreen> {
                         iconColor: Colors.orange,
                         title: 'Loan History',
                         press: () {
-                          // Implement your logic for viewing loan history
+                          if (currentMember != null) {
+                            Navigator.pushNamed(
+                              context,
+                              AppRoutes.loanGroupScreen,
+                              arguments: MyArguments(selectedGroup, currentMember!),
+                            );
+                          } else {
+                            showErrorToast(context, 'Failed to load current member data.');
+                          }
                         },
                       ),
                       const SizedBox(height: Constants.kDefaultPadding),
-                      // Loan Card for Explaining How Loans Work
                       LoanCard(
                         icon: Icons.info,
                         iconColor: Colors.purple,
@@ -125,7 +253,7 @@ class _LoanScreenState extends State<LoanScreen> {
                         press: ()  async {
                           await Preferences.setHasSeenLoanOnboarding(false);
                           setState(() {
-                            _showOnboarding = true; // Set to true to show onboarding
+                            _showOnboarding = true;
                           });
                         },
                       ),

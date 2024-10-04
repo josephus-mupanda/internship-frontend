@@ -1,41 +1,39 @@
-
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_feather_icons/flutter_feather_icons.dart';
-import 'package:internship_frontend/data/models/loan.dart';
-import 'package:internship_frontend/data/providers/loan_provider.dart';
-import 'package:internship_frontend/data/services/group_service.dart';
-import 'package:internship_frontend/features/group/components/header.dart';
+import 'package:internship_frontend/data/providers/transaction_provider.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:provider/provider.dart';
-
 import '../../core/constants/constants.dart';
-import '../../core/layout/responsive_widget.dart';
 import '../../core/widgets/input_widget.dart';
 import '../../data/models/group.dart';
+import '../../data/models/member.dart';
+import '../../data/models/transaction.dart';
 import '../../data/services/auth_service.dart';
+import '../../data/services/group_service.dart';
 import '../../routes/app_routes.dart';
+import '../group/components/header.dart';
 
-class LoanHistoryScreen extends StatefulWidget {
+class MyTransactionScreen extends StatefulWidget {
   final Group group;
-
-  const LoanHistoryScreen({super.key, required this.group,});
+  final Member member;
+  const MyTransactionScreen({super.key, required this.group, required this.member});
 
   @override
-  State<LoanHistoryScreen> createState() => _LoanHistoryScreenState();
+  State<MyTransactionScreen> createState() => _MyTransactionScreenState();
 }
 
-class _LoanHistoryScreenState extends State<LoanHistoryScreen> {
+class _MyTransactionScreenState extends State<MyTransactionScreen> {
 
   final GroupService _groupService = GroupService();
   final AuthService _authService = AuthService();
 
-  List<ReservedAmount> loans = [];
+  List<Transaction> transactions = [];
   bool _sortAscending = true;
   int _sortColumnIndex = 0;
 
-  Future<void> fetchLoans() async {
+  Future<void> fetchTransactions() async {
     // Retrieve the token from secure storage
     String? token = await _authService.getAccessToken();
     if (token == null) {
@@ -43,53 +41,45 @@ class _LoanHistoryScreenState extends State<LoanHistoryScreen> {
       Navigator.pushNamedAndRemoveUntil(context, AppRoutes.login, (route) => false);
       return;
     }
+
     try {
-      final response = await _groupService.getLoansByGroup(widget.group.id!, token, context);
+      final response = await _groupService.getTransactionsByGroupAndMember(widget.group.id!,widget.member.id!, token, context);
       if (response?.statusCode == 200) {
+        // Decode the JSON data
         List<dynamic> data = jsonDecode(response!.body);
-        List<ReservedAmount> fetchedLoans = data.map((loansJson) {
-          return ReservedAmount.fromJson(loansJson);
+        List<Transaction> fetchedTransactions = data.map((transactionsJson) {
+          return Transaction.fromJson(transactionsJson);
         }).toList();
         setState(() {
-          loans = fetchedLoans;
-          Provider.of<LoanProvider>(context, listen: false).setLoans(loans);
+          transactions = fetchedTransactions;
+          Provider.of<TransactionProvider>(context, listen: false).setTransactions(transactions);
         });
       } else {
-        // Handle the error if the status code is not 200
-        throw Exception("Failed to load loans");
+        throw Exception("Failed to load transactions");
       }
     } catch (e) {
       // Handle any exceptions
-      print("Error fetching loans: $e");
+      print("Error fetching transactions: $e");
     }
   }
 
   @override
   void initState() {
     super.initState();
-    fetchLoans();
-  }
-
-  Future<void> _onRefresh() async {
-    await fetchLoans();
-  }
-  void _onLoanDeleted() {
-    // Refresh the list after deletion
-    fetchLoans();
+    fetchTransactions();
   }
 
   void _onSearch(String? query) {
     setState(() {
       if (query == null || query.isEmpty) {
-        fetchLoans();
+        fetchTransactions();
       } else {
-        loans = loans.where((loan) {
-          return loan.amount.toString().contains(query) ||
-              loan.group.name.toString().contains(query) ||
-              loan.id.toString().contains(query) ||
-              loan.member.user!.username.toString().contains(query) ||
-              loan.type.name.toLowerCase().contains(query.toLowerCase()) ||
-              DateFormat('yyyy-MM-dd').format(loan.date).contains(query);
+        transactions = transactions.where((transaction) {
+          return transaction.amount.toString().contains(query) ||
+              transaction.group.name.toString().contains(query) ||
+              transaction.id.toString().contains(query) ||
+              transaction.type.name.toLowerCase().contains(query.toLowerCase()) ||
+              DateFormat('yyyy-MM-dd').format(transaction.date).contains(query);
         }).toList();
       }
     });
@@ -97,22 +87,18 @@ class _LoanHistoryScreenState extends State<LoanHistoryScreen> {
 
   void _onSort(int columnIndex, bool ascending) {
     if (columnIndex == 0) {
-      loans.sort((a, b) =>
+      transactions.sort((a, b) =>
       ascending ? a.id.compareTo(b.id) : b.id.compareTo(a.id));
     } else if (columnIndex == 1) {
-      loans.sort((a, b) =>
+      transactions.sort((a, b) =>
       ascending ? a.group.name.compareTo(b.group.name) : b.group.name.compareTo(a.group.name));
     }
     else if (columnIndex == 2) {
-      loans.sort((a, b) =>
-      ascending ? a.member.user!.username.compareTo(b.member.user!.username) : b.member.user!.username.compareTo(a.member.user!.username));
-    }
-    else if (columnIndex == 3) {
-      loans.sort((a, b) =>
+      transactions.sort((a, b) =>
       ascending ? a.amount.compareTo(b.amount) : b.amount.compareTo(a.amount));
     }
-    else if (columnIndex == 4) {
-      loans.sort((a, b) =>
+    else if (columnIndex == 3) {
+      transactions.sort((a, b) =>
       ascending ? a.date.compareTo(b.date) : b.date.compareTo(a.date));
     }
 
@@ -122,15 +108,18 @@ class _LoanHistoryScreenState extends State<LoanHistoryScreen> {
     });
   }
 
+  Future<void> _onRefresh() async {
+    await fetchTransactions();
+  }
+
   @override
   Widget build(BuildContext context) {
-
     final ThemeData theme = Theme.of(context);
     final ColorScheme colorScheme = theme.colorScheme;
     final TextTheme textTheme = theme.textTheme;
 
     return Scaffold(
-      body:  RefreshIndicator(
+      body:RefreshIndicator(
         onRefresh: _onRefresh,
         child: Container(
           color: theme.colorScheme.background,
@@ -140,19 +129,18 @@ class _LoanHistoryScreenState extends State<LoanHistoryScreen> {
                 GroupHeaderWithArrow(group: widget.group),
                 const Divider(thickness: 1),
                 Padding(
-                  padding:
-                  const EdgeInsets.symmetric(horizontal: Constants.kDefaultPadding),
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: Constants.kDefaultPadding),
                   child: Row(
                     children: [
-                      if (!Responsive.isDesktop(context)) const SizedBox(width: 5),
                       Expanded(
                         child: InputWidget(
-                          hintText: 'Search my loan here...',
+                          hintText: 'Search Transaction',
                           keyboardType: TextInputType.name,
                           suffixIcon: IconButton(
                             icon: Icon(
                               FeatherIcons.search,
-                              color: theme.colorScheme.onSurface.withOpacity(0.5),
+                              color: colorScheme.onSurface.withOpacity(0.5),
                             ),
                             onPressed: () {
                             },
@@ -171,9 +159,9 @@ class _LoanHistoryScreenState extends State<LoanHistoryScreen> {
                 ),
                 const SizedBox(height: Constants.kDefaultPadding),
                 Expanded(
-                  child:  loans.isEmpty
+                  child: transactions.isEmpty
                       ? _buildSkeletonTable(context)
-                      : _buildLoanTable(context, textTheme),
+                      : _buildTransactionTable(context, textTheme),
                 ),
               ],
             ),
@@ -194,15 +182,13 @@ class _LoanHistoryScreenState extends State<LoanHistoryScreen> {
           columns: const [
             DataColumn(label: Text('ID')),
             DataColumn(label: Text('Group Name')),
-            DataColumn(label: Text('Members')),
             DataColumn(label: Text('Amount')),
             DataColumn(label: Text('Date')),
             DataColumn(label: Text('Type')),
-            DataColumn(label: Text('Original Loan Amount')),
           ],
           rows: List<DataRow>.generate(5, (index) {
             return DataRow(
-              cells: List<DataCell>.generate(7, (cellIndex) {
+              cells: List<DataCell>.generate(5, (cellIndex) {
                 return DataCell(Container(
                   width: 100,
                   height: 20,
@@ -215,7 +201,7 @@ class _LoanHistoryScreenState extends State<LoanHistoryScreen> {
       ),
     );
   }
-  Widget _buildLoanTable(BuildContext context, TextTheme textTheme) {
+  Widget _buildTransactionTable(BuildContext context, TextTheme textTheme) {
     final ThemeData theme = Theme.of(context);
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
@@ -242,17 +228,7 @@ class _LoanHistoryScreenState extends State<LoanHistoryScreen> {
               onSort: (columnIndex, _) {
                 _onSort(columnIndex, !_sortAscending);
               },
-              tooltip: 'Group Identification',
-            ),
-            DataColumn(
-              label: Text(
-                'Members',
-                style: textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
-              ),
-              onSort: (columnIndex, _) {
-                _onSort(columnIndex, !_sortAscending);
-              },
-              tooltip: 'Sort By Members',
+              tooltip: 'Sort by Group Name',
             ),
             DataColumn(
               label: Text(
@@ -280,56 +256,55 @@ class _LoanHistoryScreenState extends State<LoanHistoryScreen> {
                 style: textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
               ),
             ),
-            DataColumn(
-              label: Text(
-                'Original Loan Amount',
-                style: textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
-              ),
-            ),
           ],
-          rows: loans.map((loan) {
+          rows:List<DataRow>.generate(
+              transactions.length, (index) {
+            final transaction = transactions[index];
+            final isEven = index % 2 == 0;
             return DataRow(
+              color: WidgetStateProperty.resolveWith<Color?>(
+                    (Set<WidgetState> states) {
+                  return isEven
+                      ? theme.colorScheme.background.withOpacity(0.05)
+                      : theme.colorScheme.background.withOpacity(0.15);
+                },
+              ),
               cells: [
-                DataCell(Text(loan.id.toString())),
-                DataCell(Text(loan.group.name)),
-                DataCell(Text(loan.member.user!.username)),
+                DataCell(Text(transaction.id.toString())),
+                DataCell(Text(transaction.group.name)),
+                DataCell(Text(transaction.member.user!.username)),
                 DataCell(
                   Text(
-                      NumberFormat.currency(symbol: '\$').format(loan.amount)
+                      NumberFormat.currency(symbol: '\$').format(transaction.amount)
                   ),
                 ),
-                DataCell(Text(DateFormat('yyyy-MM-dd').format(loan.date))),
+                DataCell(Text(DateFormat('yyyy-MM-dd').format(transaction.date))),
                 DataCell(
-                  _buildLoanType(loan.type, theme),
-                ),
-                DataCell(
-                  Text(
-                      NumberFormat.currency(symbol: '\$').format(loan.originalLoanAmount)
-                  ),
+                  _buildTransactionType(transaction.type, theme),
                 ),
               ],
             );
-          }).toList(),
+          }
+          ),
         ),
       ),
     );
   }
-
   // Function to build the customized transaction type container
-  Widget _buildLoanType(ReservedAmountType type, ThemeData theme) {
+  Widget _buildTransactionType(TransactionType type, ThemeData theme) {
     final Color typeColor;
     final String typeLabel;
 
     switch (type) {
-      case ReservedAmountType.LOAN:
+      case TransactionType.CONTRIBUTION:
         typeColor = theme.colorScheme.primary;
-        typeLabel = 'Loan';
+        typeLabel = 'Contribution';
         break;
-      case ReservedAmountType.DISBURSEMENT:
+      case TransactionType.DISBURSEMENT:
         typeColor = theme.colorScheme.secondary;
         typeLabel = 'Disbursement';
         break;
-      case ReservedAmountType.MEMBERSHIP_FEES:
+      case TransactionType.MEMBERSHIP_FEES:
         typeColor = theme.colorScheme.error;
         typeLabel = 'Membership';
         break;
@@ -337,6 +312,7 @@ class _LoanHistoryScreenState extends State<LoanHistoryScreen> {
         typeColor = theme.colorScheme.onSurface;
         typeLabel = 'Unknown';
     }
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(

@@ -47,6 +47,8 @@ class _UserCardState extends State<UserCard> {
     }
     try {
       bool isInGroup = await _groupService.isUserInGroup(widget.group.id!, widget.user.id!, token, context);
+      // Log the result of the check
+      print("isUserInGroup result: $isInGroup");
       if (mounted) {
         setState(() {
           _isInGroup = isInGroup;
@@ -93,7 +95,7 @@ class _UserCardState extends State<UserCard> {
                     SizedBox(
                       width: 32,
                       child: CircleAvatar(
-                        backgroundColor: getRandomColor(),
+                        // backgroundColor: getRandomColor(),
                         child: Text(
                           widget.user.username[0].toUpperCase(),
                           style: Theme.of(context).textTheme.headlineMedium?.copyWith(

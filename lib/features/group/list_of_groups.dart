@@ -106,10 +106,12 @@ class _ListOfGroupsState extends State<ListOfGroups> {
   }
 
   void _onGroupDeleted() {
-    // Refresh the list after deletion
     fetchGroups();
   }
 
+  Future<void> _onRefresh() async {
+    await fetchGroups();
+  }
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
@@ -194,26 +196,29 @@ class _ListOfGroupsState extends State<ListOfGroups> {
               ),
               const SizedBox(height: Constants.kDefaultPadding),
               Expanded(
-                child: ListView.builder(
-                  itemCount: filteredGroups.length,
-                  itemBuilder: (context, index) {
-                    final selectedGroup = menuProvider.selectedGroup;
-                    final isSelected = selectedGroup == filteredGroups[index];
-                    return GroupCard(
-                      isActive: Responsive.isMobile(context) ? false : isSelected, // Responsive.isMobile(context) ? false : index == 0,
-                      group: filteredGroups[index],
-                      press: () {
-                        menuProvider.selectGroup(filteredGroups[index]);
-                        if(Responsive.isMobile(context)) {
-                          Navigator.pushNamed(context,
-                            AppRoutes.groupMenuScreen,
-                            arguments: filteredGroups[index],
-                          );
-                        }
-                      },
-                      onGroupDeleted: _onGroupDeleted,
-                    );
-                  }
+                child : RefreshIndicator(
+                   onRefresh: _onRefresh,
+                  child: ListView.builder(
+                    itemCount: filteredGroups.length,
+                    itemBuilder: (context, index) {
+                      final selectedGroup = menuProvider.selectedGroup;
+                      final isSelected = selectedGroup == filteredGroups[index];
+                      return GroupCard(
+                        isActive: Responsive.isMobile(context) ? false : isSelected, // Responsive.isMobile(context) ? false : index == 0,
+                        group: filteredGroups[index],
+                        press: () {
+                          menuProvider.selectGroup(filteredGroups[index]);
+                          if(Responsive.isMobile(context)) {
+                            Navigator.pushNamed(context,
+                              AppRoutes.groupMenuScreen,
+                              arguments: filteredGroups[index],
+                            );
+                          }
+                        },
+                        onGroupDeleted: _onGroupDeleted,
+                      );
+                    }
+                  ),
                 ),
               ),
             ],

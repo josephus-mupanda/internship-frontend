@@ -163,8 +163,6 @@ class _GroupDialogState extends State<GroupDialog> {
     String? token = await _authService.getAccessToken();
 
     if (token == null) {
-      //showErrorToast(context, 'Session expired. Please log in again.');
-      // Use logout method to clear session data and redirect to login
       await _authService.logout(context);
       Navigator.pushNamedAndRemoveUntil(context, AppRoutes.login, (route) => false);
       return;

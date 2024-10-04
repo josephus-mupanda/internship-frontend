@@ -7,6 +7,8 @@ import 'package:internship_frontend/features/loan/loan_screen.dart';
 import 'package:internship_frontend/features/main/main_screen.dart';
 import 'package:internship_frontend/features/main/not_found_screen.dart';
 import 'package:internship_frontend/features/member/add_member_screen.dart';
+import 'package:internship_frontend/features/transaction/my_transaction_screen.dart';
+import 'package:internship_frontend/features/transaction/transaction_group_screen.dart';
 import '../data/models/group.dart';
 import '../data/models/member.dart';
 import '../features/authentication/screens/change_password_screen.dart';
@@ -123,6 +125,27 @@ class RouteGenerator {
           );
         }
         return _errorRoute();
+
+      //-------- ALL TRANSACTIONS IN A GROUP
+      case AppRoutes.allTransactionsGroupScreen:
+        if (args is Group) {
+          return MaterialPageRoute(
+            builder: (_) => TransactionGroupScreen(group: args),
+          );
+        }
+        return _errorRoute();
+      //-------- ALL MY TRANSACTIONS IN A GROUP
+      case AppRoutes.transactionGroupScreen:
+        if (args is MyArguments) {
+          return MaterialPageRoute(
+            builder: (_) => MyTransactionScreen(
+              group: args.group,
+              member: args.member,
+            ),
+          );
+        }
+        return _errorRoute();
+
        //-------- ALL DISBURSEMENTS IN A GROUP
       case AppRoutes.disbursementScreen:
         if (args is Group) {

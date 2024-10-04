@@ -177,7 +177,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
       width: isActive ? 20 : 8,
       margin: const EdgeInsets.only(right: 5.0),
       decoration: BoxDecoration(
-        color: Theme.of(context).primaryColor, // Use theme color
+        color: isActive ? Theme.of(context).primaryColor : Theme.of(context).colorScheme.background,
         borderRadius: BorderRadius.circular(5),
       ),
     );

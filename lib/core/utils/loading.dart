@@ -7,8 +7,9 @@ void showLoadingDialog(BuildContext context) {
     context: context,
     barrierDismissible: false,
     builder: (BuildContext context) {
-      return const AlertDialog(
-        content: Row(
+      return AlertDialog(
+        backgroundColor: Theme.of(context).colorScheme.background,
+        content: const Row(
           mainAxisSize: MainAxisSize.min,
           children: [
             CircularProgressIndicator(),

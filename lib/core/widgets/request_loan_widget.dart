@@ -1,14 +1,20 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
+import 'package:internship_frontend/data/models/group.dart';
 import 'package:internship_frontend/data/services/auth_service.dart';
 import 'package:internship_frontend/data/services/group_service.dart';
+import 'package:internship_frontend/data/services/loan_service.dart';
 import '../../core/constants/constants.dart';
 import '../../core/utils/loading.dart';
 import '../../core/utils/toast.dart';
 import '../../core/widgets/input_widget.dart';
+import '../../data/models/loan.dart';
+import '../../routes/app_routes.dart';
 
 class RequestLoanDialog extends StatefulWidget {
-
+  final Group group;
   final String title;
   final String content;
   final String nameYes;
@@ -21,7 +27,7 @@ class RequestLoanDialog extends StatefulWidget {
     required this.nameYes,
     required this.nameNo,
     required this.onLoanRequested,
-    super.key,
+    super.key, required this.group,
   });
 
   @override
@@ -30,8 +36,8 @@ class RequestLoanDialog extends StatefulWidget {
 
 class _RequestLoanDialogState extends State<RequestLoanDialog> {
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
-  final _groupService = GroupService();
-  final _authService = AuthService();
+  final LoanService _loanService = LoanService();
+  final AuthService _authService = AuthService();
   String? amount;
 
   @override
@@ -137,20 +143,21 @@ class _RequestLoanDialogState extends State<RequestLoanDialog> {
   }
 
   Future<void> _requestLoan() async {
+    final Loan loan = Loan(
+        groupId: widget.group.id! ,
+        amount: double.parse(amount!)
+    );
     // Show loading dialog
     showLoadingDialog(context);
-    // Retrieve the token from secure storage
-    String? token = await _authService.getAccessToken();
 
+    String? token = await _authService.getAccessToken();
     if (token == null) {
-      showErrorToast(context, 'Token not found. Please log in again.');
-      Navigator.of(context).pop();
+      await _authService.logout(context);
+      Navigator.pushNamedAndRemoveUntil(context, AppRoutes.login, (route) => false);
       return;
     }
-
     try {
-      double loanAmount = double.parse(amount!);
-      //await _groupService.requestLoan(loanAmount, token, context); // Implement this method in your GroupService
+       await _loanService.requestLoan(loan, token, context);
       formKey.currentState?.reset();
       setState(() {
         amount = null;

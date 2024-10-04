@@ -1,5 +1,8 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:internship_frontend/data/models/user.dart';
+
+import 'group.dart';
 
 class Member {
   final int? id;
@@ -47,6 +50,59 @@ class Member {
       'id': id,
       'userId': userId,
       'groupId': groupId,
+      'roleType': roleType,
+      'isActive': isActive,
+      'joinDate': joinDate?.toIso8601String(), // Convert DateTime to string
+    };
+  }
+}
+
+class MyMember {
+  final int? id;
+  final User? user;
+  final Group? group;
+  final String? roleType;
+  final DateTime? joinDate;
+  final bool? isActive;
+  final Color? tagColor;
+
+  MyMember({
+    this.id,
+    this.roleType,
+    this.isActive,
+    this.joinDate,
+    required this.user,
+    required this.group,
+  }) : tagColor = _getTagColor(roleType);
+
+  // Function to determine the color based on the role
+  static Color? _getTagColor(String? role) {
+    if (role == 'LEADER') {
+      return const Color(0xFF23CF91); // Green
+    } else if (role == 'MEMBER') {
+      return const Color(0xFF3A6FF7); // Blue
+    }
+    return Colors.grey; // Default color for other roles
+  }
+
+  // fromJson factory method for JSON deserialization
+  factory MyMember.fromJson(Map<String, dynamic> json) {
+    return MyMember(
+      id: json['id'] as int?,
+      user: json['user'] as User?,
+      group: json['group'] as Group?,
+      roleType: json['roleType'] as String?,
+      isActive: json['isActive'] as bool?,
+      joinDate: json['joinDate'] != null ? DateTime.parse(json['joinDate']) : null,
+    );
+  }
+
+  // toJson method for JSON serialization
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'user': user,
+      'group': group,
       'roleType': roleType,
       'isActive': isActive,
       'joinDate': joinDate?.toIso8601String(), // Convert DateTime to string

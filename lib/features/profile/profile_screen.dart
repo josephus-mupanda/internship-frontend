@@ -1,6 +1,5 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/constants/constants.dart';
@@ -59,8 +58,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
       String? username = await _authService.getUsernameFromToken();
 
       if (token == null || username == null) {
-        //showErrorToast(context, 'Session expired. Please log in again.');
-        // Use logout method to clear session data and redirect to login
         await _authService.logout(context);
         Navigator.pushNamedAndRemoveUntil(context, AppRoutes.login, (route) => false);
         return;
@@ -141,7 +138,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       // Username Field
                       InputWidget(
                         kController: _usernameController,
-                        //hintText: "Username",
+                        hintText: "Username",
                         prefixIcon: Icons.person,
                         onChanged: (value) {
                           setState(() {
@@ -161,7 +158,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       // Email Field
                       InputWidget(
                         kController: _emailController,
-                        //hintText: "Email",
+                        hintText: "Email",
                         prefixIcon: Icons.mail,
                         keyboardType: TextInputType.emailAddress,
                         onChanged: (value) {
@@ -175,11 +172,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         },
                       ),
                       const SizedBox(height: Constants.kDefaultPadding),
-
+                      // CircleAvatar(
+                      //   radius: 25,
+                      //   child: Text(_username[0].toUpperCase(),
+                      //     style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                      //   ),
+                      // ),
+                      // const SizedBox(height: Constants.kDefaultPadding),
                       // Phone Number Field
                       InputWidget(
                         kController: _phoneNumberController,
-                        //hintText: "Phone Number",
+                        hintText: "Phone Number",
                         prefixIcon: Icons.phone,
                         keyboardType: TextInputType.phone,
                         onChanged: (value) {
@@ -226,8 +229,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     String? token = await _authService.getAccessToken();
     if (!context.mounted) return;
     if (token == null) {
-      //showErrorToast(context, 'Session expired. Please log in again.');
-      // Use logout method to clear session data and redirect to login
       await _authService.logout(context);
       Navigator.pushNamedAndRemoveUntil(context, AppRoutes.login, (route) => false);
       return;
@@ -246,7 +247,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
       showSuccessToast(context, "Profile updated successfully");
     } catch (e) {
-      // Handle errors and show a toast or dialog with the error message
       showErrorToast(context, 'Failed to update profile');
     } finally {
       Navigator.of(context).pop();

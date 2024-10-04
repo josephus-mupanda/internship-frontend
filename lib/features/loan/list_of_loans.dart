@@ -102,6 +102,10 @@ class _ListOfLoansState extends State<ListOfLoans> {
     });
     fetchGroups();
   }
+  Future<void> _onRefresh() async {
+    await fetchGroups();
+  }
+
   @override
   Widget build(BuildContext context) {
 
@@ -186,22 +190,25 @@ class _ListOfLoansState extends State<ListOfLoans> {
                 ),
                 const SizedBox(height: Constants.kDefaultPadding),
                 Expanded(
-                  child: ListView.builder(
-                      itemCount: filteredGroups.length,
-                      itemBuilder: (context, index) {
-                        final selectedGroup = menuProvider.selectedGroup;
-                        final isSelected = selectedGroup == filteredGroups[index];
-                        return GroupCard(
-                          isActive: Responsive.isMobile(context) ? false : isSelected, // Responsive.isMobile(context) ? false : index == 0,
-                          group: filteredGroups[index],
-                          press: () {
-                            menuProvider.selectGroup(filteredGroups[index]);
-                            if(Responsive.isMobile(context)) {
-                              Navigator.pushNamed(context, AppRoutes.loanScreen);
-                            }
-                          },
-                        );
-                      }
+                  child: RefreshIndicator(
+                    onRefresh: _onRefresh,
+                    child: ListView.builder(
+                        itemCount: filteredGroups.length,
+                        itemBuilder: (context, index) {
+                          final selectedGroup = menuProvider.selectedGroup;
+                          final isSelected = selectedGroup == filteredGroups[index];
+                          return GroupCard(
+                            isActive: Responsive.isMobile(context) ? false : isSelected, // Responsive.isMobile(context) ? false : index == 0,
+                            group: filteredGroups[index],
+                            press: () {
+                              menuProvider.selectGroup(filteredGroups[index]);
+                              if(Responsive.isMobile(context)) {
+                                Navigator.pushNamed(context, AppRoutes.loanScreen);
+                              }
+                            },
+                          );
+                        }
+                    ),
                   ),
                 ),
               ],

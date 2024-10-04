@@ -2,6 +2,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:internship_frontend/data/models/contribution.dart';
+import 'package:internship_frontend/data/models/group.dart';
+import 'package:internship_frontend/data/models/member.dart';
 import 'package:internship_frontend/data/services/auth_service.dart';
 import 'package:internship_frontend/data/services/group_service.dart';
 import 'package:internship_frontend/routes/app_routes.dart';
@@ -13,7 +15,8 @@ import 'drop_down_widget.dart';
 import 'input_widget.dart';
 
 class ContributionDialog extends StatefulWidget {
-
+  final Group group;
+  final Member member;
   final String title;
   final String content;
   final String nameYes;
@@ -26,7 +29,7 @@ class ContributionDialog extends StatefulWidget {
     required this.nameYes,
     required this.nameNo,
     required this.onContributionCreated,
-    super.key});
+    super.key, required this.group, required this.member});
 
   @override
   State<ContributionDialog> createState() => _ContributionDialogState();
@@ -108,7 +111,6 @@ class _ContributionDialogState extends State<ContributionDialog> {
                       return null;
                     },
                   ),
-
                 ],
               ),
             ),
@@ -171,23 +173,21 @@ class _ContributionDialogState extends State<ContributionDialog> {
   Future<void> _createContribution() async {
 
     final Contribution contribution = Contribution(
-        groupId: 1,
-        memberId: 1,
+        memberId: widget.member.id!,
         amount: amount!,
     );
     // Show loading dialog
     showLoadingDialog(context);
-
     // Retrieve the token from secure storage
     String? token = await _authService.getAccessToken();
-
     if (token == null) {
-      showErrorToast(context, 'Token not found. Please log in again.');
-      Navigator.pushNamed(context, AppRoutes.login);
+      await _authService.logout(context);
+      Navigator.pushNamedAndRemoveUntil(context, AppRoutes.login, (route) => false);
       return;
     }
+
     try {
-      await _groupService.createContribution(1,contribution, token,context);
+      await _groupService.createContribution(widget.group.id!,contribution, token,context);
       formKey.currentState?.reset();
       setState(() {
         amount = null;

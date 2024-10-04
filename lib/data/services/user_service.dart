@@ -147,15 +147,82 @@ class UserService {
     }
     return null;
   }
-
   // Retrieve all users
-  Future<http.Response> getAllUsers(String token) async {
-    final response = await http.get(
-      Uri.parse(baseUrl),
-      headers: {
-        'Authorization': 'Bearer $token',
-      },
-    );
-    return response;
+  Future<http.Response?> getAllUsers(String token,BuildContext context) async {
+    try {
+      final response = await http.get(
+        Uri.parse(baseUrl),
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      );
+      if (!context.mounted) return null;
+      if (response.statusCode == 200) {
+        return response;
+      } else if (response.statusCode == 400) {
+        showErrorToast(context, "Invalid token or bad request. Please try again.");
+      } else if (response.statusCode == 404) {
+        showWarningToast(context, "Users not found. Please check the user ID.");
+      } else {
+        showWarningToast(context, "Failed to retrieve all users . Please try again later.");
+      }
+    } catch(e){
+      showErrorToast(context, "An error occurred. Please check your connection.");
+    }
+    return null;
+  }
+
+  // Retrieve all loans by User ID
+  Future<http.Response?> getAllLoansByUserId(int userId, String token, BuildContext context) async {
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/$userId/loans'),
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      // Check the status code and handle the response
+      if (response.statusCode == 200) {
+        showSuccessToast(context, 'Success');
+        return response;
+      } else if (response.statusCode == 400) {
+        showErrorToast(context, 'Invalid token. Please log in again.');
+      } else if (response.statusCode == 404) {
+        showWarningToast(context, 'User or member not found.');
+      } else {
+        showWarningToast(context, 'Failed to retrieve loans. Please try again later.');
+      }
+    } catch (e) {
+      showErrorToast(context, 'An error occurred. Please check your connection.');
+    }
+    return null;
+  }
+
+  // Retrieve all loans by User ID
+  Future<http.Response?> getAllTransactionsByUserId(int userId, String token, BuildContext context) async {
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/$userId/transactions'),
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      // Check the status code and handle the response
+      if (response.statusCode == 200) {
+        showSuccessToast(context, 'Success');
+        return response;
+      } else if (response.statusCode == 400) {
+        showErrorToast(context, 'Invalid token. Please log in again.');
+      } else if (response.statusCode == 404) {
+        showWarningToast(context, 'User or member not found.');
+      } else {
+        showWarningToast(context, 'Failed to retrieve transactions. Please try again later.');
+      }
+    } catch (e) {
+      showErrorToast(context, 'An error occurred. Please check your connection.');
+    }
+    return null;
   }
 }

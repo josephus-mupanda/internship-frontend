@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
+import 'package:internship_frontend/data/services/member_service.dart';
+import 'package:internship_frontend/data/services/user_service.dart';
 
 import '../../core/config/app_config.dart';
 import '../../core/config/environment.dart';
@@ -10,7 +12,8 @@ import '../models/group.dart';
 
 class GroupService {
   final String baseUrl = AppConfig.groupUrl;
-
+  final MemberService _memberService = MemberService();
+  final UserService _userService = UserService();
   // Create a new group
   Future<http.Response?> createGroup(Group group, String token,BuildContext context) async {
     try {
@@ -100,9 +103,11 @@ class GroupService {
           'Authorization': 'Bearer $token',
         },
       );
-      if (!context.mounted) return false;
+      // if (!context.mounted) return false;
       if (response.statusCode == 200) {
         bool isInGroup = jsonDecode(response.body) as bool;
+        print(" IS USER IN GROUP : >>>>>>>>>>>>>>> $isInGroup");
+        print("+++++++++++++++++++++++++++++++++++++++++++++++");
         return isInGroup;
       } else {
         if (response.statusCode == 404) {
@@ -141,7 +146,7 @@ class GroupService {
       );
       if (!context.mounted) return null;
       if (response.statusCode == 200) {
-        return jsonDecode(response.body);
+        return response;
       } else if (response.statusCode == 400) {
         showErrorToast(context, "Invalid token or bad request. Please try again.");
       } else if (response.statusCode == 404) {
@@ -245,13 +250,12 @@ class GroupService {
       if (!context.mounted) return null;
       // Check the status code and handle conditions with toast messages
       if (response.statusCode == 201) {
-        showSuccessToast(context, "Contribution created successfully!");
+        return jsonDecode(response.body);
       } else if (response.statusCode == 400) {
         showErrorToast(context, "Invalid token or bad request. Please try again.");
       } else {
         showWarningToast(context, "Failed to create the contribution. Please try again later.");
       }
-      return response;
     } catch (e) {
       showErrorToast(context, "An error occurred. Please check your connection.");
     }
@@ -271,7 +275,8 @@ class GroupService {
 
       // Check the status code and show appropriate toast messages
       if (response.statusCode == 200) {
-        showSuccessToast(context, 'Contributions retrieved successfully');
+        showSuccessToast(context, 'Success');
+        return response;
       } else if (response.statusCode == 400) {
         showErrorToast(context, 'Invalid token. Please log in again.');
       } else if (response.statusCode == 403) {
@@ -281,9 +286,8 @@ class GroupService {
       } else {
         showWarningToast(context, 'Failed to retrieve contributions. Please try again later.');
       }
-      return response;
+
     } catch (e) {
-      // Handle network errors or parsing issues
       showErrorToast(context, 'An error occurred. Please check your connection.');
     }
     return null;
@@ -302,8 +306,50 @@ class GroupService {
 
       // Check the status code and show appropriate toast messages
       if (response.statusCode == 200) {
-        //showSuccessToast(context, 'Contributions retrieved successfully');
-        return jsonDecode(response.body);
+        // // Parse the contributions response
+        // List<dynamic> contributions = json.decode(response.body);
+        //
+        // // Step 2: Fetch the group name using getGroupById
+        // final groupResponse = await getGroupById(groupId, token, context);
+        // if (groupResponse == null || groupResponse.statusCode != 200) {
+        //   showErrorToast(context, 'Failed to retrieve group details.');
+        //   return null;
+        // }
+        // // Decode the group response body
+        // final groupData = jsonDecode(groupResponse.body);
+        // final String groupName = groupData['name']; // Access group name
+        //
+        // // Step 3: Fetch the member name using getMemberById
+        // final memberResponse = await _memberService.getMemberById(memberId, token, context);
+        // if (memberResponse == null || memberResponse.statusCode != 200) {
+        //   showErrorToast(context, 'Failed to retrieve member details.');
+        //   return null;
+        // }
+        // // Decode the member response body
+        // final memberData = jsonDecode(memberResponse.body);
+        // final int userId = memberData['userId']; // Access user id
+        //
+        // final userResponse = await _userService.getUserById(userId, token, context);
+        // if (userResponse == null || userResponse.statusCode != 200) {
+        //   showErrorToast(context, 'Failed to retrieve user details.');
+        //   return null;
+        // }
+        // final userData = jsonDecode(userResponse.body);
+        // final String memberName = userData['username']; // Access user name
+        //
+        // // Step 4: Add group name and member name to each contribution
+        // List<Map> contributionsWithDetails = contributions.map((contribution) {
+        //   return {
+        //     ...contribution,
+        //     'groupName': groupName,
+        //     'memberName': memberName,
+        //   };
+        // }).toList();
+        //
+        // // Step 5: Return the modified contributions with group and member details
+        // return http.Response(json.encode(contributionsWithDetails), 200);
+        showSuccessToast(context, 'Success');
+        return response;
       } else if (response.statusCode == 400) {
         showErrorToast(context, 'Invalid token. Please log in again.');
       } else if (response.statusCode == 403) {
@@ -366,7 +412,8 @@ class GroupService {
 
       // Check the status code and show appropriate toast messages
       if (response.statusCode == 200) {
-        showSuccessToast(context, 'Transactions retrieved successfully');
+        showSuccessToast(context, 'Success');
+        return response;
       } else if (response.statusCode == 400) {
         showErrorToast(context, 'Invalid token. Please log in again.');
       } else if (response.statusCode == 403) {
@@ -376,9 +423,7 @@ class GroupService {
       } else {
         showWarningToast(context, 'Failed to retrieve transactions. Please try again later.');
       }
-      return response;
     } catch (e) {
-      // Handle network errors or parsing issues
       showErrorToast(context, 'An error occurred. Please check your connection.');
     }
     return null;
@@ -397,8 +442,8 @@ class GroupService {
       if (!context.mounted) return null;
       // Check the status code and show appropriate toast messages
       if (response.statusCode == 200) {
-        //showSuccessToast(context, 'Transactions retrieved successfully');
-        return jsonDecode(response.body);
+        showSuccessToast(context, 'Success');
+        return response;
       } else if (response.statusCode == 400) {
         showErrorToast(context, 'Invalid token. Please log in again.');
       } else if (response.statusCode == 403) {
@@ -427,10 +472,9 @@ class GroupService {
       );
 
       if (!context.mounted) return null;
-      // Check the status code and show appropriate toast messages
       if (response.statusCode == 200) {
-        //showSuccessToast(context, 'Loans retrieved successfully');
-        return jsonDecode(response.body); // Parse and return the loans data
+        showSuccessToast(context, 'Success');
+        return response;
       } else if (response.statusCode == 400) {
         showErrorToast(context, 'Invalid token. Please log in again.');
       } else if (response.statusCode == 403) {
@@ -458,11 +502,10 @@ class GroupService {
       );
 
       if (!context.mounted) return null;
-
       // Check the status code and show appropriate toast messages
       if (response.statusCode == 200) {
-        //showSuccessToast(context, 'Loan history retrieved successfully');
-        return jsonDecode(response.body); // Parse and return the loan history data
+        showSuccessToast(context, 'Success');
+        return response;
       } else if (response.statusCode == 400) {
         showErrorToast(context, 'Invalid token. Please log in again.');
       } else if (response.statusCode == 403) {
@@ -473,7 +516,6 @@ class GroupService {
         showWarningToast(context, 'Failed to retrieve loan history. Please try again later.');
       }
     } catch (e) {
-      // Handle network errors or parsing issues
       showErrorToast(context, 'An error occurred. Please check your connection.');
     }
     return null;
@@ -490,10 +532,9 @@ class GroupService {
       );
 
       if (!context.mounted) return null;
-
       // Check the status code and show appropriate toast messages
       if (response.statusCode == 200) {
-        //showSuccessToast(context, 'Total loan amount retrieved successfully');
+        showSuccessToast(context, 'Success');
         return jsonDecode(response.body);
       } else if (response.statusCode == 400) {
         showErrorToast(context, 'Invalid token. Please log in again.');

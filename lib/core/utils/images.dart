@@ -4,7 +4,7 @@ class ImagePath {
   static const String iconDir =  "assets/icons";
   // Logo
   // static const String logoDark = "$imageDir/logo/logo.png";
-  static const String companyLogo = "$imageDir/logo/Logo Outlook.png";
+  static const String companyLogo = "$imageDir/logo/logo.png";
   static const String google = "$imageDir/google.png";
   //Badge
   static const String badgeRole = "$iconDir/badge.svg";

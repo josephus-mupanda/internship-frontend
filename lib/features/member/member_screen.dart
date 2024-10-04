@@ -97,86 +97,90 @@ class _MemberScreenState extends State<MemberScreen> {
     // Refresh the list after deletion
     fetchMembers();
   }
+  Future<void> _onRefresh() async {
+    await fetchMembers();
+  }
 
   @override
   Widget build(BuildContext context) {
-
     final ThemeData theme = Theme.of(context);
-
     return Scaffold(
-      body: Container(
-        color: theme.colorScheme.background,
-        child: SafeArea(
-          child: Column(
-            children: [
-              GroupHeaderWithArrow(group: widget.group),
-              const Divider(thickness: 1),
-              Padding(
-                padding:
-                const EdgeInsets.symmetric(horizontal: Constants.kDefaultPadding),
-                child: Row(
-                  children: [
-                    if (!Responsive.isDesktop(context)) const SizedBox(width: 5),
-                    Expanded(
-                      child: InputWidget(
-                        hintText: 'Search member here...',
-                        keyboardType: TextInputType.name,
-                        suffixIcon: IconButton(
-                          icon: Icon(
-                            FeatherIcons.search,
-                            color: theme.colorScheme.onSurface.withOpacity(0.5),
+      body:  RefreshIndicator(
+        onRefresh: _onRefresh,
+        child: Container(
+          color: theme.colorScheme.background,
+          child: SafeArea(
+            child: Column(
+              children: [
+                GroupHeaderWithArrow(group: widget.group),
+                const Divider(thickness: 1),
+                Padding(
+                  padding:
+                  const EdgeInsets.symmetric(horizontal: Constants.kDefaultPadding),
+                  child: Row(
+                    children: [
+                      if (!Responsive.isDesktop(context)) const SizedBox(width: 5),
+                      Expanded(
+                        child: InputWidget(
+                          hintText: 'Search member here...',
+                          keyboardType: TextInputType.name,
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              FeatherIcons.search,
+                              color: theme.colorScheme.onSurface.withOpacity(0.5),
+                            ),
+                            onPressed: () {
+                            },
                           ),
-                          onPressed: () {
+                          onChanged: (String? value) {
                           },
+                          validator: (String? value) {},
                         ),
-                        onChanged: (String? value) {
-                        },
-                        validator: (String? value) {},
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-              const SizedBox(height: Constants.kDefaultPadding),
-              Padding(
-                padding:
-                const EdgeInsets.symmetric(horizontal: Constants.kDefaultPadding),
-                child: Row(
-                  children: [
-                    const SizedBox(width: 5),
-                    Text(
-                      "Sort by date",
-                      style: theme.textTheme.bodyMedium,
-                    ),
-                    const Spacer(),
-                    IconButton(
-                      icon: Icon(Icons.arrow_upward, color: theme.colorScheme.onSurface.withOpacity(0.5)),
-                      onPressed: () {
-                        sortGroupsByDate(true); // Ascending
-                      },
-                    ),
-                    IconButton(
-                      icon: Icon(Icons.arrow_downward, color: theme.colorScheme.onSurface.withOpacity(0.5)),
-                      onPressed: () {
-                        sortGroupsByDate(false); // Descending
-                      },
-                    ),
-                  ],
+                const SizedBox(height: Constants.kDefaultPadding),
+                Padding(
+                  padding:
+                  const EdgeInsets.symmetric(horizontal: Constants.kDefaultPadding),
+                  child: Row(
+                    children: [
+                      const SizedBox(width: 5),
+                      Text(
+                        "Sort by date",
+                        style: theme.textTheme.bodyMedium,
+                      ),
+                      const Spacer(),
+                      IconButton(
+                        icon: Icon(Icons.arrow_upward, color: theme.colorScheme.onSurface.withOpacity(0.5)),
+                        onPressed: () {
+                          sortGroupsByDate(true); // Ascending
+                        },
+                      ),
+                      IconButton(
+                        icon: Icon(Icons.arrow_downward, color: theme.colorScheme.onSurface.withOpacity(0.5)),
+                        onPressed: () {
+                          sortGroupsByDate(false); // Descending
+                        },
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              const SizedBox(height: Constants.kDefaultPadding),
-              Expanded(
-                child: ListView.builder(
-                    itemCount: members.length,
-                    itemBuilder: (context, index) {
-                      Member member = members[index];
-                      return MemberCard(
-                        member: member,
-                      );
-                    }
+                const SizedBox(height: Constants.kDefaultPadding),
+                Expanded(
+                  child: ListView.builder(
+                      itemCount: members.length,
+                      itemBuilder: (context, index) {
+                        Member member = members[index];
+                        return MemberCard(
+                          member: member,
+                        );
+                      }
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

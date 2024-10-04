@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:internship_frontend/data/providers/menu_provider.dart';
 import 'package:internship_frontend/data/services/group_service.dart';
 import 'package:internship_frontend/features/group/components/group_menu_card.dart';
@@ -13,9 +14,9 @@ import '../../core/utils/toast.dart';
 import '../../data/models/group.dart';
 import '../../data/models/member.dart';
 import '../../data/services/auth_service.dart';
-import '../../data/services/member_service.dart';
 import '../../routes/route_generator.dart';
 import 'components/header.dart';
+import 'empty_join_group_screen.dart';
 
 class GroupMenuScreen extends StatefulWidget {
   final Group group;
@@ -31,6 +32,9 @@ class _GroupMenuScreenState extends State<GroupMenuScreen> {
   Member? currentMember;
 
   bool _isLoading = true;
+  bool _isInGroup = false;
+  bool _loading = true;
+
   final AuthService _authService = AuthService();
   final GroupService _groupService = GroupService();
 
@@ -39,6 +43,7 @@ class _GroupMenuScreenState extends State<GroupMenuScreen> {
     super.initState();
     Group selectedGroup = widget.group;
     _loadUsernameAndMember(selectedGroup);
+    _checkUserInGroup();
   }
 
   // Fetch the username from the token
@@ -48,13 +53,6 @@ class _GroupMenuScreenState extends State<GroupMenuScreen> {
         String? username = await _authService.getUsernameFromToken();
         String? creatorUsername = Preferences.getGroupCreatorUsername();
         int? userId =  Preferences.getUserId();
-
-        // Log values for debugging
-        // print('Token >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>: $token');
-        // print('Username >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>: $username');
-        // print('Group Creator Username >>>>>>>>>>>>>>>>>>>>>>>>>: $creatorUsername');
-        // print('User ID >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>: $userId');
-        // print('Group ID >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>: ${selectedGroup.id}');
 
         if (token != null && username != null  && userId != null ) {
           final response = await _groupService.getMemberByUsername(token, selectedGroup.id!, userId, context);
@@ -77,6 +75,32 @@ class _GroupMenuScreenState extends State<GroupMenuScreen> {
       }
   }
 
+  // Function to check if the user is in the group
+  Future<void> _checkUserInGroup() async {
+    String? token = await _authService.getAccessToken();
+    int? userId =  Preferences.getUserId();
+    if (token == null && userId == null) {
+      await _authService.logout(context);
+      Navigator.pushNamedAndRemoveUntil(context, AppRoutes.login, (route) => false);
+      return;
+    }
+    try {
+      bool isInGroup = await _groupService.isUserInGroup(widget.group.id!, userId!, token!, context);
+      print("isUserInGroup result: $isInGroup");
+      if (mounted) {
+        setState(() {
+          _isInGroup = isInGroup;
+          _loading = false;
+        });
+      }
+    } catch (e) {
+      showErrorToast(context, 'An error occurred while checking membership.');
+      setState(() {
+        _loading = false;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
 
@@ -84,16 +108,26 @@ class _GroupMenuScreenState extends State<GroupMenuScreen> {
     final menuProvider = Provider.of<MenuProvider>(context);
     final selectedGroup = menuProvider.selectedGroup;
 
-    if (_isLoading) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    if (_loading) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
     }
+    else if (!_isInGroup) {
+      return const EmptyJoinGroupScreen();
+    }
+
     return Scaffold (
       body: Container(
         color: theme.colorScheme.background,
         child: SafeArea(
-          child: Column(
+          child:  selectedGroup == null
+              ?
+          const Center(child: Text("Select first a group ...."))
+          :
+          Column(
             children: [
-              GroupHeader(group: selectedGroup!),
+              GroupHeader(group: selectedGroup),
               const Divider(thickness: 1),
               Expanded(
                 child: SingleChildScrollView(
@@ -108,13 +142,13 @@ class _GroupMenuScreenState extends State<GroupMenuScreen> {
                           Navigator.pushNamed(
                               context,
                               AppRoutes.allMembersGroupScreen,
-                              arguments: widget.group
+                              arguments: selectedGroup
                           );
                         },
                       ),
                       const SizedBox(height: Constants.kDefaultPadding),
 
-                      if (_username == _groupCreatorUsername) ...[
+                      if (_username == selectedGroup.createdBy) ...[
                         GroupMenuCard(
                           icon: Icons.attach_money,
                           iconColor: Colors.green,
@@ -136,6 +170,19 @@ class _GroupMenuScreenState extends State<GroupMenuScreen> {
                             Navigator.pushNamed(
                                 context,
                                 AppRoutes.allLoansGroupScreen,
+                                arguments:selectedGroup
+                            );
+                          },
+                        ),
+                        const SizedBox(height: Constants.kDefaultPadding),
+                        GroupMenuCard(
+                          icon: FeatherIcons.creditCard,
+                          iconColor: Colors.teal,
+                          title: 'All Transactions',
+                          press: () {
+                            Navigator.pushNamed(
+                                context,
+                                AppRoutes.allTransactionsGroupScreen,
                                 arguments:selectedGroup
                             );
                           },
@@ -174,6 +221,23 @@ class _GroupMenuScreenState extends State<GroupMenuScreen> {
                             );
                           } else {
                             showErrorToast(context, 'Failed to load current member data.');
+                          }
+                        },
+                      ),
+                      const SizedBox(height: Constants.kDefaultPadding),
+                      GroupMenuCard(
+                        icon: FeatherIcons.creditCard,
+                        iconColor: Colors.limeAccent,
+                        title: 'My Transactions',
+                        press: () {
+                          if (currentMember != null) {
+                            Navigator.pushNamed(
+                              context,
+                              AppRoutes.transactionGroupScreen,
+                              arguments: MyArguments(selectedGroup, currentMember!),
+                            );
+                          } else {
+                            showErrorToast(context, 'Failed to load current transaction data.');
                           }
                         },
                       ),

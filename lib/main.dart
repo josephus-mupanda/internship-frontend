@@ -4,7 +4,9 @@ import 'package:app_links/app_links.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:internship_frontend/data/providers/contribution_provider.dart';
+import 'package:internship_frontend/data/providers/loan_provider.dart';
 import 'package:internship_frontend/data/providers/theme_provider.dart';
+import 'package:internship_frontend/data/providers/transaction_provider.dart';
 import 'package:internship_frontend/data/providers/user_provider.dart';
 import 'package:internship_frontend/routes/app_routes.dart';
 import 'package:internship_frontend/routes/route_generator.dart';
@@ -29,7 +31,9 @@ void main() async {
         ChangeNotifierProvider(create: (_) => UserProvider()),
         ChangeNotifierProvider(create: (_) => GroupProvider()),
         ChangeNotifierProvider(create: (_) => MemberProvider()),
-        ChangeNotifierProvider(create: (_) => ContributionProvider())
+        ChangeNotifierProvider(create: (_) => ContributionProvider(),),
+        ChangeNotifierProvider(create: (_) => TransactionProvider(),),
+        ChangeNotifierProvider(create: (_) => LoanProvider(),)
       ],
       child: const MyApp(),
     ),
