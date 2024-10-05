@@ -2,6 +2,9 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
+import 'package:http/http.dart';
+import 'package:http/http.dart';
+import 'package:internship_frontend/data/models/member.dart';
 import 'package:internship_frontend/data/services/auth_service.dart';
 import 'package:internship_frontend/data/services/group_service.dart';
 import 'package:internship_frontend/themes/color_palette.dart';
@@ -201,13 +204,7 @@ class _GroupCardState extends State<GroupCard> {
                             :
                         InkWell(
                           onTap: (){
-                            menuProvider.selectGroup( widget.group);
-                            if(Responsive.isMobile(context)) {
-                              Navigator.pushNamed(context,
-                                AppRoutes.groupMenuScreen,
-                                arguments: widget.group,
-                              );
-                            }
+                            _showJoinGroupDialog();
                           },
                           child: Container(
                             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -264,6 +261,23 @@ class _GroupCardState extends State<GroupCard> {
       },
     );
   }
+  void _showJoinGroupDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return MyDialog(
+          title: "Join Group",
+          content: "Are you sure you want to join this group?",
+          nameYes: "Join",
+          nameNo: "Cancel",
+          ok: () async {
+            Navigator.of(context).pop();
+            await _joinGroup(context);
+          },
+        );
+      },
+    );
+  }
 
   Future<void> _deleteGroup() async {
     // Retrieve the token from secure storage
@@ -281,6 +295,50 @@ class _GroupCardState extends State<GroupCard> {
     } catch (e) {
       // Handle errors and show a toast or dialog with the error message
       showErrorToast(context, 'An error occurred during deletion');
+    } finally {
+      Navigator.of(context).pop(); // Close the loading dialog
+    }
+  }
+  Future<void> _joinGroup(BuildContext context) async {
+    final menuProvider = Provider.of<MenuProvider>(context);
+    // Retrieve the token from secure storage
+    String? token = await _authService.getAccessToken();
+    int? userId  = Preferences.getUserId();
+    if (token == null && userId == null) {
+      await _authService.logout(context);
+      Navigator.pushNamedAndRemoveUntil(context, AppRoutes.login, (route) => false);
+      return;
+    }
+    Member member = Member(
+        userId: userId,
+    );
+
+    // Show loading dialog
+    showLoadingDialog(context);
+    try {
+      bool? hasDisbursement = Preferences.getDisbursementStatus() ?? false;
+      final Response? response;
+      if (!hasDisbursement) {
+        response = await _groupService.addNewMemberBeforeRotation(widget.group.id!, member, token!, context);
+
+      } else {
+        response = await _groupService.addNewMemberAfterRotation(widget.group.id!, member, token!, context);
+      }
+      if (response != null && response.statusCode == 201) {
+        showSuccessToast(context, "Member added successfully!");
+        menuProvider.selectGroup( widget.group);
+        if(Responsive.isMobile(context)) {
+          Navigator.pushNamed(context,
+            AppRoutes.groupMenuScreen,
+            arguments: widget.group,
+          );
+        }
+      } else {
+        // Handle errors inside the add functions
+      }
+    } catch (e) {
+      // Handle errors and show a toast or dialog with the error message
+      showErrorToast(context, 'An error occurred during this process');
     } finally {
       Navigator.of(context).pop(); // Close the loading dialog
     }

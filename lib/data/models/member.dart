@@ -19,7 +19,7 @@ class Member {
     this.isActive,
     this.joinDate,
     required this.userId,
-    required this.groupId,
+    this.groupId,
   }) : tagColor = _getTagColor(roleType);
 
   // Function to determine the color based on the role
