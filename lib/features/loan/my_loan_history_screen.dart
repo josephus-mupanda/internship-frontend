@@ -146,6 +146,12 @@ class _MyLoanHistoryScreenState extends State<MyLoanHistoryScreen> {
               children: [
                 GroupHeaderWithArrow(group: widget.group),
                 const Divider(thickness: 1),
+                Text(
+                  "My Loans History",
+                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
                 Padding(
                   padding:
                   const EdgeInsets.symmetric(horizontal: Constants.kDefaultPadding),

@@ -5,6 +5,7 @@ class Preferences {
 
   // Keys for the preferences
   static const _keyIsLoggedIn = 'isLoggedIn';
+  static const _keyDisbursementStatus = 'disbursementStatus';
   static const _keyHasSeenOnboarding = 'hasSeenOnboarding';
   static const _keyHasSeenLoanOnboarding = 'hasSeenLoanOnboarding';
   static const _keyUserID = 'userID';
@@ -26,6 +27,16 @@ class Preferences {
   // Getter for login status
   static bool? getIsLoggedIn() {
     return _preferences?.getBool(_keyIsLoggedIn);
+  }
+
+  // Setter for Disbursement status
+  static Future setDisbursementStatus(bool disbursementStatus) async {
+    await _preferences?.setBool(_keyDisbursementStatus, disbursementStatus);
+  }
+
+  // Getter for Disbursement status
+  static bool? getDisbursementStatus() {
+    return _preferences?.getBool(_keyDisbursementStatus);
   }
 
   // Setter for onboarding status

@@ -140,6 +140,12 @@ class _ContributionScreenState extends State<ContributionScreen> {
               children: [
                 GroupHeaderWithArrow(group: widget.group),
                 const Divider(thickness: 1),
+                Text(
+                  "All Contributions In this Group",
+                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
                 Padding(
                   padding:
                   const EdgeInsets.symmetric(horizontal: Constants.kDefaultPadding),

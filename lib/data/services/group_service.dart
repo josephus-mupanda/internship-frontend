@@ -9,6 +9,7 @@ import '../../core/config/environment.dart';
 import '../../core/utils/toast.dart';
 import '../models/contribution.dart';
 import '../models/group.dart';
+import '../models/member.dart';
 
 class GroupService {
   final String baseUrl = AppConfig.groupUrl;
@@ -272,7 +273,6 @@ class GroupService {
         },
       );
       if (!context.mounted) return null;
-
       // Check the status code and show appropriate toast messages
       if (response.statusCode == 200) {
         showSuccessToast(context, 'Success');
@@ -286,7 +286,6 @@ class GroupService {
       } else {
         showWarningToast(context, 'Failed to retrieve contributions. Please try again later.');
       }
-
     } catch (e) {
       showErrorToast(context, 'An error occurred. Please check your connection.');
     }
@@ -303,51 +302,8 @@ class GroupService {
       );
 
       if (!context.mounted) return null;
-
       // Check the status code and show appropriate toast messages
       if (response.statusCode == 200) {
-        // // Parse the contributions response
-        // List<dynamic> contributions = json.decode(response.body);
-        //
-        // // Step 2: Fetch the group name using getGroupById
-        // final groupResponse = await getGroupById(groupId, token, context);
-        // if (groupResponse == null || groupResponse.statusCode != 200) {
-        //   showErrorToast(context, 'Failed to retrieve group details.');
-        //   return null;
-        // }
-        // // Decode the group response body
-        // final groupData = jsonDecode(groupResponse.body);
-        // final String groupName = groupData['name']; // Access group name
-        //
-        // // Step 3: Fetch the member name using getMemberById
-        // final memberResponse = await _memberService.getMemberById(memberId, token, context);
-        // if (memberResponse == null || memberResponse.statusCode != 200) {
-        //   showErrorToast(context, 'Failed to retrieve member details.');
-        //   return null;
-        // }
-        // // Decode the member response body
-        // final memberData = jsonDecode(memberResponse.body);
-        // final int userId = memberData['userId']; // Access user id
-        //
-        // final userResponse = await _userService.getUserById(userId, token, context);
-        // if (userResponse == null || userResponse.statusCode != 200) {
-        //   showErrorToast(context, 'Failed to retrieve user details.');
-        //   return null;
-        // }
-        // final userData = jsonDecode(userResponse.body);
-        // final String memberName = userData['username']; // Access user name
-        //
-        // // Step 4: Add group name and member name to each contribution
-        // List<Map> contributionsWithDetails = contributions.map((contribution) {
-        //   return {
-        //     ...contribution,
-        //     'groupName': groupName,
-        //     'memberName': memberName,
-        //   };
-        // }).toList();
-        //
-        // // Step 5: Return the modified contributions with group and member details
-        // return http.Response(json.encode(contributionsWithDetails), 200);
         showSuccessToast(context, 'Success');
         return response;
       } else if (response.statusCode == 400) {
@@ -565,14 +521,63 @@ class GroupService {
     return response;
   }
 
-  // Add new member after rotation
-  Future<http.Response> addNewMemberAfterRotation(
-      Map<String, dynamic> newMemberDTO, String token) async {
-    final response = await http.post(
-      Uri.parse('$baseUrl/add-new-member'),
-      headers: Environment.getJsonHeaders(token),
-      body: jsonEncode(newMemberDTO),
-    );
-    return response;
+  // Function to add a new member before the rotation starts
+  Future<http.Response?> addNewMemberBeforeRotation(
+      int groupId,Member member, String token, BuildContext context) async {
+    try {
+      // Make the HTTP POST request
+      final response = await http.post(
+        Uri.parse('$baseUrl/$groupId/add-new-member/before'),
+        headers: Environment.getJsonHeaders(token),
+        body: jsonEncode(member.toJson()),
+      );
+
+      // Check the response and handle it based on status codes
+      if (!context.mounted) return null;
+      if (response.statusCode == 201) {
+        return response;  // Return the response on successful creation
+      } else if (response.statusCode == 400) {
+        showErrorToast(context, "Member already exists or bad request.");
+      } else if (response.statusCode == 403) {
+        showErrorToast(context, "You are not authorized to add this member.");
+      } else if (response.statusCode == 404) {
+        showErrorToast(context, "Group not found.");
+      } else {
+        showWarningToast(context, "Failed to add the new member. Please try again later.");
+      }
+    } catch (e) {
+      showErrorToast(context, "An error occurred. Please check your connection.");
+    }
+    return null;
+  }
+
+  // Function to add a new member after the rotation has started
+  Future<http.Response?> addNewMemberAfterRotation(
+      int groupId, Member member, String token, BuildContext context) async {
+    try {
+      // Make the HTTP POST request
+      final response = await http.post(
+        Uri.parse('$baseUrl/$groupId/add-new-member/after'),
+        headers: Environment.getJsonHeaders(token),
+        body: jsonEncode(member),
+      );
+
+      // Check the response and handle it based on status codes
+      if (!context.mounted) return null;  // Ensure the context is still mounted before showing toasts
+      if (response.statusCode == 201) {
+        return response;  // Return the response on successful creation
+      } else if (response.statusCode == 400) {
+        showErrorToast(context, "Member already exists or bad request.");
+      } else if (response.statusCode == 403) {
+        showErrorToast(context, "You are not authorized to add this member.");
+      } else if (response.statusCode == 404) {
+        showErrorToast(context, "Group not found.");
+      } else {
+        showWarningToast(context, "Failed to add the new member. Please try again later.");
+      }
+    } catch (e) {
+      showErrorToast(context, "An error occurred. Please check your connection.");
+    }
+    return null;
   }
 }

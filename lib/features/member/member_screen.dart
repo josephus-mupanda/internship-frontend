@@ -114,6 +114,12 @@ class _MemberScreenState extends State<MemberScreen> {
               children: [
                 GroupHeaderWithArrow(group: widget.group),
                 const Divider(thickness: 1),
+                Text(
+                  "All Members in this group",
+                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
                 Padding(
                   padding:
                   const EdgeInsets.symmetric(horizontal: Constants.kDefaultPadding),

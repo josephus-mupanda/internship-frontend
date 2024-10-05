@@ -92,15 +92,13 @@ class _UserCardState extends State<UserCard> {
               children: [
                 Row(
                   children: [
-                    SizedBox(
-                      width: 32,
-                      child: CircleAvatar(
-                        // backgroundColor: getRandomColor(),
-                        child: Text(
-                          widget.user.username[0].toUpperCase(),
-                          style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
+                    CircleAvatar(
+                      radius: 30,
+                      // backgroundColor: getRandomColor(),
+                      child: Text(
+                        widget.user.username[0].toUpperCase(),
+                        style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
                     ),
@@ -109,7 +107,7 @@ class _UserCardState extends State<UserCard> {
                       child: Text.rich(
                         TextSpan(
                           text: "${widget.user.username} \n",
-                          style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                             fontWeight: FontWeight.bold,
                           ),
                           children: [
@@ -126,25 +124,17 @@ class _UserCardState extends State<UserCard> {
                     if (_loading)
                       const CircularProgressIndicator()
                     else if (!_isInGroup)
-                      TextButton.icon(
-                        style: TextButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(
-                              vertical: Constants.kDefaultPadding),
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10)),
-                          backgroundColor: ColorPalette.primaryColor,
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: ColorPalette.primaryColor,
+                          borderRadius: BorderRadius.circular(20),
                         ),
-                        onPressed: () async {
-                          await _addMemberInTheGroup();
-                        },
-                        icon: const Icon(
-                          Icons.add,
-                          color: Colors.white,
-                          size: 16,
+                        child: Text("Add",
+                            style: theme.textTheme.bodySmall?.copyWith(
+                                color: Colors.white
+                            )
                         ),
-                        label: Text("Add",
-                            style: theme.textTheme.bodyMedium?.copyWith(
-                                color: Colors.white)),
                       ),
                   ],
                 ),

@@ -2,10 +2,13 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:internship_frontend/core/utils/preferences.dart';
 import 'package:internship_frontend/themes/color_palette.dart';
+import 'package:provider/provider.dart';
 
 import '../../../core/constants/constants.dart';
+import '../../../core/layout/responsive_widget.dart';
 import '../../../core/utils/toast.dart';
 import '../../../data/models/group.dart';
+import '../../../data/providers/menu_provider.dart';
 import '../../../data/services/auth_service.dart';
 import '../../../data/services/group_service.dart';
 import '../../../routes/app_routes.dart';
@@ -79,7 +82,7 @@ class _GroupCardState extends State<GroupCard> {
 
   @override
   Widget build(BuildContext context) {
-    //  Here the shadow is not showing properly
+    final menuProvider = Provider.of<MenuProvider>(context);
     return Padding(
       padding: const EdgeInsets.symmetric(
           horizontal: Constants.kDefaultPadding, vertical: Constants.kDefaultPadding / 2),
@@ -97,16 +100,14 @@ class _GroupCardState extends State<GroupCard> {
                 children: [
                   Row(
                     children: [
-                      SizedBox(
-                        width: 32,
-                        child: CircleAvatar(
-                            backgroundColor: getRandomColor(),
-                          child: Text(
-                            widget.group.name[0].toUpperCase(),
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold, // Make the text bold
-                            ),
+                      CircleAvatar(
+                        radius: 30,
+                          // backgroundColor: getRandomColor(),
+                        child: Text(
+                          widget.group.name[0].toUpperCase(),
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold, // Make the text bold
                           ),
                         ),
                       ),
@@ -115,13 +116,14 @@ class _GroupCardState extends State<GroupCard> {
                         child: Text.rich(
                           TextSpan(
                             text: "${widget.group.name} \n",
-                            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                               fontWeight: FontWeight.bold,
+                              color: widget.isActive ? Colors.white : null,
                             ),
                             children: [
                               TextSpan(
                                 text: "Created By : ${widget.group.createdBy}",
-                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                style: Theme.of(context).textTheme.bodySmall?.copyWith(
                                   color: widget.isActive ? Colors.white : null,
                                 ),
                               ),
@@ -131,15 +133,33 @@ class _GroupCardState extends State<GroupCard> {
                       ),
                       _loading
                           ? const CircularProgressIndicator() // Show loading indicator while checking membership
-                          : _isUserInGroup
+                          :  _isUserInGroup
                           ?
                         Column(
                           children: [
                             const SizedBox(height: 10),
-                            Text(
-                              "Request",
-                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                color: widget.isActive ? Colors.white70 : null,
+                            InkWell(
+                              onTap: (){
+                                menuProvider.selectGroup( widget.group);
+                                if(Responsive.isMobile(context)) {
+                                  Navigator.pushNamed(context,
+                                    AppRoutes.groupMenuScreen,
+                                    arguments: widget.group,
+                                  );
+                                }
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                decoration: BoxDecoration(
+                                  color: widget.isActive ? ColorPalette.secondaryColor : ColorPalette.primaryColor,
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                 child: Text(
+                                  "Request",
+                                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                         color: Colors.white
+                                     )
+                                ),
                               ),
                             ),
                           ],

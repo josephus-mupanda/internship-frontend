@@ -154,6 +154,7 @@ class RouteGenerator {
           );
         }
         return _errorRoute();
+
       case AppRoutes.loanScreen:
         if (args is Group) {
           return MaterialPageRoute(

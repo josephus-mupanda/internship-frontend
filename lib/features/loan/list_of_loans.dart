@@ -203,8 +203,14 @@ class _ListOfLoansState extends State<ListOfLoans> {
                             press: () {
                               menuProvider.selectGroup(filteredGroups[index]);
                               if(Responsive.isMobile(context)) {
-                                Navigator.pushNamed(context, AppRoutes.loanScreen);
+                                Navigator.pushNamed(context,
+                                  AppRoutes.loanScreen,
+                                  arguments: filteredGroups[index],
+                                );
                               }
+                              // if(Responsive.isMobile(context)) {
+                              //   Navigator.pushNamed(context, AppRoutes.loanScreen);
+                              // }
                             },
                           );
                         }

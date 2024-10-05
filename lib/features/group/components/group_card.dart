@@ -107,17 +107,14 @@ class _GroupCardState extends State<GroupCard> {
                 children: [
                   Row(
                     children: [
-                      SizedBox(
-                        width: 40,
-                        child: CircleAvatar(
-                          radius: 30,
-                            // backgroundColor: getRandomColor(),
-                          child: Text(
-                            widget.group.name[0].toUpperCase(),
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold, // Make the text bold
-                            ),
+                      CircleAvatar(
+                        radius: 30,
+                          // backgroundColor: getRandomColor(),
+                        child: Text(
+                          widget.group.name[0].toUpperCase(),
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold, // Make the text bold
                           ),
                         ),
                       ),
@@ -126,13 +123,14 @@ class _GroupCardState extends State<GroupCard> {
                         child: Text.rich(
                           TextSpan(
                             text: "${widget.group.name} \n",
-                            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                               fontWeight: FontWeight.bold,
+                              color: widget.isActive ? Colors.white : null,
                             ),
                             children: [
                               TextSpan(
                                 text: "Created by : ${widget.group.createdBy}",
-                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                style: Theme.of(context).textTheme.bodySmall?.copyWith(
                                   color: widget.isActive ? Colors.white : null,
                                 ),
                               ),
@@ -151,7 +149,7 @@ class _GroupCardState extends State<GroupCard> {
                                 },
                                 icon: Icon(
                                   FeatherIcons.edit,
-                                  color: widget.isActive ? Colors.white70 : null,
+                                  color: widget.isActive ? Colors.white70 : Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
                                 )
                             ),
                             const SizedBox(height: 5),
@@ -161,7 +159,7 @@ class _GroupCardState extends State<GroupCard> {
                                 },
                                 icon: Icon(
                                   FeatherIcons.trash,
-                                  color: widget.isActive ? Colors.white70 : null,
+                                  color: widget.isActive ? Colors.white70 : Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
                                 )
                             ),
 
@@ -176,14 +174,8 @@ class _GroupCardState extends State<GroupCard> {
                       else
                         isInGroup != null && isInGroup!
                             ?
-                        TextButton.icon(
-                          style: TextButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(vertical: Constants.kDefaultPadding),
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                            backgroundColor: widget.isActive ? ColorPalette.secondaryColor : ColorPalette.primaryColor,
-                          ),
-
-                          onPressed: () {
+                        InkWell(
+                          onTap: (){
                             menuProvider.selectGroup( widget.group);
                             if(Responsive.isMobile(context)) {
                               Navigator.pushNamed(context,
@@ -192,22 +184,23 @@ class _GroupCardState extends State<GroupCard> {
                               );
                             }
                           },
-                          icon: const Icon(Icons.add, color:Colors.white, size: 16,),
-                          label:Text(
-                              "Open Group",
-                              style: theme.textTheme.bodyMedium?.copyWith(
-                                  color: Colors.white
-                              )
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                            decoration: BoxDecoration(
+                              color: widget.isActive ? ColorPalette.secondaryColor : ColorPalette.errorColor,
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Text(
+                                "Open Group",
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                    color: Colors.white
+                                )
+                            ),
                           ),
                         )
                             :
-                        TextButton.icon(
-                          style: TextButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(vertical: Constants.kDefaultPadding),
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                            backgroundColor: widget.isActive ? ColorPalette.secondaryColor : ColorPalette.primaryColor,
-                          ),
-                          onPressed: () {
+                        InkWell(
+                          onTap: (){
                             menuProvider.selectGroup( widget.group);
                             if(Responsive.isMobile(context)) {
                               Navigator.pushNamed(context,
@@ -216,12 +209,18 @@ class _GroupCardState extends State<GroupCard> {
                               );
                             }
                           },
-                          icon: const Icon(Icons.add, color:Colors.white, size: 16,),
-                          label:Text(
-                              "Join Group",
-                              style: theme.textTheme.bodyMedium?.copyWith(
-                                  color: Colors.white
-                              )
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                            decoration: BoxDecoration(
+                              color: widget.isActive ? ColorPalette.secondaryColor : ColorPalette.primaryColor,
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child:Text(
+                                "Join Group",
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                    color: Colors.white
+                                )
+                            ),
                           ),
                         ),
                     ],

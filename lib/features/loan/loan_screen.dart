@@ -139,8 +139,9 @@ class _LoanScreenState extends State<LoanScreen> {
     final selectedGroup = menuProvider.selectedGroup;
 
     if (_loading) {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
+      return  Scaffold(
+        backgroundColor:theme.colorScheme.background,
+        body: const Center(child: CircularProgressIndicator()),
       );
     }
     else if (!_isInGroup) {

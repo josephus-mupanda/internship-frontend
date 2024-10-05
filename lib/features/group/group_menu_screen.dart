@@ -16,6 +16,7 @@ import '../../data/models/member.dart';
 import '../../data/services/auth_service.dart';
 import '../../routes/route_generator.dart';
 import 'components/header.dart';
+import 'empty_group_screen.dart';
 import 'empty_join_group_screen.dart';
 
 class GroupMenuScreen extends StatefulWidget {
@@ -86,7 +87,6 @@ class _GroupMenuScreenState extends State<GroupMenuScreen> {
     }
     try {
       bool isInGroup = await _groupService.isUserInGroup(widget.group.id!, userId!, token!, context);
-      print("isUserInGroup result: $isInGroup");
       if (mounted) {
         setState(() {
           _isInGroup = isInGroup;
@@ -109,23 +109,26 @@ class _GroupMenuScreenState extends State<GroupMenuScreen> {
     final selectedGroup = menuProvider.selectedGroup;
 
     if (_loading) {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
+      return  Scaffold(
+        backgroundColor:theme.colorScheme.background,
+        body: const Center(child: CircularProgressIndicator()),
       );
     }
-    else if (!_isInGroup) {
+    if (!_isInGroup) {
+      // User is not part of the group
       return const EmptyJoinGroupScreen();
+    }
+
+    if (selectedGroup == null) {
+      // No group selected (fallback)
+      return const EmptyGroupScreen();
     }
 
     return Scaffold (
       body: Container(
         color: theme.colorScheme.background,
         child: SafeArea(
-          child:  selectedGroup == null
-              ?
-          const Center(child: Text("Select first a group ...."))
-          :
-          Column(
+          child: Column(
             children: [
               GroupHeader(group: selectedGroup),
               const Divider(thickness: 1),

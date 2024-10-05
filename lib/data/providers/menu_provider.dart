@@ -10,6 +10,8 @@ import '../../features/loan/list_of_loans.dart';
 import '../../features/profile/profile_screen.dart';
 import '../../features/transaction/transaction_screen.dart';
 import '../models/group.dart';
+import '../services/auth_service.dart';
+import '../services/group_service.dart';
 
 enum MenuItemSelect { GROUPS, LOANS, TRANSACTIONS, PROFILE, LOGOUT }
 
@@ -73,7 +75,8 @@ class MenuProvider with ChangeNotifier {
               flex: 9,
               child: _selectedGroup != null
                   ?
-              GroupMenuScreen(group: _selectedGroup!):
+              GroupMenuScreen(group: _selectedGroup!)
+                  :
               const EmptyGroupScreen(),
             ),
           ],

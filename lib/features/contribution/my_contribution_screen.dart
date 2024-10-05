@@ -112,7 +112,6 @@ class _MyContributionScreenState extends State<MyContributionScreen> {
           return contribution.amount.toString().contains(query) ||
               contribution.group.toString().contains(query) ||
               contribution.id.toString().contains(query) ||
-              contribution.user.toString().contains(query) ||
               DateFormat('yyyy-MM-dd').format(contribution.date).contains(query);
         }).toList();
       }
@@ -129,13 +128,9 @@ class _MyContributionScreenState extends State<MyContributionScreen> {
     }
     else if (columnIndex == 2) {
       myContributions.sort((a, b) =>
-      ascending ? a.user.compareTo(b.user) : b.user.compareTo(a.user));
-    }
-    else if (columnIndex == 3) {
-      myContributions.sort((a, b) =>
       ascending ? a.amount.compareTo(b.amount) : b.amount.compareTo(a.amount));
     }
-    else if (columnIndex == 4) {
+    else if (columnIndex == 3) {
       myContributions.sort((a, b) =>
       ascending ? a.date.compareTo(b.date) : b.date.compareTo(a.date));
     }
@@ -156,7 +151,7 @@ class _MyContributionScreenState extends State<MyContributionScreen> {
     final TextTheme textTheme = theme.textTheme;
 
     return Scaffold(
-      body:  RefreshIndicator(
+      body: RefreshIndicator(
         onRefresh: _onRefresh,
         child: Container(
           color: theme.colorScheme.background,
@@ -165,6 +160,12 @@ class _MyContributionScreenState extends State<MyContributionScreen> {
               children: [
                 GroupHeaderWithArrow(group: widget.group),
                 const Divider(thickness: 1),
+                Text(
+                  "My Contributions in this group",
+                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
                 Padding(
                   padding:
                   const EdgeInsets.symmetric(horizontal: Constants.kDefaultPadding),
@@ -225,13 +226,12 @@ class _MyContributionScreenState extends State<MyContributionScreen> {
           columns: const [
             DataColumn(label: Text('ID')),
             DataColumn(label: Text('Group Name')),
-            DataColumn(label: Text('Members')),
             DataColumn(label: Text('Amount')),
             DataColumn(label: Text('Date')),
           ],
           rows: List<DataRow>.generate(5, (index) {
             return DataRow(
-              cells: List<DataCell>.generate(5, (cellIndex) {
+              cells: List<DataCell>.generate(4, (cellIndex) {
                 return DataCell(Container(
                   width: 100,
                   height: 20,
@@ -275,16 +275,6 @@ class _MyContributionScreenState extends State<MyContributionScreen> {
             ),
             DataColumn(
               label: Text(
-                'Members',
-                style: textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
-              ),
-              onSort: (columnIndex, _) {
-                _onSort(columnIndex, !_sortAscending);
-              },
-              tooltip: 'Sort By Member',
-            ),
-            DataColumn(
-              label: Text(
                 'Amount',
                 style: textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
               ),
@@ -319,7 +309,6 @@ class _MyContributionScreenState extends State<MyContributionScreen> {
               cells: [
                 DataCell(Text(contribution.id.toString())),
                 DataCell(Text(contribution.group)),
-                DataCell(Text(contribution.user)),
                 DataCell(
                   Text(
                       NumberFormat.currency(symbol: '\$').format(contribution.amount)
