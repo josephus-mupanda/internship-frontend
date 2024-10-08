@@ -8,7 +8,6 @@ import 'package:internship_frontend/themes/color_palette.dart';
 
 import '../../../core/constants/constants.dart';
 import '../../../core/utils/loading.dart';
-import '../../../core/utils/preferences.dart';
 import '../../../core/utils/toast.dart';
 import '../../../core/widgets/alert_widget.dart';
 import '../../../core/widgets/view_member_dialog.dart';
@@ -18,7 +17,7 @@ import '../../../routes/app_routes.dart';
 
 class MemberCard extends StatefulWidget {
   final bool isActive;
-  final Member member;
+  final MyMember member;
   final VoidCallback? press;
   final VoidCallback? onMemberDeleted;
 
@@ -37,50 +36,12 @@ class _MemberCardState extends State<MemberCard> {
 
   final UserService _userService = UserService();
   final AuthService _authService = AuthService();
-  String? username;
 
   @override
   void initState() {
     super.initState();
-    fetchUsername();
   }
 
-  Future<void> fetchUsername() async {
-    // Retrieve the token from secure storage
-    String? token = await _authService.getAccessToken();
-    if (token == null) {
-      await _authService.logout(context);
-      Navigator.pushNamedAndRemoveUntil(context, AppRoutes.login, (route) => false);
-      return;
-    }
-
-    try {
-      // Make the API call to get the user details by ID
-      final response = await _userService.getUserById(widget.member.userId!, token, context);
-
-      if (response != null && response.statusCode == 200) {
-        // Log the response for debugging
-        // print('Response body for userId ${widget.member.userId}: ${response.body}');
-        // Parse the JSON response
-        Map<String, dynamic> data = jsonDecode(response.body);
-
-        // Update the username state
-        setState(() {
-          username = data['username'];
-        });
-      } else {
-        // Log the error response
-        print('Failed to fetch username for userId ${widget.member.userId}. Status code: ${response?.statusCode}');
-      }
-    } catch (e) {
-      // Log any errors that occur during the fetch
-      print('Error fetching username for userId ${widget.member.userId}: $e');
-    }
-  }
-
-
-
-  // Function to generate a random color
   Color getRandomColor() {
     Random random = Random();
     return Color.fromARGB(
@@ -110,15 +71,13 @@ class _MemberCardState extends State<MemberCard> {
                 children: [
                   Row(
                     children: [
-                      SizedBox(
-                        width: 32,
-                        child: CircleAvatar(
-                          backgroundColor: getRandomColor(),
-                          child: Text(
-                              username != null ? username![0] : '?',
-                            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                              fontWeight: FontWeight.bold,
-                            ),
+                      CircleAvatar(
+                        // backgroundColor: getRandomColor(),
+                        radius : 30,
+                        child: Text(
+                            widget.member.user![0],
+                          style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
                       ),
@@ -126,7 +85,7 @@ class _MemberCardState extends State<MemberCard> {
                       Expanded(
                         child: Text.rich(
                           TextSpan(
-                            text : "${username ?? 'Loading...'} \n",
+                            text : "${widget.member.user} \n",
                             style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                               fontWeight: FontWeight.bold,
                             ),
@@ -152,7 +111,7 @@ class _MemberCardState extends State<MemberCard> {
                                 builder: (context) => ViewMemberDialog(
                                   title: "View Member Details",
                                   member: widget.member,
-                                  username: username!,
+                                  username: widget.member.user!,
                                 ),
                               );
                             },

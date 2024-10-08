@@ -102,7 +102,6 @@ class _MyContributionScreenState extends State<MyContributionScreen> {
     );
   }
 
-
   void _onSearch(String? query) {
     setState(() {
       if (query == null || query.isEmpty) {

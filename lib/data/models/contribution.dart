@@ -4,12 +4,17 @@ class Contribution {
   final int memberId;
   final double amount;
   final DateTime? date;
+  final String? month;
+  final int? year;
+
   Contribution({
     this.id,
     this.groupId,
     required this.memberId,
     required this.amount,
     this.date,
+    required this.month,
+    required this.year
   });
 
   factory Contribution.fromJson(Map<String, dynamic> json) {
@@ -19,6 +24,8 @@ class Contribution {
       memberId: json['memberId'] as int,
       amount: (json['amount'] as num).toDouble(),
       date: DateTime.parse(json['date'] as String),
+      month: json['month'] as String,
+      year: json['year'] as int,
     );
   }
 
@@ -29,6 +36,8 @@ class Contribution {
       'memberId': memberId,
       'amount': amount,
       'date': date?.toIso8601String(),
+      'month': month,
+      'year': year,
     };
   }
 }

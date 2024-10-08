@@ -580,4 +580,24 @@ class GroupService {
     }
     return null;
   }
+
+  Future<List<String>?> getAvailableMonths(int groupId, String token, BuildContext context) async {
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/$groupId/available-months'),
+        headers: Environment.getJsonHeaders(token),
+      );
+      if (response.statusCode == 200) {
+        List<dynamic> data = jsonDecode(response.body);
+        return data.map((month) => month.toString()).toList(); // Convert dynamic to String
+      } else {
+        showErrorToast(context, "Failed to fetch available months. Status Code: ${response.statusCode}");
+        return null;
+      }
+    } catch (e) {
+      showErrorToast(context, "An error occurred: $e");
+      return null;
+    }
+  }
+
 }

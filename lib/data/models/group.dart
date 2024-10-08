@@ -5,6 +5,7 @@ class Group {
   final String? createdBy;
   final bool? isChecked;
   final DateTime? createdAt;
+  bool isInGroup;
 
   Group({
     this.id,
@@ -12,7 +13,8 @@ class Group {
     required this.name,
     required this.description,
     this.isChecked,
-    this.createdAt
+    this.createdAt,
+    this.isInGroup = false,
   });
 
   factory Group.fromJson(Map<String, dynamic> json){
@@ -24,6 +26,7 @@ class Group {
       createdBy: json['createdBy'],
       isChecked: json['isChecked'],
       createdAt: json['createdAt'] != null ? DateTime.parse(json['createdAt']) : null,
+      isInGroup: json['isInGroup'] ?? false,
     );
   }
 
@@ -35,6 +38,7 @@ class Group {
       'createdBy': createdBy,
       'isChecked': isChecked,
       'createdAt': createdAt?.toIso8601String(),
+      'isInGroup': isInGroup,
     };
   }
 }

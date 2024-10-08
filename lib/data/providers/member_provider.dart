@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:internship_frontend/data/models/member.dart';
 
 class MemberProvider with ChangeNotifier {
-  List<Member> _members = [];
+  List<MyMember> _members = [];
   bool _isLoading = false;
 
-  List<Member> get members  => _members;
+  List<MyMember> get members  => _members;
   bool get isLoading => _isLoading;
 
   // Method to set loading state
@@ -16,7 +16,7 @@ class MemberProvider with ChangeNotifier {
   }
 
   // Method to set groups and select the first one as default
-  void setMembers(List<Member> members) {
+  void setMembers(List<MyMember> members) {
     _members = members;
     notifyListeners();
   }

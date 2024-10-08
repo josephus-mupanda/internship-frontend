@@ -3,7 +3,6 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:http/http.dart';
-import 'package:http/http.dart';
 import 'package:internship_frontend/data/models/member.dart';
 import 'package:internship_frontend/data/services/auth_service.dart';
 import 'package:internship_frontend/data/services/group_service.dart';
@@ -39,8 +38,6 @@ class GroupCard extends StatefulWidget {
 
 class _GroupCardState extends State<GroupCard> {
 
-  bool? isInGroup; // Nullable variable to track membership status
-  bool isLoading = true; // To show loading indicator while checking status
   String? currentUsername;
 
   // Function to generate a random color
@@ -53,39 +50,6 @@ class _GroupCardState extends State<GroupCard> {
       random.nextInt(256), // Blue value
     );
   }
-
-  // Function to check membership status with error handling
-  Future<void> checkMembershipStatus() async {
-    try {
-      // Retrieve the token and userId
-      String? token = await _authService.getAccessToken();
-      int? userId = Preferences.getUserId();
-
-      if (token != null && userId != null) {
-        bool result = await _groupService.isUserInGroup(widget.group.id!, userId, token, context);
-        currentUsername = await _authService.getUsernameFromToken();
-        setState(() {
-          isInGroup = result;
-          isLoading = false;
-        });
-      } else {
-        print('No valid token found');
-      }
-    } catch (e) {
-      print('Error checking membership status: $e');
-      setState(() {
-        isInGroup = false; // Default to false if error occurs
-        isLoading = false;
-      });
-    }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    checkMembershipStatus();
-  }
-
 
   @override
   Widget build(BuildContext context) {
@@ -170,13 +134,7 @@ class _GroupCardState extends State<GroupCard> {
                         ),
                         const SizedBox(width: Constants.kDefaultPadding / 2),
                       ],
-
-                      // Loading indicator or the actual button
-                      if (isLoading)
-                        const CircularProgressIndicator()
-                      else
-                        isInGroup != null && isInGroup!
-                            ?
+                      if (widget.group.isInGroup)
                         InkWell(
                           onTap: (){
                             menuProvider.selectGroup( widget.group);
@@ -201,7 +159,7 @@ class _GroupCardState extends State<GroupCard> {
                             ),
                           ),
                         )
-                            :
+                      else
                         InkWell(
                           onTap: (){
                             _showJoinGroupDialog();

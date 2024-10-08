@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:internship_frontend/features/authentication/screens/confirm_email_screen.dart';
 import 'package:internship_frontend/features/contribution/my_contribution_screen.dart';
 import 'package:internship_frontend/features/group/group_menu_screen.dart';
-import 'package:internship_frontend/features/loan/loan_onboarding_screen.dart';
 import 'package:internship_frontend/features/loan/loan_screen.dart';
 import 'package:internship_frontend/features/main/main_screen.dart';
 import 'package:internship_frontend/features/main/not_found_screen.dart';
@@ -16,6 +15,7 @@ import '../features/authentication/screens/login_screen.dart';
 import '../features/authentication/screens/register_screen.dart';
 import '../features/authentication/screens/reset_password_screen.dart';
 import '../features/contribution/contribution_screen.dart';
+import '../features/disbursement/disbursement_screen.dart';
 import '../features/loan/loan_history_screen.dart';
 import '../features/loan/my_loan_history_screen.dart';
 import '../features/member/member_screen.dart';
@@ -150,7 +150,7 @@ class RouteGenerator {
       case AppRoutes.disbursementScreen:
         if (args is Group) {
           return MaterialPageRoute(
-            builder: (_) => MemberScreen(group: args),
+            builder: (_) => DisbursementScreen(group: args),
           );
         }
         return _errorRoute();

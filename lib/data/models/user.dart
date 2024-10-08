@@ -4,6 +4,7 @@ class User {
   final String? password;
   final String? email;
   final String? phoneNumber;
+  bool isInGroup;
 
   User({
     this.id,
@@ -11,6 +12,7 @@ class User {
     this.password,
     this.email,
     this.phoneNumber,
+    this.isInGroup = false,
   });
 
   factory User.fromJson(Map<String, dynamic>  json){
@@ -19,7 +21,8 @@ class User {
         username: json['username'],
         password: json['password'],
         email: json['email'],
-        phoneNumber: json['phoneNumber']
+        phoneNumber: json['phoneNumber'],
+      isInGroup: json['isInGroup'] ?? false,
     );
   }
 
@@ -29,7 +32,8 @@ class User {
       'username': username,
       'password': password,
       'email':email,
-      'phoneNumber':phoneNumber
+      'phoneNumber':phoneNumber,
+      'isInGroup': isInGroup,
     };
   }
 }

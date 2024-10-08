@@ -5,6 +5,7 @@ import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:provider/provider.dart';
 import '../../core/constants/constants.dart';
 import '../../core/layout/responsive_widget.dart';
+import '../../core/utils/preferences.dart';
 import '../../core/utils/toast.dart';
 import '../../core/widgets/input_widget.dart';
 import '../../data/models/group.dart';
@@ -36,31 +37,33 @@ class _ListOfLoansState extends State<ListOfLoans> {
   List<Group> groups = [];
   List<Group> filteredGroups = [];
 
-  Future<void> fetchGroups() async {
+  Map<int, bool> membershipStatuses = {};
 
-    // Retrieve the token from secure storage
+  Future<void> fetchGroups() async {
     String? token = await _authService.getAccessToken();
-    if (token == null) {
-      showErrorToast(context, 'Token not found. Please log in again.');
-      Navigator.pushReplacementNamed(context, AppRoutes.login);
+    int? userId = Preferences.getUserId();
+    if (token == null && userId == null) {
+      await _authService.logout(context);
+      Navigator.pushNamedAndRemoveUntil(context, AppRoutes.login, (route) => false);
       return;
     }
-
     try {
-      final response = await _groupService.getAllGroups(token);
+      final response = await _groupService.getAllGroups(token!);
       if (response.statusCode == 200) {
         // Decode the JSON data
         List<dynamic> data = jsonDecode(response.body);
-        List<Group> fetchedGroups = data.map((groupJson) {
-          return Group.fromJson(groupJson);
-        }).toList();
-        // Update your state or provider with the fetched groups
+        List<Group> fetchedGroups = await Future.wait(data.map((groupJson) async {
+          Group group = Group.fromJson(groupJson);
+          bool isUserInGroup = await _groupService.isUserInGroup(group.id!, userId!, token, context);
+          group.isInGroup = isUserInGroup;
+          return group;
+        }).toList());
         setState(() {
           groups = fetchedGroups;
           filteredGroups = groups;
-          Provider.of<GroupProvider>(context, listen: false).setGroups(groups);
-
+          Provider.of<MenuProvider>(context, listen: false).updateGroups(groups);
         });
+        await fetchMembershipStatuses();
       } else {
         // Handle the error if the status code is not 200
         throw Exception("Failed to load groups");
@@ -78,6 +81,7 @@ class _ListOfLoansState extends State<ListOfLoans> {
             group.description.toLowerCase().contains(query.toLowerCase());
       }).toList();
     });
+    fetchMembershipStatuses();
   }
 
   void sortGroupsByDate(bool ascending) {
@@ -89,7 +93,22 @@ class _ListOfLoansState extends State<ListOfLoans> {
         return ascending ? a.createdAt!.compareTo(b.createdAt!) : b.createdAt!.compareTo(a.createdAt!);
       });
     });
+    fetchMembershipStatuses();
   }
+
+  Future<void> fetchMembershipStatuses() async {
+    String? token = await _authService.getAccessToken();
+    int? userId = Preferences.getUserId();
+    if (token == null || userId == null) return;
+
+    for (var group in groups) {
+      bool isInGroup = await _groupService.isUserInGroup(group.id!, userId, token, context);
+      setState(() {
+        membershipStatuses[group.id!] = isInGroup;
+      });
+    }
+  }
+
 
   @override
   void initState() {

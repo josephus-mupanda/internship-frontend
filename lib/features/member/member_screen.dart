@@ -34,8 +34,8 @@ class _MemberScreenState extends State<MemberScreen> {
   final GroupService _groupService = GroupService();
   final AuthService _authService = AuthService();
 
-  List<Member> members = [];
-  List<Member> filteredMembers = [];
+  List<MyMember> members = [];
+  List<MyMember> filteredMembers = [];
   String? username;
 
   Future<void> fetchMembers() async {
@@ -53,8 +53,8 @@ class _MemberScreenState extends State<MemberScreen> {
       final response = await _groupService.getMembersByGroup(widget.group.id!, token!, context);
       if (response?.statusCode == 200) {
         List<dynamic> data = jsonDecode(response!.body);
-        List<Member> fetchedMembers = data.map((membersJson) {
-          return Member.fromJson(membersJson);
+        List<MyMember> fetchedMembers = data.map((membersJson) {
+          return MyMember.fromJson(membersJson);
         }).toList();
 
         // Log the fetched members for debugging
@@ -178,7 +178,7 @@ class _MemberScreenState extends State<MemberScreen> {
                   child: ListView.builder(
                       itemCount: members.length,
                       itemBuilder: (context, index) {
-                        Member member = members[index];
+                        MyMember member = members[index];
                         return MemberCard(
                           member: member,
                         );

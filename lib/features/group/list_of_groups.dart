@@ -7,10 +7,12 @@ import 'package:internship_frontend/data/services/group_service.dart';
 import 'package:provider/provider.dart';
 import '../../core/constants/constants.dart';
 import '../../core/layout/responsive_widget.dart';
+import '../../core/utils/preferences.dart';
 import '../../core/utils/toast.dart';
 import '../../core/widgets/group_dialog.dart';
 import '../../core/widgets/input_widget.dart';
 import '../../data/models/group.dart';
+import '../../data/models/user.dart';
 import '../../data/providers/group_provider.dart';
 
 import 'package:flutter/foundation.dart' show kIsWeb;
@@ -33,34 +35,37 @@ class _ListOfGroupsState extends State<ListOfGroups> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final GroupService _groupService = GroupService();
   final AuthService _authService = AuthService();
+
   List<Group> groups = [];
   List<Group> filteredGroups = [];
+  Map<int, bool> membershipStatuses = {};
 
   Future<void> fetchGroups() async {
-
-    // Retrieve the token from secure storage
     String? token = await _authService.getAccessToken();
-    if (token == null) {
-      //showErrorToast(context, 'Session expired. Please log in again.');
+    int? userId = Preferences.getUserId();
+    if (token == null && userId == null) {
       await _authService.logout(context);
       Navigator.pushNamedAndRemoveUntil(context, AppRoutes.login, (route) => false);
       return;
     }
-
     try {
-      final response = await _groupService.getAllGroups(token);
+      final response = await _groupService.getAllGroups(token!);
       if (response.statusCode == 200) {
         // Decode the JSON data
         List<dynamic> data = jsonDecode(response.body);
-        List<Group> fetchedGroups = data.map((groupJson) {
-          return Group.fromJson(groupJson);
-        }).toList();
-        // Update your state or provider with the fetched groups
+
+        List<Group> fetchedGroups = await Future.wait(data.map((groupJson) async {
+          Group group = Group.fromJson(groupJson);
+          bool isUserInGroup = await _groupService.isUserInGroup(group.id!, userId!, token, context);
+          group.isInGroup = isUserInGroup;
+          return group;
+        }).toList());
         setState(() {
           groups = fetchedGroups;
           filteredGroups = groups;
           Provider.of<MenuProvider>(context, listen: false).updateGroups(groups);
         });
+        await fetchMembershipStatuses();
       } else {
         // Handle the error if the status code is not 200
         throw Exception("Failed to load groups");
@@ -78,6 +83,7 @@ class _ListOfGroupsState extends State<ListOfGroups> {
             group.description.toLowerCase().contains(query.toLowerCase());
       }).toList();
     });
+    fetchMembershipStatuses();
   }
 
   void sortGroupsByDate(bool ascending) {
@@ -90,6 +96,7 @@ class _ListOfGroupsState extends State<ListOfGroups> {
       });
     });
     showSuccessToast(context, ascending ? 'Sorted by ascending date' : 'Sorted by descending date');
+    fetchMembershipStatuses();
   }
 
   @override
@@ -103,6 +110,20 @@ class _ListOfGroupsState extends State<ListOfGroups> {
       }
     });
     fetchGroups();
+  }
+
+
+  Future<void> fetchMembershipStatuses() async {
+    String? token = await _authService.getAccessToken();
+    int? userId = Preferences.getUserId();
+    if (token == null || userId == null) return;
+
+    for (var group in groups) {
+      bool isInGroup = await _groupService.isUserInGroup(group.id!, userId, token, context);
+      setState(() {
+        membershipStatuses[group.id!] = isInGroup;
+      });
+    }
   }
 
   void _onGroupDeleted() {

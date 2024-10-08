@@ -1,8 +1,5 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:internship_frontend/data/models/user.dart';
-
-import 'group.dart';
 
 class Member {
   final int? id;
@@ -59,8 +56,8 @@ class Member {
 
 class MyMember {
   final int? id;
-  final User? user;
-  final Group? group;
+  final String? group;
+  final String? user;
   final String? roleType;
   final DateTime? joinDate;
   final bool? isActive;
@@ -89,8 +86,8 @@ class MyMember {
   factory MyMember.fromJson(Map<String, dynamic> json) {
     return MyMember(
       id: json['id'] as int?,
-      user: json['user'] as User?,
-      group: json['group'] as Group?,
+      user: json['user'] as String?,
+      group: json['group'] as String?,
       roleType: json['roleType'] as String?,
       isActive: json['isActive'] as bool?,
       joinDate: json['joinDate'] != null ? DateTime.parse(json['joinDate']) : null,

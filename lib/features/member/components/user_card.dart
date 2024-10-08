@@ -32,42 +32,6 @@ class _UserCardState extends State<UserCard> {
   final GroupService _groupService = GroupService();
   final AuthService _authService = AuthService();
 
-  bool _isInGroup = false;
-  bool _loading = true;
-
-  @override
-  void initState() {
-    super.initState();
-    _checkUserInGroup();
-  }
-
-  // Function to check if the user is in the group
-  Future<void> _checkUserInGroup() async {
-    String? token = await _authService.getAccessToken();
-    if (token == null) {
-      await _authService.logout(context);
-      Navigator.pushNamedAndRemoveUntil(context, AppRoutes.login, (route) => false);
-      return;
-    }
-    try {
-      bool isInGroup = await _groupService.isUserInGroup(widget.group.id!, widget.user.id!, token, context);
-      // Log the result of the check
-      print("isUserInGroup result: $isInGroup");
-      if (mounted) {
-        setState(() {
-          _isInGroup = isInGroup;
-          _loading = false;
-        });
-      }
-    } catch (e) {
-      // Handle the error appropriately (e.g., show a toast or dialog)
-      showErrorToast(context, 'An error occurred while checking membership.');
-      setState(() {
-        _loading = false; // Stop loading
-      });
-    }
-  }
-
   // Function to generate a random color
   Color getRandomColor() {
     Random random = Random();
@@ -125,9 +89,9 @@ class _UserCardState extends State<UserCard> {
                         // maxLines: 1,
                       ),
                     ),
-                    if (_loading)
-                      const CircularProgressIndicator()
-                    else if (!_isInGroup)
+                    if (widget.user.isInGroup)
+                      const SizedBox()
+                    else
                       InkWell(
                         onTap: (){
                           _showAddMemberInGroupDialog();

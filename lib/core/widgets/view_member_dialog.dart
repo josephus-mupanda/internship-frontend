@@ -8,7 +8,7 @@ import '../constants/constants.dart';
 class ViewMemberDialog extends StatefulWidget {
 
   final String title;
-  final Member member;
+  final MyMember member;
   final String username;
 
   const ViewMemberDialog({

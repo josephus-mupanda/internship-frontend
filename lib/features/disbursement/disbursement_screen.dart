@@ -30,12 +30,11 @@ class _DisbursementScreenState extends State<DisbursementScreen> with SingleTick
   final GroupService _groupService = GroupService();
   final AuthService _authService = AuthService();
 
-  List<Member> members = [];
-  List<Member> filteredMembers = [];
+  List<MyMember> members = [];
+  List<MyMember> filteredMembers = [];
   String? username;
 
   late TabController _tabController;
-
 
   Future<void> fetchMembers() async {
     // Retrieve the token from secure storage
@@ -51,8 +50,8 @@ class _DisbursementScreenState extends State<DisbursementScreen> with SingleTick
       final response = await _groupService.getMembersByGroup(widget.group.id!, token!, context);
       if (response?.statusCode == 200) {
         List<dynamic> data = jsonDecode(response!.body);
-        List<Member> fetchedMembers = data.map((membersJson) {
-          return Member.fromJson(membersJson);
+        List<MyMember> fetchedMembers = data.map((membersJson) {
+          return MyMember.fromJson(membersJson);
         }).toList();
         setState(() {
           members = fetchedMembers;
@@ -168,7 +167,7 @@ class _DisbursementScreenState extends State<DisbursementScreen> with SingleTick
 }
 
 class ScheduleTab extends StatelessWidget {
-  final List<Member> members;
+  final List<MyMember> members;
   final Group group;
 
   const ScheduleTab({super.key, required this.members, required this.group});
@@ -189,7 +188,7 @@ class ScheduleTab extends StatelessWidget {
 }
 
 class MembersReceivedTab extends StatelessWidget {
-  final List<Member> members;
+  final List<MyMember> members;
 
   const MembersReceivedTab({super.key, required this.members});
 
@@ -206,7 +205,7 @@ class MembersReceivedTab extends StatelessWidget {
 }
 
 class MembersToReceiveTab extends StatelessWidget {
-  final List<Member> members;
+  final List<MyMember> members;
 
   const MembersToReceiveTab({super.key, required this.members});
 

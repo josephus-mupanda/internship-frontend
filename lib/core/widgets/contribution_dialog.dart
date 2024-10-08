@@ -43,15 +43,31 @@ class _ContributionDialogState extends State<ContributionDialog> {
 
   double? amount;
   String? selectedMonth;
+  String? selectedYear;
+
+  List<String> availableMonths = [];
+
+  Future<void> fetchAvailableMonths() async {
+    String? token = await _authService.getAccessToken();
+    if (token != null) {
+      List<String>? months = await _groupService.getAvailableMonths(widget.group.id!, token, context);
+      if (months != null) {
+        setState(() {
+          availableMonths = months;
+        });
+      }
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    fetchAvailableMonths();
+  }
 
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
-
-    List<String> months = [
-      'January', 'February', 'March', 'April', 'May', 'June',
-      'July', 'August', 'September', 'October', 'November', 'December'
-    ];
 
     return AlertDialog(
       backgroundColor: theme.cardColor,
@@ -85,10 +101,11 @@ class _ContributionDialogState extends State<ContributionDialog> {
                 children: [
                   DropdownWidget(
                     hintText: 'Select Month',
-                    items: months,
+                    items: availableMonths,
                     onChanged: (String? value) {
                       setState(() {
-                        selectedMonth = value;
+                        selectedMonth = value?.split(' ')[0];
+                        selectedYear = value?.split(' ')[1];
                       });
                     },
                     validator: (String? value) =>
@@ -171,11 +188,17 @@ class _ContributionDialogState extends State<ContributionDialog> {
     );
   }
   Future<void> _createContribution() async {
-
+    if (selectedMonth == null || selectedYear == null) {
+      showErrorToast(context, 'Please select a month and year');
+      return;
+    }
     final Contribution contribution = Contribution(
-        memberId: widget.member.id!,
-        amount: amount!,
+      memberId: widget.member.id!,
+      amount: amount!,
+      month: selectedMonth!,
+      year: int.tryParse(selectedYear!),
     );
+
     // Show loading dialog
     showLoadingDialog(context);
     // Retrieve the token from secure storage
@@ -185,17 +208,16 @@ class _ContributionDialogState extends State<ContributionDialog> {
       Navigator.pushNamedAndRemoveUntil(context, AppRoutes.login, (route) => false);
       return;
     }
-
     try {
       await _groupService.createContribution(widget.group.id!,contribution, token,context);
       formKey.currentState?.reset();
       setState(() {
         amount = null;
         selectedMonth = null;
+        selectedYear = null;
       });
       widget.onContributionCreated();
     } catch (e) {
-      // Handle errors and show a toast or dialog with the error message
       showErrorToast(context, 'An error occurred during creation');
     } finally {
       Navigator.of(context).pop(); // Close the loading dialog

@@ -21,7 +21,6 @@ import 'empty_join_group_screen.dart';
 
 class GroupMenuScreen extends StatefulWidget {
   final Group group;
-
   const GroupMenuScreen({super.key, required this.group});
 
   @override
@@ -229,6 +228,23 @@ class _GroupMenuScreenState extends State<GroupMenuScreen> {
                       ),
                       const SizedBox(height: Constants.kDefaultPadding),
                       GroupMenuCard(
+                        icon: Icons.account_balance_wallet,
+                        iconColor: Colors.greenAccent,
+                        title: 'Disbursement',
+                        press: () {
+                          if (currentMember != null) {
+                            Navigator.pushNamed(
+                              context,
+                              AppRoutes.disbursementScreen,
+                              arguments: MyArguments(selectedGroup, currentMember!),
+                            );
+                          } else {
+                            showErrorToast(context, 'Failed to load current member data.');
+                          }
+                        },
+                      ),
+                      const SizedBox(height: Constants.kDefaultPadding),
+                      GroupMenuCard(
                         icon: FeatherIcons.creditCard,
                         iconColor: Colors.limeAccent,
                         title: 'My Transactions',
@@ -240,7 +256,7 @@ class _GroupMenuScreenState extends State<GroupMenuScreen> {
                               arguments: MyArguments(selectedGroup, currentMember!),
                             );
                           } else {
-                            showErrorToast(context, 'Failed to load current transaction data.');
+                            showErrorToast(context, 'Failed to load current member data.');
                           }
                         },
                       ),
