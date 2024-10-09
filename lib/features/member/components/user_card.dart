@@ -18,9 +18,9 @@ import '../../../routes/app_routes.dart';
 class UserCard extends StatefulWidget {
   final User user;
   final Group group;
-  final VoidCallback onMemberAdded;
+  final VoidCallback onUserAdded;
   const UserCard({super.key,
-    required this.user, required this.group, required this.onMemberAdded,
+    required this.user, required this.group, required this.onUserAdded,
   });
 
   @override
@@ -158,7 +158,7 @@ class _UserCardState extends State<UserCard> {
       }
       if (response != null && response.statusCode == 201) {
         showSuccessToast(context, "Member added successfully!");
-        widget.onMemberAdded();
+        widget.onUserAdded();
       } else {
         // Handle errors inside the add functions
       }
@@ -167,6 +167,7 @@ class _UserCardState extends State<UserCard> {
       showErrorToast(context, 'An error occurred during this process');
     } finally {
       Navigator.of(context).pop(); // Close the loading dialog
+      Navigator.of(context).pop(true);
     }
   }
 }

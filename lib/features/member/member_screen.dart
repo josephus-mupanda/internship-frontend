@@ -198,7 +198,11 @@ class _MemberScreenState extends State<MemberScreen> {
                 context,
                 AppRoutes.addMemberInGroupScreen,
                 arguments: widget.group,
-              );
+              ).then((result) {
+                if (result == true) {
+                  fetchMembers();
+                }
+              });
             },
             child: const Icon(Icons.add),
           )

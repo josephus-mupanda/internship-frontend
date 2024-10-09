@@ -20,7 +20,6 @@ import '../../../data/providers/menu_provider.dart';
 import '../../../routes/app_routes.dart';
 
 class GroupCard extends StatefulWidget {
-
   final bool isActive;
   final Group group;
   final VoidCallback? press;
@@ -60,141 +59,138 @@ class _GroupCardState extends State<GroupCard> {
     return Padding(
       padding: const EdgeInsets.symmetric(
           horizontal: Constants.kDefaultPadding, vertical: Constants.kDefaultPadding / 2),
-      child: InkWell(
-        onTap: widget.press,
-        child: Stack(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(Constants.kDefaultPadding),
-              decoration: BoxDecoration(
-                color: widget.isActive ? ColorPalette.primaryColor : Theme.of(context).colorScheme.background,
-                borderRadius: BorderRadius.circular(15),
-              ),
-              child: Column(
-                children: [
-                  Row(
-                    children: [
-                      CircleAvatar(
-                        radius: 30,
-                          // backgroundColor: getRandomColor(),
-                        child: Text(
-                          widget.group.name[0].toUpperCase(),
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold, // Make the text bold
-                          ),
+      child: Stack(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(Constants.kDefaultPadding),
+            decoration: BoxDecoration(
+              color: widget.isActive ? ColorPalette.primaryColor : Theme.of(context).colorScheme.background,
+              borderRadius: BorderRadius.circular(15),
+            ),
+            child: Column(
+              children: [
+                Row(
+                  children: [
+                    CircleAvatar(
+                      radius: 30,
+                        // backgroundColor: getRandomColor(),
+                      child: Text(
+                        widget.group.name[0].toUpperCase(),
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold, // Make the text bold
                         ),
                       ),
-                      const SizedBox(width: Constants.kDefaultPadding / 2),
-                      Expanded(
-                        child: Text.rich(
-                          TextSpan(
-                            text: "${widget.group.name} \n",
-                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              fontWeight: FontWeight.bold,
-                              color: widget.isActive ? Colors.white : null,
-                            ),
-                            children: [
-                              TextSpan(
-                                text: "Created by : ${widget.group.createdBy}",
-                                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                  color: widget.isActive ? Colors.white : null,
-                                ),
-                              ),
-                            ],
+                    ),
+                    const SizedBox(width: Constants.kDefaultPadding / 2),
+                    Expanded(
+                      child: Text.rich(
+                        TextSpan(
+                          text: "${widget.group.name} \n",
+                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: widget.isActive ? Colors.white : null,
                           ),
-                          overflow: TextOverflow.ellipsis,
-                          // maxLines: 1,
-                        ),
-                      ),
-                      if (currentUsername == widget.group.createdBy) ...[
-                        Column(
                           children: [
-                            IconButton(
-                                onPressed: (){
-
-                                },
-                                icon: Icon(
-                                  FeatherIcons.edit,
-                                  color: widget.isActive ? Colors.white70 : Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
-                                )
+                            TextSpan(
+                              text: "Created by : ${widget.group.createdBy}",
+                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                color: widget.isActive ? Colors.white : null,
+                              ),
                             ),
-                            const SizedBox(height: 5),
-                            IconButton(
-                                onPressed: (){
-                                  _showDeleteGroupDialog();
-                                },
-                                icon: Icon(
-                                  FeatherIcons.trash,
-                                  color: widget.isActive ? Colors.white70 : Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
-                                )
-                            ),
-
                           ],
                         ),
-                        const SizedBox(width: Constants.kDefaultPadding / 2),
-                      ],
-                      if (widget.group.isInGroup)
-                        InkWell(
-                          onTap: (){
-                            menuProvider.selectGroup( widget.group);
-                            if(Responsive.isMobile(context)) {
-                              Navigator.pushNamed(context,
-                                AppRoutes.groupMenuScreen,
-                                arguments: widget.group,
-                              );
-                            }
-                          },
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                            decoration: BoxDecoration(
-                              color: widget.isActive ? ColorPalette.secondaryColor : ColorPalette.errorColor,
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: Text(
-                                "Open Group",
-                                style: theme.textTheme.bodySmall?.copyWith(
-                                    color: Colors.white
-                                )
-                            ),
+                        overflow: TextOverflow.ellipsis,
+                        // maxLines: 1,
+                      ),
+                    ),
+                    if (currentUsername == widget.group.createdBy) ...[
+                      Column(
+                        children: [
+                          IconButton(
+                              onPressed: (){
+
+                              },
+                              icon: Icon(
+                                FeatherIcons.edit,
+                                color: widget.isActive ? Colors.white70 : Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+                              )
                           ),
-                        )
-                      else
-                        InkWell(
-                          onTap: (){
-                            _showJoinGroupDialog();
-                          },
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                            decoration: BoxDecoration(
-                              color: widget.isActive ? ColorPalette.secondaryColor : ColorPalette.primaryColor,
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child:Text(
-                                "Join Group",
-                                style: theme.textTheme.bodySmall?.copyWith(
-                                    color: Colors.white
-                                )
-                            ),
+                          const SizedBox(height: 5),
+                          IconButton(
+                              onPressed: (){
+                                _showDeleteGroupDialog();
+                              },
+                              icon: Icon(
+                                FeatherIcons.trash,
+                                color: widget.isActive ? Colors.white70 : Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+                              )
+                          ),
+
+                        ],
+                      ),
+                      const SizedBox(width: Constants.kDefaultPadding / 2),
+                    ],
+                    if (widget.group.isInGroup)
+                      InkWell(
+                        onTap: (){
+                          menuProvider.selectGroup( widget.group);
+                          if(Responsive.isMobile(context)) {
+                            Navigator.pushNamed(context,
+                              AppRoutes.groupMenuScreen,
+                              arguments: widget.group,
+                            );
+                          }
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                          decoration: BoxDecoration(
+                            color: widget.isActive ? ColorPalette.secondaryColor : ColorPalette.errorColor,
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Text(
+                              "Open Group",
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                  color: Colors.white
+                              )
                           ),
                         ),
-                    ],
+                      )
+                    else
+                      InkWell(
+                        onTap: (){
+                          _showJoinGroupDialog();
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                          decoration: BoxDecoration(
+                            color: widget.isActive ? ColorPalette.secondaryColor : ColorPalette.primaryColor,
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child:Text(
+                              "Join Group",
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                  color: Colors.white
+                              )
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+                const SizedBox(height: Constants.kDefaultPadding / 2),
+                Text(
+                  widget.group.description,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    height: 1.5,
+                    color: widget.isActive ? Colors.white70 : null,
                   ),
-                  const SizedBox(height: Constants.kDefaultPadding / 2),
-                  Text(
-                    widget.group.description,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      height: 1.5,
-                      color: widget.isActive ? Colors.white70 : null,
-                    ),
-                  )
-                ],
-              ),
-            )
-          ],
-        ),
+                )
+              ],
+            ),
+          )
+        ],
       ),
     );
   }
@@ -230,7 +226,7 @@ class _GroupCardState extends State<GroupCard> {
           nameNo: "Cancel",
           ok: () async {
             Navigator.of(context).pop();
-            await _joinGroup(context);
+            await _joinGroup();
           },
         );
       },
@@ -257,8 +253,8 @@ class _GroupCardState extends State<GroupCard> {
       Navigator.of(context).pop(); // Close the loading dialog
     }
   }
-  Future<void> _joinGroup(BuildContext context) async {
-    final menuProvider = Provider.of<MenuProvider>(context);
+  Future<void> _joinGroup() async {
+    //final menuProvider = Provider.of<MenuProvider>(context);
     // Retrieve the token from secure storage
     String? token = await _authService.getAccessToken();
     int? userId  = Preferences.getUserId();
@@ -268,7 +264,7 @@ class _GroupCardState extends State<GroupCard> {
       return;
     }
     Member member = Member(
-        userId: userId,
+      userId: userId,
     );
 
     // Show loading dialog
@@ -283,22 +279,15 @@ class _GroupCardState extends State<GroupCard> {
         response = await _groupService.addNewMemberAfterRotation(widget.group.id!, member, token!, context);
       }
       if (response != null && response.statusCode == 201) {
-        showSuccessToast(context, "Member added successfully!");
-        menuProvider.selectGroup( widget.group);
-        if(Responsive.isMobile(context)) {
-          Navigator.pushNamed(context,
-            AppRoutes.groupMenuScreen,
-            arguments: widget.group,
-          );
-        }
+        showSuccessToast(context, "Member joined successfully!");
+        widget.group.isInGroup = true;
       } else {
         // Handle errors inside the add functions
       }
     } catch (e) {
-      // Handle errors and show a toast or dialog with the error message
       showErrorToast(context, 'An error occurred during this process');
     } finally {
-      Navigator.of(context).pop(); // Close the loading dialog
+      Navigator.of(context).pop(true);
     }
   }
 }

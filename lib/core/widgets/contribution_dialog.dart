@@ -192,6 +192,13 @@ class _ContributionDialogState extends State<ContributionDialog> {
       showErrorToast(context, 'Please select a month and year');
       return;
     }
+
+    print("Creating contribution...");
+    print("Member ID: ${widget.member.id!}");
+    print("Amount: $amount");
+    print("Month: $selectedMonth");
+    print("Year: $selectedYear");
+
     final Contribution contribution = Contribution(
       memberId: widget.member.id!,
       amount: amount!,
@@ -218,6 +225,8 @@ class _ContributionDialogState extends State<ContributionDialog> {
       });
       widget.onContributionCreated();
     } catch (e) {
+      // Log the error for debugging
+      print("Error occurred: $e");
       showErrorToast(context, 'An error occurred during creation');
     } finally {
       Navigator.of(context).pop(); // Close the loading dialog

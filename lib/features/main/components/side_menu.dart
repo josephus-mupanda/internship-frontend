@@ -313,7 +313,10 @@ class _SideMenuState extends State<SideMenu> {
       // Handle errors and show a toast or dialog with the error message
       showErrorToast(context, 'An error occurred during logout');
     } finally {
-      Navigator.of(context).pop(); // Close the loading dialog
+      Navigator.of(context).pop();
+      if (Scaffold.of(context).isDrawerOpen) {
+        Navigator.of(context).pop();
+      }
       Navigator.pushReplacementNamed(context, AppRoutes.login); // Navigate to login screen
     }
   }

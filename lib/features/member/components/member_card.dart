@@ -86,13 +86,13 @@ class _MemberCardState extends State<MemberCard> {
                         child: Text.rich(
                           TextSpan(
                             text : "${widget.member.user} \n",
-                            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                               fontWeight: FontWeight.bold,
                             ),
                             children: [
                               TextSpan(
                                 text: "Join Date : ${widget.member.joinDate}",
-                                style: Theme.of(context).textTheme.bodyMedium,
+                                style: Theme.of(context).textTheme.bodySmall,
                               ),
                             ],
                           ),

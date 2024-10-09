@@ -559,13 +559,13 @@ class GroupService {
       final response = await http.post(
         Uri.parse('$baseUrl/$groupId/add-new-member/after'),
         headers: Environment.getJsonHeaders(token),
-        body: jsonEncode(member),
+        body: jsonEncode(member.toJson()),
       );
 
       // Check the response and handle it based on status codes
-      if (!context.mounted) return null;  // Ensure the context is still mounted before showing toasts
+      if (!context.mounted) return null;
       if (response.statusCode == 201) {
-        return response;  // Return the response on successful creation
+        return response;
       } else if (response.statusCode == 400) {
         showErrorToast(context, "Member already exists or bad request.");
       } else if (response.statusCode == 403) {
@@ -598,6 +598,95 @@ class GroupService {
       showErrorToast(context, "An error occurred: $e");
       return null;
     }
+  }
+
+  // Get members who have received disbursement
+  Future<http.Response?> getMembersWhoReceived(int groupId, String token, BuildContext context) async {
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/$groupId/members-who-received'),
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (!context.mounted) return null;
+
+      if (response.statusCode == 200) {
+        //showSuccessToast(context, 'Successfully retrieved members who received.');
+        return response; // Handle the response as needed
+      } else if (response.statusCode == 400) {
+        showErrorToast(context, 'Invalid token. Please log in again.');
+      } else if (response.statusCode == 403) {
+        showErrorToast(context, 'Unauthorized. You don’t have permission to view these members.');
+      } else if (response.statusCode == 404) {
+        showWarningToast(context, 'Group not found. Please check the ID.');
+      } else {
+        showWarningToast(context, 'Failed to retrieve members. Please try again later.');
+      }
+    } catch (e) {
+      showErrorToast(context, 'An error occurred. Please check your connection.');
+    }
+    return null;
+  }
+
+  // Get members who have not received disbursement
+  Future<http.Response?> getMembersWhoNotReceived(int groupId,String token, BuildContext context) async {
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/$groupId/members-who-not-received'),
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (!context.mounted) return null;
+
+      if (response.statusCode == 200) {
+        //showSuccessToast(context, 'Successfully retrieved members who have not received.');
+        return response; // Handle the response as needed
+      } else if (response.statusCode == 400) {
+        showErrorToast(context, 'Invalid token. Please log in again.');
+      } else if (response.statusCode == 403) {
+        showErrorToast(context, 'Unauthorized. You don’t have permission to view these members.');
+      } else if (response.statusCode == 404) {
+        showWarningToast(context, 'Group not found. Please check the ID.');
+      } else {
+        showWarningToast(context, 'Failed to retrieve members. Please try again later.');
+      }
+    } catch (e) {
+      showErrorToast(context, 'An error occurred. Please check your connection.');
+    }
+    return null;
+  }
+
+  // Get current recipient of the disbursement
+  Future<http.Response?> getCurrentRecipient(int groupId,String token, BuildContext context) async {
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/$groupId/current-recipient'),
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      );
+      if (!context.mounted) return null;
+
+      if (response.statusCode == 200) {
+        //showSuccessToast(context, 'Successfully retrieved current recipient.');
+        return response; // Handle the response as needed
+      } else if (response.statusCode == 400) {
+        showErrorToast(context, 'Invalid token. Please log in again.');
+      } else if (response.statusCode == 403) {
+        showErrorToast(context, 'Unauthorized. You don’t have permission to view the current recipient.');
+      } else if (response.statusCode == 404) {
+        showWarningToast(context, 'Group not found. Please check the ID.');
+      } else {
+        showWarningToast(context, 'Failed to retrieve current recipient. Please try again later.');
+      }
+    } catch (e) {
+      showErrorToast(context, 'An error occurred. Please check your connection.');
+    }
+    return null;
   }
 
 }
