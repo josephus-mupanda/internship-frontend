@@ -197,7 +197,7 @@ class RouteGenerator {
 
 class MyArguments {
   final Group group;
-  final Member member;
+  final MyMember member;
 
   MyArguments(this.group, this.member);
 }

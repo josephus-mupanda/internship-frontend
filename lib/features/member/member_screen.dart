@@ -4,7 +4,6 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:internship_frontend/data/providers/member_provider.dart';
-import 'package:internship_frontend/data/providers/menu_provider.dart';
 import 'package:internship_frontend/data/services/group_service.dart';
 import 'package:internship_frontend/features/group/components/header.dart';
 import 'package:provider/provider.dart';
@@ -16,7 +15,6 @@ import '../../core/widgets/input_widget.dart';
 import '../../data/models/group.dart';
 import '../../data/models/member.dart';
 import '../../data/services/auth_service.dart';
-import '../../data/services/user_service.dart';
 import '../../routes/app_routes.dart';
 import 'components/member_card.dart';
 
@@ -39,16 +37,13 @@ class _MemberScreenState extends State<MemberScreen> {
   String? username;
 
   Future<void> fetchMembers() async {
-    // Retrieve the token from secure storage
     String? token = await _authService.getAccessToken();
     username = await _authService.getUsernameFromToken();
-
     if (token == null && username == null) {
       await _authService.logout(context);
       Navigator.pushNamedAndRemoveUntil(context, AppRoutes.login, (route) => false);
       return;
     }
-
     try {
       final response = await _groupService.getMembersByGroup(widget.group.id!, token!, context);
       if (response?.statusCode == 200) {
@@ -74,16 +69,23 @@ class _MemberScreenState extends State<MemberScreen> {
       showErrorToast(context, "An error occurred: $e");
     }
   }
-  void sortGroupsByDate(bool ascending) {
+
+  void sortGroupsByUser(bool ascending) {
     setState(() {
       filteredMembers.sort((a, b) {
-        if (a.joinDate == null && b.joinDate == null) return 0; // Both are null
-        if (a.joinDate == null) return ascending ? 1 : -1; // a is null, b is not
-        if (b.joinDate == null) return ascending ? -1 : 1; // b is null, a is not
-        return ascending ? a.joinDate!.compareTo(b.joinDate!) : b.joinDate!.compareTo(a.joinDate!);
+        return ascending ? a.user!.compareTo(b.user!) : b.user!.compareTo(a.user!);
       });
     });
     showSuccessToast(context, ascending ? 'Sorted by ascending date' : 'Sorted by descending date');
+  }
+
+  void filterMembers(String query) {
+    setState(() {
+      filteredMembers = members.where((member) {
+        return member.group!.toLowerCase().contains(query.toLowerCase()) ||
+            member.user!.toLowerCase().contains(query.toLowerCase());
+      }).toList();
+    });
   }
 
   @override
@@ -139,6 +141,7 @@ class _MemberScreenState extends State<MemberScreen> {
                             },
                           ),
                           onChanged: (String? value) {
+                            filterMembers(value ?? "");
                           },
                           validator: (String? value) {},
                         ),
@@ -154,20 +157,20 @@ class _MemberScreenState extends State<MemberScreen> {
                     children: [
                       const SizedBox(width: 5),
                       Text(
-                        "Sort by date",
+                        "Sort by username",
                         style: theme.textTheme.bodyMedium,
                       ),
                       const Spacer(),
                       IconButton(
                         icon: Icon(Icons.arrow_upward, color: theme.colorScheme.onSurface.withOpacity(0.5)),
                         onPressed: () {
-                          sortGroupsByDate(true); // Ascending
+                          sortGroupsByUser(true); // Ascending
                         },
                       ),
                       IconButton(
                         icon: Icon(Icons.arrow_downward, color: theme.colorScheme.onSurface.withOpacity(0.5)),
                         onPressed: () {
-                          sortGroupsByDate(false); // Descending
+                          sortGroupsByUser(false); // Descending
                         },
                       ),
                     ],

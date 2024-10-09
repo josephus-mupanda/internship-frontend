@@ -132,7 +132,6 @@ class _AddMemberScreenState extends State<AddMemberScreen> {
   Widget build(BuildContext context) {
 
     final ThemeData theme = Theme.of(context);
-
     return Scaffold(
       body: RefreshIndicator(
         onRefresh: _onRefresh,

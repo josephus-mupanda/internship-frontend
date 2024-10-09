@@ -16,7 +16,7 @@ import 'input_widget.dart';
 
 class ContributionDialog extends StatefulWidget {
   final Group group;
-  final Member member;
+  final MyMember member;
   final String title;
   final String content;
   final String nameYes;
@@ -63,6 +63,7 @@ class _ContributionDialogState extends State<ContributionDialog> {
   void initState() {
     super.initState();
     fetchAvailableMonths();
+    amount = 100;
   }
 
   @override
@@ -120,7 +121,7 @@ class _ContributionDialogState extends State<ContributionDialog> {
                     prefixIcon: Icons.monetization_on,
                     kInitialValue: '100',
                     kReadOnly: true,
-                    onChanged: (String? value) => amount = double.tryParse(value ?? '100'),  // Set amount to default value
+                    //onChanged: (String? value) => amount = double.tryParse(value ?? '100'),  // Set amount to default value
                     validator: (String? value) {
                       if (value == null || value.isEmpty) {
                         return "Monthly amount is required";
@@ -200,7 +201,7 @@ class _ContributionDialogState extends State<ContributionDialog> {
     print("Year: $selectedYear");
 
     final Contribution contribution = Contribution(
-      memberId: widget.member.id!,
+      // memberId: widget.member.id!,
       amount: amount!,
       month: selectedMonth!,
       year: int.tryParse(selectedYear!),
@@ -225,8 +226,6 @@ class _ContributionDialogState extends State<ContributionDialog> {
       });
       widget.onContributionCreated();
     } catch (e) {
-      // Log the error for debugging
-      print("Error occurred: $e");
       showErrorToast(context, 'An error occurred during creation');
     } finally {
       Navigator.of(context).pop(); // Close the loading dialog

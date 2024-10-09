@@ -17,7 +17,7 @@ import '../group/components/header.dart';
 
 class MyTransactionScreen extends StatefulWidget {
   final Group group;
-  final Member member;
+  final MyMember member;
   const MyTransactionScreen({super.key, required this.group, required this.member});
 
   @override

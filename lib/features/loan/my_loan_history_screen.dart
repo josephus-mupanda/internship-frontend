@@ -20,7 +20,7 @@ import '../../routes/app_routes.dart';
 
 class MyLoanHistoryScreen extends StatefulWidget {
   final Group group;
-  final Member member;
+  final MyMember member;
 
   const MyLoanHistoryScreen({
     super.key,

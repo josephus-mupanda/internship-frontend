@@ -250,7 +250,7 @@ class GroupService {
 
       if (!context.mounted) return null;
       // Check the status code and handle conditions with toast messages
-      if (response.statusCode == 201) {
+      if (response.statusCode == 200) {
         return jsonDecode(response.body);
       } else if (response.statusCode == 400) {
         showErrorToast(context, "Invalid token or bad request. Please try again.");
@@ -508,17 +508,64 @@ class GroupService {
     return null;
   }
 
+  // Function to automate disbursement for a specific group
+  Future<http.Response?> automateDisbursement(int groupId, String token, BuildContext context) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/$groupId/automate-disbursement'),
+        headers: Environment.getJsonHeaders(token),
+      );
 
+      if (!context.mounted) return null;
 
-  // Automate disbursement
-  Future<http.Response> automateDisbursement(int groupId, String token) async {
-    final response = await http.post(
-      Uri.parse('$baseUrl/$groupId/automate'),
-      headers: {
-        'Authorization': 'Bearer $token',
-      },
-    );
-    return response;
+      // Check the status code and show appropriate toast messages
+      if (response.statusCode == 200) {
+        showSuccessToast(context, 'Disbursements automated successfully.');
+        return response;
+      } else if (response.statusCode == 401) {
+        showErrorToast(context, 'Invalid token. Please log in again.');
+      } else if (response.statusCode == 403) {
+        showErrorToast(context, 'Unauthorized. You don’t have permission to automate disbursements.');
+      } else if (response.statusCode == 404) {
+        showWarningToast(context, 'Group not found. Please check the ID.');
+      } else {
+        showWarningToast(context, 'Failed to automate disbursement. Please try again later.');
+      }
+    } catch (e) {
+      showErrorToast(context, 'An error occurred. Please check your connection.');
+    }
+    return null;
+  }
+
+  // Function to get automated disbursement schedule for a specific group
+  Future<http.Response?> getAutomatedDisbursement(int groupId, String token, BuildContext context) async {
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/$groupId/automate-disbursement'),
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (!context.mounted) return null;
+
+      // Check the status code and show appropriate toast messages
+      if (response.statusCode == 200) {
+        //showSuccessToast(context, 'Automated disbursement schedule retrieved successfully.');
+        return response;
+      } else if (response.statusCode == 401) {
+        showErrorToast(context, 'Invalid token. Please log in again.');
+      } else if (response.statusCode == 403) {
+        showErrorToast(context, 'Unauthorized. You don’t have permission to view this schedule.');
+      } else if (response.statusCode == 404) {
+        showWarningToast(context, 'Group not found. Please check the ID.');
+      } else {
+        showWarningToast(context, 'Failed to retrieve automated disbursement schedule. Please try again later.');
+      }
+    } catch (e) {
+      showErrorToast(context, 'An error occurred. Please check your connection.');
+    }
+    return null;
   }
 
   // Function to add a new member before the rotation starts
@@ -609,7 +656,6 @@ class GroupService {
           'Authorization': 'Bearer $token',
         },
       );
-
       if (!context.mounted) return null;
 
       if (response.statusCode == 200) {
@@ -639,7 +685,6 @@ class GroupService {
           'Authorization': 'Bearer $token',
         },
       );
-
       if (!context.mounted) return null;
 
       if (response.statusCode == 200) {

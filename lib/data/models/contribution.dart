@@ -1,7 +1,7 @@
 class Contribution {
   final int? id;
   final int? groupId;
-  final int memberId;
+  final int? memberId;
   final double amount;
   final DateTime? date;
   final String? month;
@@ -10,7 +10,7 @@ class Contribution {
   Contribution({
     this.id,
     this.groupId,
-    required this.memberId,
+    this.memberId,
     required this.amount,
     this.date,
     required this.month,

@@ -293,7 +293,7 @@ class _SideMenuState extends State<SideMenu> {
             nameYes: "Yes",
             nameNo: "No",
             ok: () async {
-              Navigator.of(context).pop(); // Close the dialog
+              print("Logout confirmed");
               await _logoutUser(); // Call logout method
             },
           ),
@@ -302,22 +302,31 @@ class _SideMenuState extends State<SideMenu> {
     );
   }
   Future<void> _logoutUser() async {
+    if (!mounted) return;
+    Navigator.of(context).pop();
     // Show loading dialog
     showLoadingDialog(context);
     try {
       await _authService.logout(context);
-      // Reset MenuProvider selection after logout
+      if (!mounted) return;
       final menuProvider = Provider.of<MenuProvider>(context, listen: false);
       menuProvider.resetSelection();
+
     } catch (e) {
-      // Handle errors and show a toast or dialog with the error message
-      showErrorToast(context, 'An error occurred during logout');
-    } finally {
-      Navigator.of(context).pop();
-      if (Scaffold.of(context).isDrawerOpen) {
-        Navigator.of(context).pop();
+      if (mounted) {
+        showErrorToast(context, 'An error occurred during logout');
       }
-      Navigator.pushReplacementNamed(context, AppRoutes.login); // Navigate to login screen
+    } finally {
+      if (mounted) {
+        Navigator.of(context).pop(); // Close the loading dialog
+        // Delay to give time for UI to settle before navigating
+        await Future.delayed(const Duration(milliseconds: 300));
+
+        if (!Responsive.isDesktop(context)) {
+          Navigator.of(context).pop();
+        }
+        Navigator.pushReplacementNamed(context, AppRoutes.login);// Navigate to login screen
+      }
     }
   }
 }

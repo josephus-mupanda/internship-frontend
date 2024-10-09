@@ -28,8 +28,8 @@ class GroupMenuScreen extends StatefulWidget {
 }
 
 class _GroupMenuScreenState extends State<GroupMenuScreen> {
-  String? _username,_groupCreatorUsername;
-  Member? currentMember;
+  String? _username;
+  MyMember? currentMember;
 
   bool _isLoading = true;
   bool _isInGroup = false;
@@ -51,7 +51,6 @@ class _GroupMenuScreenState extends State<GroupMenuScreen> {
       try {
         String? token = await _authService.getAccessToken();
         String? username = await _authService.getUsernameFromToken();
-        String? creatorUsername = Preferences.getGroupCreatorUsername();
         int? userId =  Preferences.getUserId();
 
         if (token != null && username != null  && userId != null ) {
@@ -59,8 +58,7 @@ class _GroupMenuScreenState extends State<GroupMenuScreen> {
           if (response != null) {
             setState(() {
               _username = username;
-              _groupCreatorUsername = creatorUsername;
-              currentMember = Member.fromJson(jsonDecode(response.body));
+              currentMember = MyMember.fromJson(jsonDecode(response.body));
               _isLoading = false;
               // Log current member for debugging
               print('Current Member >>>>>>>>>>>>>>>>>>>>>>>>>>>>>: ${currentMember?.toJson()}');
@@ -236,7 +234,7 @@ class _GroupMenuScreenState extends State<GroupMenuScreen> {
                             Navigator.pushNamed(
                               context,
                               AppRoutes.disbursementScreen,
-                              arguments: MyArguments(selectedGroup, currentMember!),
+                              arguments: selectedGroup,
                             );
                           } else {
                             showErrorToast(context, 'Failed to load current member data.');

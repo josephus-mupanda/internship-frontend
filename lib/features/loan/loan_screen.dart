@@ -33,7 +33,7 @@ class LoanScreen extends StatefulWidget {
 class _LoanScreenState extends State<LoanScreen> {
 
   bool _showOnboarding = false;
-  Member? currentMember;
+  MyMember? currentMember;
   List<ReservedAmount> loans = [];
 
   bool _isLoading = true;
@@ -62,7 +62,7 @@ class _LoanScreenState extends State<LoanScreen> {
         final response = await _groupService.getMemberByUsername(token, selectedGroup.id!, userId, context);
         if (response != null) {
           setState(() {
-            currentMember = Member.fromJson(jsonDecode(response.body));
+            currentMember = MyMember.fromJson(jsonDecode(response.body));
             _isLoading = false;
             print('Current Member >>>>>>>>>>>>>>>>>>>>>>>>>>>>>: ${currentMember?.toJson()}');
           });

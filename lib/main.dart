@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:internship_frontend/data/providers/contribution_provider.dart';
 import 'package:internship_frontend/data/providers/loan_provider.dart';
+import 'package:internship_frontend/data/providers/schedule_provider.dart';
 import 'package:internship_frontend/data/providers/theme_provider.dart';
 import 'package:internship_frontend/data/providers/transaction_provider.dart';
 import 'package:internship_frontend/data/providers/user_provider.dart';
@@ -33,7 +34,8 @@ void main() async {
         ChangeNotifierProvider(create: (_) => MemberProvider()),
         ChangeNotifierProvider(create: (_) => ContributionProvider(),),
         ChangeNotifierProvider(create: (_) => TransactionProvider(),),
-        ChangeNotifierProvider(create: (_) => LoanProvider(),)
+        ChangeNotifierProvider(create: (_) => LoanProvider(),),
+        ChangeNotifierProvider(create: (_) => ScheduleProvider(),)
       ],
       child: const MyApp(),
     ),

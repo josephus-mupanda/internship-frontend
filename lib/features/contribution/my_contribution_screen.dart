@@ -21,7 +21,7 @@ import '../group/components/header.dart';
 
 class MyContributionScreen extends StatefulWidget {
   final Group group;
-  final Member member;
+  final MyMember member;
 
   const MyContributionScreen({
     super.key,
@@ -243,6 +243,7 @@ class _MyContributionScreenState extends State<MyContributionScreen> {
       ),
     );
   }
+
   Widget _buildContributionTable(BuildContext context, TextTheme textTheme) {
     final ThemeData theme = Theme.of(context);
     return SingleChildScrollView(
