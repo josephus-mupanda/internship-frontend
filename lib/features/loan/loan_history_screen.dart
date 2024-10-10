@@ -32,6 +32,7 @@ class _LoanHistoryScreenState extends State<LoanHistoryScreen> {
   final AuthService _authService = AuthService();
 
   List<ReservedAmount> loans = [];
+  List<ReservedAmount> allLoans = [];
   bool _sortAscending = true;
   int _sortColumnIndex = 0;
 
@@ -52,6 +53,7 @@ class _LoanHistoryScreenState extends State<LoanHistoryScreen> {
         }).toList();
         setState(() {
           loans = fetchedLoans;
+          allLoans = fetchedLoans;
           Provider.of<LoanProvider>(context, listen: false).setLoans(loans);
         });
       } else {
@@ -81,7 +83,10 @@ class _LoanHistoryScreenState extends State<LoanHistoryScreen> {
   void _onSearch(String? query) {
     setState(() {
       if (query == null || query.isEmpty) {
-        fetchLoans();
+        setState(() {
+          loans = allLoans;
+        });
+        return;
       } else {
         loans = loans.where((loan) {
           return loan.amount.toString().contains(query) ||

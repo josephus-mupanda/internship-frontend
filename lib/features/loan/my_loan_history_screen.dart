@@ -38,6 +38,8 @@ class _MyLoanHistoryScreenState extends State<MyLoanHistoryScreen> {
   final AuthService _authService = AuthService();
 
   List<ReservedAmount> myLoans = [];
+  List<ReservedAmount> allLoans = [];
+
   bool _isLoading = true;
   bool _sortAscending = true;
   int _sortColumnIndex = 0;
@@ -62,6 +64,7 @@ class _MyLoanHistoryScreenState extends State<MyLoanHistoryScreen> {
         }).toList();
         setState(() {
           myLoans = fetchedMyLoans;
+          allLoans = fetchedMyLoans;
           _isLoading = false;
           Provider.of<LoanProvider>(context, listen: false).setLoans(myLoans);
         });
@@ -87,15 +90,13 @@ class _MyLoanHistoryScreenState extends State<MyLoanHistoryScreen> {
     await fetchMyLoans();
   }
 
-  void _onLoanDeleted() {
-    // Refresh the list after deletion
-    fetchMyLoans();
-  }
-
   void _onSearch(String? query) {
     setState(() {
       if (query == null || query.isEmpty) {
-        fetchMyLoans();
+        setState(() {
+          myLoans = allLoans;
+        });
+        return;
       } else {
         myLoans = myLoans.where((loan) {
           return loan.amount.toString().contains(query) ||

@@ -39,6 +39,8 @@ class _MyContributionScreenState extends State<MyContributionScreen> {
   final AuthService _authService = AuthService();
 
   List<ContributionM> myContributions = [];
+  List<ContributionM> allContributions = [];
+
   bool _sortAscending = true;
   int _sortColumnIndex = 0;
   
@@ -60,6 +62,7 @@ class _MyContributionScreenState extends State<MyContributionScreen> {
         }).toList();
         setState(() {
           myContributions = fetchedMyContributions;
+          allContributions =  fetchedMyContributions;
           Provider.of<ContributionProvider>(context, listen: false).setContributions(myContributions);
         });
       } else {
@@ -105,7 +108,10 @@ class _MyContributionScreenState extends State<MyContributionScreen> {
   void _onSearch(String? query) {
     setState(() {
       if (query == null || query.isEmpty) {
-        fetchMyContributions();
+        setState(() {
+          myContributions = allContributions;
+        });
+        return;
       } else {
         myContributions = myContributions.where((contribution) {
           return contribution.amount.toString().contains(query) ||
@@ -210,7 +216,7 @@ class _MyContributionScreenState extends State<MyContributionScreen> {
         onPressed: () {
           _showContributionDialog();
         },
-        child: const Icon(Icons.add),
+        child: const Icon(Icons.add, color: Colors.white,),
       ),
     );
   }

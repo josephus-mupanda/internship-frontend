@@ -3,7 +3,6 @@ import '../../../core/constants/constants.dart';
 
 class LoanOnboardingScreen extends StatefulWidget {
   final VoidCallback onboardingComplete;
-
   const LoanOnboardingScreen({
     super.key,
     required this.onboardingComplete
@@ -16,7 +15,6 @@ class LoanOnboardingScreen extends StatefulWidget {
 class _LoanOnboardingScreenState extends State<LoanOnboardingScreen> {
   final PageController _pageController = PageController(initialPage: 0);
   int currentIndex = 0;
-
   void _nextPage() {
     if (currentIndex < 2) {
       setState(() {
@@ -34,7 +32,6 @@ class _LoanOnboardingScreenState extends State<LoanOnboardingScreen> {
   @override
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
-
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Container(
@@ -91,7 +88,6 @@ class _LoanOnboardingScreenState extends State<LoanOnboardingScreen> {
                                                           title: Constants.loanTitleTwo,
                                                           description: Constants.loanDescriptionTwo,
                                                           color: Colors.green,
-
                                                         ),
                                                         CreatePage(
                                                           icon: Icons.history,
@@ -180,7 +176,6 @@ class _LoanOnboardingScreenState extends State<LoanOnboardingScreen> {
         indicators.add(_indicator(false));
       }
     }
-
     return indicators;
   }
 }

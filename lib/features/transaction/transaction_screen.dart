@@ -31,6 +31,7 @@ class _TransactionScreenState extends State<TransactionScreen> {
   final AuthService _authService = AuthService();
 
   List<Transaction> transactions = [];
+  List<Transaction> allTransactions = [];
   bool _sortAscending = true;
   int _sortColumnIndex = 0;
 
@@ -55,6 +56,7 @@ class _TransactionScreenState extends State<TransactionScreen> {
         }).toList();
         setState(() {
           transactions = fetchedTransactions;
+          allTransactions = fetchedTransactions;
           Provider.of<TransactionProvider>(context, listen: false).setTransactions(transactions);
         });
       } else {
@@ -75,7 +77,10 @@ class _TransactionScreenState extends State<TransactionScreen> {
   void _onSearch(String? query) {
     setState(() {
       if (query == null || query.isEmpty) {
-        fetchTransactions();
+        setState(() {
+          transactions = allTransactions;
+        });
+        return;
       } else {
         transactions = transactions.where((transaction) {
           return transaction.amount.toString().contains(query) ||
@@ -322,6 +327,10 @@ class _TransactionScreenState extends State<TransactionScreen> {
       case "MEMBERSHIP_FEES":
         typeColor = theme.colorScheme.error;
         typeLabel = 'Membership';
+        break;
+      case "LOAN_REQUEST":
+        typeColor = Colors.yellow;
+        typeLabel = 'Loan';
         break;
       default:
         typeColor = theme.colorScheme.onSurface;
