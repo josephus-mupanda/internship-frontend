@@ -39,6 +39,33 @@ class _GroupCardState extends State<GroupCard> {
 
   String? currentUsername;
 
+  Future<void> _loadUsernameAndMember(Group selectedGroup) async {
+    try {
+      String? token = await _authService.getAccessToken();
+      String? username = await _authService.getUsernameFromToken();
+      int? userId =  Preferences.getUserId();
+
+      if (token != null && username != null  && userId != null ) {
+        final response = await _groupService.getMemberByUsername(token, selectedGroup.id!, userId, context);
+        if (response != null) {
+          setState(() {
+            currentUsername = username;
+          });
+        }
+      }
+    } catch (error) {
+      setState(() {
+      });
+      showErrorToast(context, "Failed to load user data.");
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    Group selectedGroup = widget.group;
+    _loadUsernameAndMember(selectedGroup);
+  }
   // Function to generate a random color
   Color getRandomColor() {
     Random random = Random();
@@ -59,138 +86,141 @@ class _GroupCardState extends State<GroupCard> {
     return Padding(
       padding: const EdgeInsets.symmetric(
           horizontal: Constants.kDefaultPadding, vertical: Constants.kDefaultPadding / 2),
-      child: Stack(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(Constants.kDefaultPadding),
-            decoration: BoxDecoration(
-              color: widget.isActive ? ColorPalette.primaryColor : Theme.of(context).colorScheme.background,
-              borderRadius: BorderRadius.circular(15),
-            ),
-            child: Column(
-              children: [
-                Row(
-                  children: [
-                    CircleAvatar(
-                      radius: 30,
-                        // backgroundColor: getRandomColor(),
-                      child: Text(
-                        widget.group.name[0].toUpperCase(),
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold, // Make the text bold
+      child: InkWell(
+        onTap: widget.press,
+        child: Stack(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(Constants.kDefaultPadding),
+              decoration: BoxDecoration(
+                color: widget.isActive ? ColorPalette.primaryColor : Theme.of(context).colorScheme.background,
+                borderRadius: BorderRadius.circular(15),
+              ),
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      CircleAvatar(
+                        radius: 30,
+                          // backgroundColor: getRandomColor(),
+                        child: Text(
+                          widget.group.name[0].toUpperCase(),
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold, // Make the text bold
+                          ),
                         ),
-                      ),
-                    ),
-                    const SizedBox(width: Constants.kDefaultPadding / 2),
-                    Expanded(
-                      child: Text.rich(
-                        TextSpan(
-                          text: "${widget.group.name} \n",
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: widget.isActive ? Colors.white : null,
-                          ),
-                          children: [
-                            TextSpan(
-                              text: "Created by : ${widget.group.createdBy}",
-                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                color: widget.isActive ? Colors.white : null,
-                              ),
-                            ),
-                          ],
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                        // maxLines: 1,
-                      ),
-                    ),
-                    if (currentUsername == widget.group.createdBy) ...[
-                      Column(
-                        children: [
-                          IconButton(
-                              onPressed: (){
-
-                              },
-                              icon: Icon(
-                                FeatherIcons.edit,
-                                color: widget.isActive ? Colors.white70 : Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
-                              )
-                          ),
-                          const SizedBox(height: 5),
-                          IconButton(
-                              onPressed: (){
-                                _showDeleteGroupDialog();
-                              },
-                              icon: Icon(
-                                FeatherIcons.trash,
-                                color: widget.isActive ? Colors.white70 : Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
-                              )
-                          ),
-
-                        ],
                       ),
                       const SizedBox(width: Constants.kDefaultPadding / 2),
-                    ],
-                    if (widget.group.isInGroup)
-                      InkWell(
-                        onTap: (){
-                          menuProvider.selectGroup( widget.group);
-                          if(Responsive.isMobile(context)) {
-                            Navigator.pushNamed(context,
-                              AppRoutes.groupMenuScreen,
-                              arguments: widget.group,
-                            );
-                          }
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                          decoration: BoxDecoration(
-                            color: widget.isActive ? ColorPalette.secondaryColor : ColorPalette.errorColor,
-                            borderRadius: BorderRadius.circular(20),
+                      Expanded(
+                        child: Text.rich(
+                          TextSpan(
+                            text: "${widget.group.name} \n",
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: widget.isActive ? Colors.white : null,
+                            ),
+                            children: [
+                              TextSpan(
+                                text: "Created by : ${widget.group.createdBy}",
+                                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                  color: widget.isActive ? Colors.white : null,
+                                ),
+                              ),
+                            ],
                           ),
-                          child: Text(
-                              "Open Group",
-                              style: theme.textTheme.bodySmall?.copyWith(
-                                  color: Colors.white
-                              )
-                          ),
-                        ),
-                      )
-                    else
-                      InkWell(
-                        onTap: (){
-                          _showJoinGroupDialog();
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                          decoration: BoxDecoration(
-                            color: widget.isActive ? ColorPalette.secondaryColor : ColorPalette.primaryColor,
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child:Text(
-                              "Join Group",
-                              style: theme.textTheme.bodySmall?.copyWith(
-                                  color: Colors.white
-                              )
-                          ),
+                          overflow: TextOverflow.ellipsis,
+                          // maxLines: 1,
                         ),
                       ),
-                  ],
-                ),
-                const SizedBox(height: Constants.kDefaultPadding / 2),
-                Text(
-                  widget.group.description,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    height: 1.5,
-                    color: widget.isActive ? Colors.white70 : null,
+                      if (currentUsername == widget.group.createdBy) ...[
+                        Column(
+                          children: [
+                            IconButton(
+                                onPressed: (){
+
+                                },
+                                icon: Icon(
+                                  FeatherIcons.edit,
+                                  color: widget.isActive ? Colors.white70 : Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+                                )
+                            ),
+                            const SizedBox(height: 5),
+                            IconButton(
+                                onPressed: (){
+                                  _showDeleteGroupDialog();
+                                },
+                                icon: Icon(
+                                  FeatherIcons.trash,
+                                  color: widget.isActive ? Colors.white70 : Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+                                )
+                            ),
+
+                          ],
+                        ),
+                        const SizedBox(width: Constants.kDefaultPadding / 2),
+                      ],
+                      if (widget.group.isInGroup)
+                        InkWell(
+                          onTap: (){
+                            menuProvider.selectGroup(widget.group);
+                            if(Responsive.isMobile(context)) {
+                              Navigator.pushNamed(context,
+                                AppRoutes.groupMenuScreen,
+                                arguments: widget.group,
+                              );
+                            }
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                            decoration: BoxDecoration(
+                              color: widget.isActive ? ColorPalette.secondaryColor : ColorPalette.errorColor,
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Text(
+                                "Open Group",
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                    color: Colors.white
+                                )
+                            ),
+                          ),
+                        )
+                      else
+                        InkWell(
+                          onTap: (){
+                            _showJoinGroupDialog();
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                            decoration: BoxDecoration(
+                              color: widget.isActive ? ColorPalette.secondaryColor : ColorPalette.primaryColor,
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child:Text(
+                                "Join Group",
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                    color: Colors.white
+                                )
+                            ),
+                          ),
+                        ),
+                    ],
                   ),
-                )
-              ],
-            ),
-          )
-        ],
+                  const SizedBox(height: Constants.kDefaultPadding / 2),
+                  Text(
+                    widget.group.description,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      height: 1.5,
+                      color: widget.isActive ? Colors.white70 : null,
+                    ),
+                  )
+                ],
+              ),
+            )
+          ],
+        ),
       ),
     );
   }
@@ -254,8 +284,6 @@ class _GroupCardState extends State<GroupCard> {
     }
   }
   Future<void> _joinGroup() async {
-    //final menuProvider = Provider.of<MenuProvider>(context);
-    // Retrieve the token from secure storage
     String? token = await _authService.getAccessToken();
     int? userId  = Preferences.getUserId();
     if (token == null && userId == null) {
@@ -281,6 +309,18 @@ class _GroupCardState extends State<GroupCard> {
       if (response != null && response.statusCode == 201) {
         showSuccessToast(context, "Member joined successfully!");
         widget.group.isInGroup = true;
+        // Update the menu provider to reflect the selected group
+        final menuProvider = Provider.of<MenuProvider>(context, listen: false);
+        menuProvider.selectGroup(widget.group);
+        // Optionally, navigate the user to the group menu screen after joining
+        if (Responsive.isMobile(context)) {
+          Navigator.pushNamed(
+            context,
+            AppRoutes.groupMenuScreen,
+            arguments: widget.group,
+          );
+
+        }
       } else {
         // Handle errors inside the add functions
       }

@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:internship_frontend/routes/app_routes.dart';
 import '../../../core/constants/constants.dart';
-import '../../../core/utils/preferences.dart';
 
 class LoanOnboardingScreen extends StatefulWidget {
   final VoidCallback onboardingComplete;
@@ -18,6 +16,20 @@ class LoanOnboardingScreen extends StatefulWidget {
 class _LoanOnboardingScreenState extends State<LoanOnboardingScreen> {
   final PageController _pageController = PageController(initialPage: 0);
   int currentIndex = 0;
+
+  void _nextPage() {
+    if (currentIndex < 2) {
+      setState(() {
+        currentIndex++;
+      });
+      _pageController.nextPage(
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeIn,
+      );
+    } else {
+      widget.onboardingComplete();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -72,16 +84,20 @@ class _LoanOnboardingScreenState extends State<LoanOnboardingScreen> {
                                                           icon: Icons.request_page,
                                                           title: Constants.loanTitleOne,
                                                           description: Constants.loanDescriptionOne,
+                                                          color: Colors.blue,
                                                         ),
                                                         CreatePage(
                                                           icon: Icons.attach_money,
                                                           title: Constants.loanTitleTwo,
                                                           description: Constants.loanDescriptionTwo,
+                                                          color: Colors.green,
+
                                                         ),
                                                         CreatePage(
                                                           icon: Icons.history,
                                                           title: Constants.loanTitleThree,
                                                           description: Constants.loanDescriptionThree,
+                                                          color: Colors.orange,
                                                         ),
                                                       ],
                                                     ),
@@ -103,17 +119,7 @@ class _LoanOnboardingScreenState extends State<LoanOnboardingScreen> {
                                                         ),
                                                         child: IconButton(
                                                           onPressed: () {
-                                                            setState(()  async {
-                                                              if (currentIndex < 2) {
-                                                                currentIndex++;
-                                                                _pageController.nextPage(
-                                                                  duration: const Duration(milliseconds: 300),
-                                                                  curve: Curves.easeIn,
-                                                                );
-                                                              } else {
-                                                                widget.onboardingComplete();
-                                                              }
-                                                            });
+                                                            _nextPage();
                                                           },
                                                           icon: const Icon(
                                                             Icons.arrow_forward_ios,
@@ -157,7 +163,7 @@ class _LoanOnboardingScreenState extends State<LoanOnboardingScreen> {
       width: isActive ? 20 : 8,
       margin: const EdgeInsets.only(right: 5.0),
       decoration: BoxDecoration(
-        color: Theme.of(context).primaryColor, // Use theme color
+        color:  isActive ?  Theme.of(context).primaryColor : Theme.of(context).colorScheme.background,
         borderRadius: BorderRadius.circular(5),
       ),
     );
@@ -183,12 +189,14 @@ class CreatePage extends StatelessWidget {
   final IconData icon;
   final String title;
   final String description;
+  final Color color;
 
   const CreatePage({
     super.key,
     required this.icon,
     required this.title,
     required this.description,
+    required this.color
   });
 
   @override
@@ -200,8 +208,10 @@ class CreatePage extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             SizedBox(
-              height: 300,
-              child: Icon(icon),
+              height: 100,
+              child: Icon(
+                icon, color: color,size: 80,
+              ),
             ),
             const SizedBox(
               height: Constants.kDefaultPadding,
@@ -209,15 +219,15 @@ class CreatePage extends StatelessWidget {
             Text(
               title,
               textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.headlineMedium,
+              style: Theme.of(context).textTheme.bodyMedium,
             ),
             const SizedBox(
               height: Constants.kDefaultPadding,
             ),
             Text(
               description,
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodyMedium,
+              textAlign: TextAlign.justify,
+              style: Theme.of(context).textTheme.bodySmall,
             ),
             const SizedBox(
               height: Constants.kDefaultPadding,

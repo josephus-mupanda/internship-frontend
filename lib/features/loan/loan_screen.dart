@@ -19,6 +19,7 @@ import '../../data/services/auth_service.dart';
 import '../../data/services/group_service.dart';
 import '../../routes/app_routes.dart';
 import '../../routes/route_generator.dart';
+import '../group/empty_group_screen.dart';
 import '../group/empty_join_group_screen.dart';
 import 'components/loan_card.dart';
 
@@ -37,7 +38,6 @@ class _LoanScreenState extends State<LoanScreen> {
   List<ReservedAmount> loans = [];
 
   bool _isLoading = true;
-  bool _isInGroup = false;
   bool _loading = true;
 
   final AuthService _authService = AuthService();
@@ -119,7 +119,7 @@ class _LoanScreenState extends State<LoanScreen> {
       print("isUserInGroup result: $isInGroup");
       if (mounted) {
         setState(() {
-          _isInGroup = isInGroup;
+          widget.group.isInGroup = isInGroup;
           _loading = false;
         });
       }
@@ -144,10 +144,14 @@ class _LoanScreenState extends State<LoanScreen> {
         body: const Center(child: CircularProgressIndicator()),
       );
     }
-    else if (!_isInGroup) {
+    else
+    if (!widget.group.isInGroup) {
       return const EmptyJoinGroupScreen();
     }
-
+    else if (selectedGroup == null) {
+      // No group selected (fallback)
+      return const EmptyGroupScreen();
+    }
     return _showOnboarding
         ?
     LoanOnboardingScreen(
@@ -162,22 +166,14 @@ class _LoanScreenState extends State<LoanScreen> {
       body: Container(
         color: theme.colorScheme.background,
         child: SafeArea(
-          child: selectedGroup == null
-              ?
-          const Center(child: Text("Please select a group to view loan options."))
-              :
-          Column(
+          child: Column(
             children: [
               GroupHeader(group: selectedGroup),
               const Divider(thickness: 1),
               Expanded(
                 child: SingleChildScrollView(
                   padding: const EdgeInsets.all(Constants.kDefaultPadding),
-                  child: _isLoading
-                      ?
-                  const CircularProgressIndicator()
-                      :
-                  Column(
+                  child: Column(
                     children: [
                       // Loan Card for Requesting a Loan
                       LoanCard(

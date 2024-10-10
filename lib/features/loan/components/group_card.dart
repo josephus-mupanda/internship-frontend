@@ -99,10 +99,10 @@ class _GroupCardState extends State<GroupCard> {
                             const SizedBox(height: 10),
                             InkWell(
                               onTap: (){
-                                menuProvider.selectGroup( widget.group);
+                                menuProvider.selectGroup(widget.group);
                                 if(Responsive.isMobile(context)) {
                                   Navigator.pushNamed(context,
-                                    AppRoutes.groupMenuScreen,
+                                    AppRoutes.loanScreen,
                                     arguments: widget.group,
                                   );
                                 }

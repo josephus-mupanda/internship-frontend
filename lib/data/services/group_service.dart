@@ -229,7 +229,7 @@ class GroupService {
       } else if (response.statusCode == 404) {
         showWarningToast(context, "Member not found. Please check the member username.");
       } else {
-        showWarningToast(context, "Failed to retrieve the member . Please try again later.");
+        //showWarningToast(context, "Failed to retrieve the member . Please try again later.");
       }
     }
     catch(e){
@@ -429,7 +429,7 @@ class GroupService {
 
       if (!context.mounted) return null;
       if (response.statusCode == 200) {
-        showSuccessToast(context, 'Success');
+        //showSuccessToast(context, 'Success');
         return response;
       } else if (response.statusCode == 400) {
         showErrorToast(context, 'Invalid token. Please log in again.');
@@ -460,7 +460,7 @@ class GroupService {
       if (!context.mounted) return null;
       // Check the status code and show appropriate toast messages
       if (response.statusCode == 200) {
-        showSuccessToast(context, 'Success');
+        //showSuccessToast(context, 'Success');
         return response;
       } else if (response.statusCode == 400) {
         showErrorToast(context, 'Invalid token. Please log in again.');
@@ -490,7 +490,7 @@ class GroupService {
       if (!context.mounted) return null;
       // Check the status code and show appropriate toast messages
       if (response.statusCode == 200) {
-        showSuccessToast(context, 'Success');
+        //showSuccessToast(context, 'Success');
         return jsonDecode(response.body);
       } else if (response.statusCode == 400) {
         showErrorToast(context, 'Invalid token. Please log in again.');

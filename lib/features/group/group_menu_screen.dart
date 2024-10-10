@@ -32,7 +32,6 @@ class _GroupMenuScreenState extends State<GroupMenuScreen> {
   MyMember? currentMember;
 
   bool _isLoading = true;
-  bool _isInGroup = false;
   bool _loading = true;
 
   final AuthService _authService = AuthService();
@@ -86,7 +85,7 @@ class _GroupMenuScreenState extends State<GroupMenuScreen> {
       bool isInGroup = await _groupService.isUserInGroup(widget.group.id!, userId!, token!, context);
       if (mounted) {
         setState(() {
-          _isInGroup = isInGroup;
+          widget.group.isInGroup = isInGroup;
           _loading = false;
         });
       }
@@ -111,7 +110,7 @@ class _GroupMenuScreenState extends State<GroupMenuScreen> {
         body: const Center(child: CircularProgressIndicator()),
       );
     }
-    if (!_isInGroup) {
+    if (!widget.group.isInGroup) {
       // User is not part of the group
       return const EmptyJoinGroupScreen();
     }

@@ -12,8 +12,6 @@ import '../../core/utils/toast.dart';
 import '../../core/widgets/group_dialog.dart';
 import '../../core/widgets/input_widget.dart';
 import '../../data/models/group.dart';
-import '../../data/models/user.dart';
-import '../../data/providers/group_provider.dart';
 
 import 'package:flutter/foundation.dart' show kIsWeb;
 
@@ -102,13 +100,13 @@ class _ListOfGroupsState extends State<ListOfGroups> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      // Check if there are groups and no selected group, then select the first group
-      final menuProvider = Provider.of<MenuProvider>(context, listen: false);
-      if (menuProvider.groups.isNotEmpty && menuProvider.selectedGroup == null) {
-        menuProvider.selectGroup(menuProvider.groups[0]);
-      }
-    });
+    // WidgetsBinding.instance.addPostFrameCallback((_) {
+    //   // Check if there are groups and no selected group, then select the first group
+    //   final menuProvider = Provider.of<MenuProvider>(context, listen: false);
+    //   if (menuProvider.groups.isNotEmpty && menuProvider.selectedGroup == null) {
+    //     menuProvider.selectGroup(menuProvider.groups[0]);
+    //   }
+    // });
     fetchGroups();
   }
 
@@ -248,7 +246,7 @@ class _ListOfGroupsState extends State<ListOfGroups> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {  _showGroupDialog();},
-        child: const Icon(Icons.add),
+        child: const Icon(Icons.add, color: Colors.white,),
       )
     );
   }

@@ -113,12 +113,12 @@ class _ListOfLoansState extends State<ListOfLoans> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final menuProvider = Provider.of<MenuProvider>(context, listen: false);
-      if (menuProvider.groups.isNotEmpty && menuProvider.selectedGroup == null) {
-        menuProvider.selectGroup(menuProvider.groups[0]);
-      }
-    });
+    // WidgetsBinding.instance.addPostFrameCallback((_) {
+    //   final menuProvider = Provider.of<MenuProvider>(context, listen: false);
+    //   if (menuProvider.groups.isNotEmpty && menuProvider.selectedGroup == null) {
+    //     menuProvider.selectGroup(menuProvider.groups[0]);
+    //   }
+    // });
     fetchGroups();
   }
   Future<void> _onRefresh() async {
@@ -227,9 +227,6 @@ class _ListOfLoansState extends State<ListOfLoans> {
                                   arguments: filteredGroups[index],
                                 );
                               }
-                              // if(Responsive.isMobile(context)) {
-                              //   Navigator.pushNamed(context, AppRoutes.loanScreen);
-                              // }
                             },
                           );
                         }
